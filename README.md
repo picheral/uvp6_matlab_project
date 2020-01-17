@@ -9,7 +9,7 @@ Les codes tournent avec Matlab 9.7 et utilisent les packages suivant:
 - Image Processing Toolbox 11.0
 - Statistics and Machine Learning Toolbox 11.6
 
-Lors de l'ouverture du projet, le path est automatiquement atualisé pour l'utilisation des codes. Est ajouté la racine du projet et les sous répertoires.
+Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'utilisation des codes. Est ajouté la racine du projet et les sous répertoires.
 
 ## description du projet
 
@@ -58,3 +58,10 @@ Lors de l'ouverture du projet, le path est automatiquement atualisé pour l'util
 - master : ne **jamais** comiter directement sur master
 - merger les branches : merger depuis github afin d'assurer une bonne traçabilité
 - gestion local : toujours vérifier que les branches locales sont à jour avant de les modifier (pull), **notamment master**
+
+# bonnes pratiques de matlab project
+Les codes font partie d'un projet matlab qui aide à laur gestion.
+
+Avant de lancer un code, il est impératif d'ouvrir le projet matlab (ouvrir le fichier \*.prj). Le path sera automatiquement updaté pour faire tourner les codes. La fenêtre projet permet de vérifier les fichiers/dossiers suivis par matlab project et git.
+
+Il est recomandé d'effectuer les actions de refactoring sur les dossiers/fichiers (déplacer, supprimer, renomer,...) dans la fenêtre projet. Ainsi ces changements seront bien pris en compte par Matlab project et git.
