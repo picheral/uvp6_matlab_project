@@ -38,7 +38,7 @@ process_calib = input('Process data from aquarium inter-calibration ? (n/y) ','s
 if isempty(process_calib); process_calib = 'n'; end
 
 % -------- AUTO --------------------------------
-auto = input('Select manually the data range for each sample (n/y) ','s');
+auto = input('Select manually the data range for each sample ? (n/y) ','s');
 if isempty(auto);auto = 'n';end
 
 % ----- RAW folder -----------------------------
@@ -104,10 +104,9 @@ while j < N_seq+1
     
     % ------------ LIgne ACQ ----------------------------------
     tline = fgetl(fid);
-    tline = fgetl(fid);
     A = strsplit(tline,{','});
     black_ratio = str2num(A{15+X});
-%     black_ratio = str2num(A{11+X});
+    %black_ratio = str2num(A{11+X});
     
     % ------------- Fermeture fichier -------------------------
     fclose(fid);
