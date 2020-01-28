@@ -16,6 +16,16 @@
 %Modified : Marc Picheral
 %Date : 2019/01/25
 
+% -----------------------------------------------------------------
+% TO DO :
+% modifier graphes (N) images, S/N%
+% -----------------------------------------------------------------
+
+
+% ------ raw_black
+raw_black_col = {' '};
+raw_histopx_col = {' '};
+histopx_col ={' '};
 
 % ------ Creation de base UVP6 generique avec contrôle des données --------
 
@@ -29,15 +39,20 @@ disp('---------------------------------------------------------------')
 disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
 
-% -------- Option ------------------------------
+% -------- Option creation base en plus vecteurs bruts --------------------
+% les data.mat sont toujours créés :
+% Image status : Z, datenum, statut image (1: overexposed, 2 : black, 3 : lpm)
 create_profils = input('Process also profile database ? (y/n) ','s');
 if isempty(create_profils); create_profils = 'y';end
 
 % --------  AQUARIUM OPTION --------------------
+% Va créer un vecteur de profondeur fictif en utilisant le N° d'image
 process_calib = input('Process data from aquarium inter-calibration ? (n/y) ','s');
 if isempty(process_calib); process_calib = 'n'; end
 
 % -------- AUTO --------------------------------
+% Par défaut, création d'une base avec les même profondeurs et metadata
+% pour tous les sample/sequence, sinon, toutes options possibles.
 auto = input('Select manually the data range for each sample ? (n/y) ','s');
 if isempty(auto);auto = 'n';end
 
@@ -110,6 +125,7 @@ while j < N_seq+1
     
     % ------------- Fermeture fichier -------------------------
     fclose(fid);
+    
     eval([base_name '(sample).cruise = {cruise};']);
     eval([base_name '(sample).raw_folder = {seq(j).name};']);
     eval([base_name '(sample).pvmtype = {pvmtype};']);
@@ -127,6 +143,7 @@ while j < N_seq+1
     
     %T is the table with all the lines of the text file, seperated in two tables : first part is the begnning with the date and time, pressure and black image flag
     T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
+%     20190724-123151,22.31,34.50,1:  1,1048,41.7,14.5; 2,26,38.2,5.6;    3,1,66.0,28.5;
     data = table2array(T(:,2));
     meta = table2array(T(:,1));
     
@@ -154,12 +171,14 @@ while j < N_seq+1
         end
         % ------------ Ligne de zeros -----------------------
         line = zeros(1,900);
-        % -------- METADATA -------
+        
+        % -------- VECTEURS METADATA -------
         C = strsplit(meta{h},{','});
         time_data(h) = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
         prof_data(h) =  str2num(C{2});
         Flag = str2num(C{4});
-        % --------- DATA -------------
+        
+        % --------- VECTEURS DATA -------------
         if isempty(findstr('OVER',data{h})) && isempty(findstr('EMPTY',data{h}))
             % -------- DATA ------------
             eval(['temp_matrix=[' data{h} '];']);
@@ -197,6 +216,7 @@ while j < N_seq+1
     disp('----------------- end of loop ----------------------')
     
     %% -------- Construction matrices de travail -----------------
+    % raw_nb et black_nb sont les histo d'abondances par taille de pixel
     data_nb = [prof_data time_data raw_nb];
     black_nb = [prof_data time_data black_nb];
     image_status = [prof_data time_data image_status];
@@ -206,26 +226,29 @@ while j < N_seq+1
     disp(['saving ',seq_name,'_data.mat'])
     eval(['save ',results_folder,'\',seq_name,'_data.mat data_nb black_nb image_status;'])
     disp('----------------- Data saved ----------------------')
-    
+   
+    %% -------------- Creation de la base des profils "baseuvp6...." -----------------
     if strcmp(create_profils,'y')
         %% -------- Enrgistrement table metadata -------------------
         %     vect = {'Z' 'timenum' 'pixel_1' 'pixel_2' 'pixel_3' 'pixel_4' 'pixel_5'};
         %     T = array2table(black_nb(:,1:7),'VariableNames',vect);
         %     T.time = %
         
-        % --------- Retrait des trames vides -----------------------
+        % --------- Retrait des trames vides indiquées par NaN -----------------------
         I = isnan(raw_nb(:,3));
         data_nb(I,:) = [];
         I = isnan(black_nb(:,3));
         black_nb(I,:) = [];
         
+        % --------- Vecteur des images noires (Methode à vérifier) ------------
         vect_img_black = (black_ratio-1)*[1:numel(black_nb(:,1))];
         
+        % --------- Calcul du bruit pour UVPdb --------------------------
         disp('---------------------------------------------------------------')
         median_1px = nanmedian(black_nb(:,3));
         median_2px = nanmedian(black_nb(:,4));
-        disp(['Black_nb median abundance of 1 pixel objects : ',num2str(median_1px)])
-        disp(['Black_nb median abundance of 2 pixel objects : ',num2str(median_2px)])
+        disp(['Black_nb median abundance of 1 pixel objects (UVPdb) : ',num2str(median_1px)])
+        disp(['Black_nb median abundance of 2 pixel objects (UVPdb) : ',num2str(median_2px)])
         
         disp('---------------------------------------------------------------')
         
