@@ -173,7 +173,7 @@ if ~isempty(list_mat)
         subplot(4,3,2)
         loglog( (pixsize), exp(y_all), 'r-' );
         hold on
-        loglog( pixsize(deb_x:end_x), exp(y_sel), 'g-' );
+        loglog( pixsize(deb_x:end_x), exp(y_sel), 'g-','LineWidth',2 );
         xlabel('Area [pixel]','fontsize',9);
         ylabel('Fitted abundance [# image-1]','fontsize',9);
         legend([num2str(ratio,3),'% of data'], ['size [',num2str(esd_min),' - ',num2str(esd_max),' mm]'], 'Location', 'NorthEast' );
@@ -282,7 +282,7 @@ if ~isempty(list_mat)
         somme_ecarts_area =             nansum(abs(ecarts(2:end,3)),1);
         somme_ecarts_grey =             nansum(abs(ecarts(3:end,4)),1);
         
-        disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_a)])
+%         disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_a)])
         disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_b)])
         disp(['Mediane of spectra differences : ',num2str(mediane_ecarts_spectres_fit_b)])
         disp(['Sum of area differences    : ',num2str(somme_ecarts_area)])
@@ -290,28 +290,39 @@ if ~isempty(list_mat)
         
         % ------------------ Ajout courbe image entière --------------
         subplot(4,3,5)
-        loglog( pixsize(deb_x:end_x), exp(y_sel), 'g-' );
+        loglog( pixsize(deb_x:end_x), exp(y_sel),'g-','LineWidth',2 );
         
         % ------------------ Histo des ecarts spectres a-------
-        subplot(4,3,6)
-        hist(ecarts(:,1));
-        xlim([0 max_a]);
-        ylim([0 nb_zones/2]);
-        title('Histogramme of differences of spectra (a)','fontsize',10);
+%         subplot(4,3,6)
+%         hist(ecarts(:,1));
+%         xlim([0 max_a]);
+%         ylim([0 nb_zones/2]);
+%         title('Histogramme of differences of spectra (a)','fontsize',10);
         
         % ------------------ Histo des ecarts spectres b -------
-        subplot(4,3,9)
-        hist(ecarts(:,2));
+        subplot(4,3,12)
+        data = ecarts(:,2);
+        aa = ~isnan(data);
+        aa = find(aa==1);
+        data = data(aa);
+        histogram(data,30,'BinLimits',[0 max_b]);
         xlim([0 max_b]);
-        ylim([0 nb_zones/2]);
+        ylim([0 nb_zones]);
         title('Histogramme of differences of spectra (b)','fontsize',10);
         
         % ------------------ Histo des ecarts area -------
-        subplot(4,3,12)
-        hist(ecarts(:,3));
+        subplot(4,3,10)
+        histogram(ecarts(:,3),20,'BinLimits',[-1 1]);
         xlim([-1 1]);
         ylim([0 nb_zones/2]);
         title('Histogramme of differences of area ','fontsize',10);
+        
+        % ------------------ Histo des ecarts grey -------
+        subplot(4,3,11)
+        histogram(ecarts(:,4),20,'BinLimits',[-1 1]);
+        xlim([-1 1]);
+        ylim([0 nb_zones/2]);
+        title('Histogramme of differences of grey x area ','fontsize',10);
         
         % ---- Normalisation image SPECTRES a ----------------
         %         ecart_spectre_min = min(ecarts(:,1));
@@ -320,10 +331,10 @@ if ~isempty(list_mat)
         %         image =  50 + image_ecarts_spectres_a *2;
         %         image = image_ecarts_spectres + 1;
         % ------------------ Affichage des carrés couleur proportionnels --
-        subplot(4,3,7)
-        imagesc(image_ecarts_spectres_a,[0 max_a]);
-        title(['Map spectral differences (a) S : ',num2str(somme_ecarts_spectres_fit_a,5)],'fontsize',10);
-        colorbar
+%         subplot(4,3,7)
+%         imagesc(image_ecarts_spectres_a,[0 max_a]);
+%         title(['Map spectral differences (a) S : ',num2str(somme_ecarts_spectres_fit_a,5)],'fontsize',10);
+%         colorbar
         
         % ---- Normalisation image SPECTRES b ----------------
         ecart_spectre_max = max(ecarts(:,2));
@@ -332,7 +343,7 @@ if ~isempty(list_mat)
         %         image = image_ecarts_spectres_b * 255/350;
         %         image = image_ecarts_spectres + 1;
         % ------------------ Affichage des carrés couleur proportionnels --
-        subplot(4,3,8)
+        subplot(4,3,9)
         imagesc(image_ecarts_spectres_b,[0 max_b]);
         colormap(fig1,jet);
         
@@ -345,7 +356,7 @@ if ~isempty(list_mat)
         %         image = image_ecarts_area * 255/ecart_area_max;
         %         image = 150*(image_ecarts_area + 1);
         % ------------------ Affichage des carrés couleur proportionnels --
-        subplot(4,3,10)
+        subplot(4,3,7)
         imagesc(image_ecarts_area,[0 max_area]);
         title(['Map area differences S : ',num2str(somme_ecarts_area,5)],'fontsize',10);
         colorbar
@@ -355,7 +366,7 @@ if ~isempty(list_mat)
         %         image = image_ecarts_grey * 255/ecart_grey_max;
         %         image = 125*(image_ecarts_grey +1);
         % ------------------ Affichage des carrés couleur proportionnels --
-        subplot(4,3,11)
+        subplot(4,3,8)
         imagesc(image_ecarts_grey,[0 max_grey]);
         title(['Map grey x area differences S : ',num2str(somme_ecarts_grey,5)],'fontsize',10);
         colorbar
