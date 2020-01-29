@@ -17,7 +17,7 @@ disp('------------------- OPTIONS --------------------------')
 
 %% Choix du projet
 disp('Select PROJECT folder ')
-folder = uigetdir('Select PROJECT Folder ');
+folder = uigetdir([], 'Select PROJECT Folder ');
 disp('---------------------------------------------------------------')
 disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
@@ -35,7 +35,7 @@ zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
 
 % gamme threshold selon fonction de transfert
-mat_thres = input('Input threshold matrix (log1:1 = [18:1:28], log1:2 = [10:5:30]) ');
+mat_thres = input('Input threshold matrix (log1:1 = [18:1:28] = default, log1:2 = [10:5:30]) ');
 if isempty(mat_thres); mat_thres = [18:1:28]; end
 
 
@@ -80,10 +80,14 @@ for i = 1 : N_seq
             cd(subfolder);
             fid_uvp = fopen([seq(i).name,'_',num2str(threstxt),'_data.txt'],'w');
             
-            % Copie des lignes HW et ACQ dans ces fichiers DATA
-            % TO DO : Modification dyu threshold dans la ligne HWline 
+            % update the threshold of the HW line
+            % the threshold is at the 19th position in the line
+            thres_HWline = split(HWline,',');
+            thres_HWline(19) = {num2str(threshold)};
+            thres_HWline = string(join(thres_HWline,','));
             
-            fprintf(fid_uvp,'%s\r',HWline);
+            % Copie des lignes HW et ACQ dans ces fichiers DATA            
+            fprintf(fid_uvp,'%s\r',thres_HWline);
             fprintf(fid_uvp,'%s\r',line);
             fprintf(fid_uvp,'%s\r',ACQline);
             
@@ -127,13 +131,13 @@ for i = 1 : N_seq
             index = index+1;
             % progression
             if h/100==floor(h/100)
-                disp(num2str(h))
+                disp("image index : " + num2str(h))
             end
             % -------- METADATA -------
             C = strsplit(meta{h},{','});
             time = char(C(1));
             %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-            prof_data =  str2num(C{2});
+            prof_data =  str2num(C{2}); %#ok<*ST2NM>
             temp_data = str2num(C{3});
             Flag = str2num(C{4});
             
