@@ -43,7 +43,7 @@ max_centre = 0;
 min_centre = 100;
 
 
-base_grey = dir([dir_img,'\*.png']);
+base_grey = dir([dir_img,'\save*.png']);
 % ------- Boucle images ----------------
 for m = 1 : numel(base_grey)
     
