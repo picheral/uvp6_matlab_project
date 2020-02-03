@@ -17,7 +17,7 @@ disp('------------------- OPTIONS --------------------------')
 
 %% Choix du projet
 disp('Select PROJECT folder ')
-folder = uigetdir([], 'Select PROJECT Folder ');
+folder = uigetdir('', 'Select PROJECT Folder ');
 disp('---------------------------------------------------------------')
 disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
@@ -112,17 +112,26 @@ for i = 1 : N_seq
         
         
         % détection h pour zmin et zmax
+        % h est le numéro d'images
+        % la sequence sélectionnée sera la DESCENTE du profil
+        hstart = 1;
+        hend = 1;
+        max_prof_data = -10;
         for h=1:n
             C = strsplit(meta{h},{','});
             time = char(C(1));
             %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
             prof_data =  str2num(C{2});
-            if prof_data <= zmin
+            if (prof_data <= zmin) && (h <= hstart+1)
                 hstart = h;
             end
-            if prof_data <= zmax
+            if (prof_data <= zmax) && (prof_data > max_prof_data)
                 hend = h;
+                max_prof_data = prof_data;
+            elseif (prof_data > zmax)
+                break
             end
+            last_prof_data = prof_data;
         end
         
         deb = 1;
@@ -146,12 +155,15 @@ for i = 1 : N_seq
             %             if prof_data > zmin && prof_data < zmax
             % creation du nom d'image (fichier image à ouvrir et analyser)
             img_name = [time,'.png'];
-            % Test si existe
-            if isfile([raw_folder,seq(i).name,'\',img_name])
+            % Test if file exist (and look in subdirectories as well)
+            filelist = dir(fullfile([raw_folder,seq(i).name],'/*/',img_name));
+            if ~isempty(filelist)                
+                % abs path filename
+                imgfile_pathname = [filelist.folder, '\',filelist.name];
                 % --------- DATA -------------
                 if isempty(findstr('OVER',data{h})) %&& isempty(findstr('EMPTY',data{h}))
                     % ouverture image
-                    img = imread([raw_folder,seq(i).name,'\',img_name]);
+                    img = imread(imgfile_pathname);
                     % affichage du nom de la première image
                     if deb == 1
                         disp(['First image : ',img_name])

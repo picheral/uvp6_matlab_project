@@ -50,14 +50,14 @@ ref_datetime = datetime(cell2mat(ref_meta(:,1)), 'InputFormat', 'yyyyMMdd-HHmmss
 ref_depth = str2double(ref_meta(:,2));
 
 %% replace data file or create a new one
-create_new_file = input('Create a new file ? (y/n)(default=n) ', 's');
-if create_new_file == 'y'
+create_new_file = input('Create a new file ? (y/n)(default=y) ', 's');
+if create_new_file == 'n'
+    disp("replacing data file")
+    WithDepth_file = fopen([data_folder, data_filename],'w');
+else
     disp("creating a new file")
     new_file = [data_folder, data_filename(1:end-4), '_WithDepth.txt'];
     WithDepth_file = fopen(new_file,'w');
-else
-    disp("replacing data file")
-    WithDepth_file = fopen([data_folder, data_filename],'w');
 end
 disp('------------------------------------------------------')
 

@@ -230,7 +230,7 @@ while other_cast == 1
     if select_adj == 1
         %% ------------------ Choix du projet UVP à ajuster ----------------------
         disp('------------------------------------------------------');
-        disp('>> Select the ''uvp'' root folder containing samples(s) of UVP to add for adjustment');
+        disp('>> Select the ''uvp'' root folder containing samples(s) of UVP to add');
         selectprojet = 0;
         while (selectprojet == 0)
             project_folder_adj = uigetdir('Select UVP project directory');

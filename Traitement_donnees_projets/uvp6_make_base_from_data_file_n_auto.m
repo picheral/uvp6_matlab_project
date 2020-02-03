@@ -34,7 +34,7 @@ close all
 
 disp('------------------- START CREATING BASE for UVP6 --------------')
 disp('Select PROJECT folder ')
-folder = uigetdir('Select PROJECT Folder ');
+folder = uigetdir('', 'Select PROJECT Folder ');
 disp('---------------------------------------------------------------')
 disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
@@ -60,10 +60,13 @@ if isempty(auto);auto = 'n';end
 raw_folder = [folder,'\raw\'];
 cd(raw_folder);
 
+% ----- SETTINGS -------------------------------
+zmin = 40;
+
 % ----- Results folder -------------------------
 results_folder = [folder,'\results\'];
 if exist(results_folder) ~= 7
-    mkdir results_folder
+    mkdir(folder,'\results\');
 end
 
 % ------ Liste des répertoires séquence --------
@@ -82,7 +85,7 @@ while j < N_seq+1
     disp(['SAMPLE : ',char(profilename)]);
     txt = dir([seq(j).name '\*data.txt']);
     % path is the path for the text file stored in each sequence folder
-    path = [raw_folder,'\',seq(j).name '\' txt.name];
+    path = [raw_folder, seq(j).name, '\', txt.name];
     fid = fopen(path);
     % ----------------- Ligne HW -----------------
     tline = fgetl(fid);
@@ -118,6 +121,7 @@ while j < N_seq+1
     Exp = str2num(A{21});
     
     % ------------ LIgne ACQ ----------------------------------
+    tline = fgetl(fid);
     tline = fgetl(fid);
     A = strsplit(tline,{','});
     black_ratio = str2num(A{15+X});
@@ -325,7 +329,7 @@ while j < N_seq+1
         else
             % -------------- Valeurs par défaut ( > 100m )-----------------
             
-            firstimg = find(data_nb(:,1) >= 100);
+            firstimg = find(data_nb(:,1) >= zmin);
             firstimg = firstimg(1);
             lastimg = max(data_nb(:,1));
             lastimg = find(data_nb(:,1) == lastimg);
@@ -359,7 +363,12 @@ while j < N_seq+1
         % --------------------- Data selection -----------------------
         firstimg_black = floor(firstimg/(black_ratio-1)) +1;
         lastimg_black = floor(lastimg/(black_ratio-1))+1;
+        [aa bb] = size(black_nb);
+        lastimg_black = min(aa,lastimg_black);
+        [aa bb] = size(data_nb);
+        lastimg = min(aa,lastimg);
         data_nb = data_nb(firstimg :lastimg,:);
+        
         black_nb = black_nb(firstimg_black  :lastimg_black , : );
         x2 = size(black_nb,1);
         
