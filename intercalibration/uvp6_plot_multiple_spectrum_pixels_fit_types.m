@@ -336,81 +336,79 @@ while other_cast == 1
     end
     
     
-    % ----- Nombre de profils ---------
-    nb_profils = 1;
-    for i = 1 :nb_profils
-        rec_adj = adj_record + i -1;
-        
-        % ---------------------- AJUST --------------------------
-        if isfield(base_adj,'histopx')
-            aa = find(base_adj(rec_adj).histopx(:,2) >= zmin & base_adj(rec_adj).histopx(:,2) <= zmax);
-            data=base_adj(rec_adj).histopx(:,5:end);
-            nombreimages=base_adj(rec_adj).histopx(:,3);
-        elseif isfield(base_adj,'data_nb')
-            aa = find(base_adj(rec_adj).data_nb(:,2) >= zmin & base_adj(rec_adj).data_nb(:,2) <= zmax);
-            data=base_adj(rec_adj).data_nb(:,5:end);
-            nombreimages=base_adj(rec_adj).data_nb(:,3);
-        end
-        data = data./(pix_adj^2);
-        volumeimage=base_adj(rec_adj).volimg0;
-        %     hisnb=baseadj(profildata).hisnb;
-        volumeech=volumeimage*nombreimages;
-        volumeech2=volumeech*ones(1,27);
-        volumeech=volumeech*ones(1,size(refpix,2));
-        aa_adj=base_adj(rec_adj).a0;
-        expo_adj=base_adj(rec_adj).exp0;
-        nbre=data./volumeech;
-        [n,m]=size(nbre);
-        %refsum=sum(refs);
-        nbsum=nanmean(nbre);
-        nbsum_adj_log = log(nbsum);
-        x = [esd_min:0.01:esd_max];
-        
-        % -------- Figure RAW data ----------------------------------
-        subplot(2,2,1)
-        hold on
-        if type_plot == 'c'
-            camsm_adj = 2*((aa_adj*(pixsize.^expo_adj)./pi).^0.5);
-        else
-            camsm_adj = 2*(((pix_adj^2)*(pixsize)./pi).^0.5);
-        end
-        camsm_adj_log = log(camsm_adj);
-        loglog(exp(camsm_adj_log),exp(nbsum_adj_log),[color(index_plot+1),'+']);
-        
-        % --------- Selection gamme de taille ADJ -----------------------
-        aa = find(camsm_adj <= esd_min);
-        bb = find(camsm_adj <= esd_max);
-        if isempty(aa)
-            deb_x = 1;
-        else
-            deb_x = aa(end);
-        end
-        if isempty(bb)
-            end_x = size(camsm_adj);
-        else
-            end_x = bb(end);
-        end
-        
-        % -------- FIT sur données RAW ------------------------------
-        [fitresult] = createFit1_minimisation_uvp((camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),0,fit_type,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
-        [y] = Process_data(x,fitresult,fit_type);
-        
-        % -------------- Pour calcul Score final -----------------------------
-        [y_adj] = Process_data(x_ref,fitresult,fit_type);
-        data_score = (abs(exp(y_adj)-exp(y_ref))./(exp(y_ref))).^2;
-        Score=nansum(data_score);
-        
-        % -------- Figure FIT ADJ -------------------------------------
-        subplot(2,2,2)
-        hold on
-        loglog(x,exp(y),[color(index_plot+1),'-']);
-        
-        % -------- Figure RATIO --------------------------------------
-        subplot(2,2,3)
-        %         semilogx(x,(y_ref-y)./y_ref,[color(index_plot),'-']);
-        hold on
-        semilogx(x,y./y_ref,[color(index_plot+1),'-']);
+    % ----- Nombre de profils --------- (ancienne boucle)
+    rec_adj = adj_record + i -1;
+
+    % ---------------------- AJUST --------------------------
+    if isfield(base_adj,'histopx')
+        aa = find(base_adj(rec_adj).histopx(:,2) >= zmin & base_adj(rec_adj).histopx(:,2) <= zmax);
+        data=base_adj(rec_adj).histopx(:,5:end);
+        nombreimages=base_adj(rec_adj).histopx(:,3);
+    elseif isfield(base_adj,'data_nb')
+        aa = find(base_adj(rec_adj).data_nb(:,2) >= zmin & base_adj(rec_adj).data_nb(:,2) <= zmax);
+        data=base_adj(rec_adj).data_nb(:,5:end);
+        nombreimages=base_adj(rec_adj).data_nb(:,3);
     end
+    data = data./(pix_adj^2);
+    volumeimage=base_adj(rec_adj).volimg0;
+    %     hisnb=baseadj(profildata).hisnb;
+    volumeech=volumeimage*nombreimages;
+    volumeech2=volumeech*ones(1,27);
+    volumeech=volumeech*ones(1,size(refpix,2));
+    aa_adj=base_adj(rec_adj).a0;
+    expo_adj=base_adj(rec_adj).exp0;
+    nbre=data./volumeech;
+    [n,m]=size(nbre);
+    %refsum=sum(refs);
+    nbsum=nanmean(nbre);
+    nbsum_adj_log = log(nbsum);
+    x = [esd_min:0.01:esd_max];
+
+    % -------- Figure RAW data ----------------------------------
+    subplot(2,2,1)
+    hold on
+    if type_plot == 'c'
+        camsm_adj = 2*((aa_adj*(pixsize.^expo_adj)./pi).^0.5);
+    else
+        camsm_adj = 2*(((pix_adj^2)*(pixsize)./pi).^0.5);
+    end
+    camsm_adj_log = log(camsm_adj);
+    loglog(exp(camsm_adj_log),exp(nbsum_adj_log),[color(index_plot+1),'+']);
+
+    % --------- Selection gamme de taille ADJ -----------------------
+    aa = find(camsm_adj <= esd_min);
+    bb = find(camsm_adj <= esd_max);
+    if isempty(aa)
+        deb_x = 1;
+    else
+        deb_x = aa(end);
+    end
+    if isempty(bb)
+        end_x = size(camsm_adj);
+    else
+        end_x = bb(end);
+    end
+
+    % -------- FIT sur données RAW ------------------------------
+    [fitresult] = createFit1_minimisation_uvp((camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),0,fit_type,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
+    [y] = Process_data(x,fitresult,fit_type);
+
+    % -------------- Pour calcul Score final -----------------------------
+    [y_adj] = Process_data(x_ref,fitresult,fit_type);
+    data_score = (abs(exp(y_adj)-exp(y_ref))./(exp(y_ref))).^2;
+    Score=nansum(data_score);
+
+    % -------- Figure FIT ADJ -------------------------------------
+    subplot(2,2,2)
+    hold on
+    loglog(x,exp(y),[color(index_plot+1),'-']);
+
+    % -------- Figure RATIO --------------------------------------
+    subplot(2,2,3)
+    %         semilogx(x,(y_ref-y)./y_ref,[color(index_plot),'-']);
+    hold on
+    semilogx(x,y./y_ref,[color(index_plot+1),'-']);
+    
     txt = [char(uvp_adj),' : ',char(base_adj(adj_record).profilename)];
     aa = txt == '_';
     txt(aa) = ' ';

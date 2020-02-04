@@ -62,6 +62,7 @@ cd(raw_folder);
 
 % ----- SETTINGS -------------------------------
 zmin = 40;
+disp("zmin is by default " + zmin)
 
 % ----- Results folder -------------------------
 results_folder = [folder,'\results\'];
