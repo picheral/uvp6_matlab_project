@@ -10,7 +10,7 @@
 
 
 clear all
-close all
+% close all
 warning('OFF')
 scrsz = get(0,'ScreenSize');
 other_cast = 1;
@@ -448,7 +448,10 @@ axis([0.05 2 0.01 10000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 orient tall
-title('Normalized SPECTRA');
+texte = project_folder_ref(4:end);
+aa = find(texte == '_');
+texte(aa) = ' ';
+title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
 
 %% ------------- Mise en forme finale FIT -----------------
 subplot(2,2,2)
@@ -464,7 +467,7 @@ axis([0.05 2 0.01 10000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
-title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2str(esd_max),'mm]']);
+title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2str(esd_max),'mm]'],'fontsize',10);
 
 %% ------------- Mise en forme finale RATIO -----------------
 subplot(2,2,3)
@@ -478,7 +481,7 @@ legend(legende,'Location','best');
 axis([0.05 2 0.5 2]);
 set(gca,'xscale','log');
 % set(gca,'yscale','log');
-title('Ratio of fit / reference');
+title('Ratio of fit / reference','fontsize',10);
 
 %% --------------- PLOT Ratio/shutter ----------------
 % data_list = {'profilename' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio'};
@@ -491,7 +494,7 @@ ylabel('RATIO (mean)','fontsize',12);
 xlabel('SHUTTER','fontsize',12);
 % axis([0.05 2 -2 2]);
 % set(gca,'xscale','log');
-title('Mean ratio / shutter');
+title('Mean ratio / shutter','fontsize',10);
 
 % -------------- Enregistrement figure ---------------
 disp('------------------------------------------------------')
