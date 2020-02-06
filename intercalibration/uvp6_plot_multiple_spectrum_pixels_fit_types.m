@@ -32,8 +32,8 @@ if isempty(esd_min); esd_min = 0.10; end
 esd_max = input('Max ESD [mm] (default = 0.70) ? ');
 if isempty(esd_max); esd_max = 0.7; end
 
-zmin = input('Min depth for all profiles (default = 100) ? ');
-if isempty(zmin);zmin = 100; end
+zmin = input('Min depth for all profiles (default = 0) ? ');
+if isempty(zmin);zmin = 0; end
 
 zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
@@ -225,6 +225,7 @@ plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o'])
 
 select_adj = 1;
 adj_record = 0;
+adj_first = 0;
 while other_cast == 1
     
     if select_adj == 1
@@ -276,8 +277,8 @@ while other_cast == 1
         eval(toto);
         ligne_adj = size(base_adj,2);
         % ------------- List of samples ---------------
-        for i = 1 : ligne_adj
-            disp(['Number : ',num2str(i),'   >  Profile : ',char(base_adj(i).profilename)]);
+        for k = 1 : ligne_adj
+            disp(['Number : ',num2str(k),'   >  Profile : ',char(base_adj(k).profilename)]);
         end
         
         if type_selection == 1
