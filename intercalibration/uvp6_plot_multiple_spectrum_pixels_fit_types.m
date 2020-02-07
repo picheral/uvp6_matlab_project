@@ -61,7 +61,7 @@ disp('------------------------------------------------------');
 selectprojet = 0;
 while (selectprojet == 0)
     disp('>> Select UVP REFERENCE project directory');
-    project_folder_ref = uigetdir('Select UVP REFERENCE project directory');
+    project_folder_ref = uigetdir('', 'Select UVP REFERENCE project directory');
     if strcmp(project_folder_ref(4:6),'uvp')
         selectprojet = 1;
     else
@@ -233,7 +233,7 @@ while other_cast == 1
         disp('>> Select the ''uvp'' root folder containing samples(s) of UVP to add');
         selectprojet = 0;
         while (selectprojet == 0)
-            project_folder_adj = uigetdir('Select UVP project directory');
+            project_folder_adj = uigetdir('', 'Select UVP project directory');
             if strcmp(project_folder_adj(4:6),'uvp')
                 selectprojet = 1;
             else

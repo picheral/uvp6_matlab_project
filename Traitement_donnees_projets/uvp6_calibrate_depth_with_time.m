@@ -19,14 +19,14 @@ disp('------------------------------------------------------')
 %% input data file
 disp("Selection of the data file to calibrate")
 [data_filename, data_folder] = uigetfile('*.txt','Select the data file to calibrate');
-disp("Selected data file : " + data_filename)
+disp("Selected data file : " + data_folder + data_filename)
 data_file = fopen([data_folder, data_filename]);
 disp('------------------------------------------------------')
 
 %% input reference file
 disp("Selection of the reference data file")
 [ref_filename, ref_folder] = uigetfile('*.txt','Select the reference data file');
-disp("Selected reference file : " + ref_filename)
+disp("Selected reference file : " + ref_folder + ref_filename)
 disp('------------------------------------------------------')
 
 %% read HW and ACQ lines from data file
