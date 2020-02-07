@@ -10,7 +10,7 @@
 
 
 clear all
-close all
+% close all
 warning('OFF')
 scrsz = get(0,'ScreenSize');
 other_cast = 1;
@@ -32,8 +32,8 @@ if isempty(esd_min); esd_min = 0.10; end
 esd_max = input('Max ESD [mm] (default = 0.70) ? ');
 if isempty(esd_max); esd_max = 0.7; end
 
-zmin = input('Min depth for all profiles (default = 100) ? ');
-if isempty(zmin);zmin = 100; end
+zmin = input('Min depth for all profiles (default = 0) ? ');
+if isempty(zmin);zmin = 0; end
 
 zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
@@ -225,6 +225,7 @@ plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o'])
 
 select_adj = 1;
 adj_record = 0;
+adj_first = 0;
 while other_cast == 1
     
     if select_adj == 1
@@ -276,8 +277,8 @@ while other_cast == 1
         eval(toto);
         ligne_adj = size(base_adj,2);
         % ------------- List of samples ---------------
-        for i = 1 : ligne_adj
-            disp(['Number : ',num2str(i),'   >  Profile : ',char(base_adj(i).profilename)]);
+        for k = 1 : ligne_adj
+            disp(['Number : ',num2str(k),'   >  Profile : ',char(base_adj(k).profilename)]);
         end
         
         if type_selection == 1
@@ -446,7 +447,10 @@ axis([0.05 2 0.01 10000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 orient tall
-title('Normalized SPECTRA');
+texte = project_folder_ref(4:end);
+aa = find(texte == '_');
+texte(aa) = ' ';
+title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
 
 %% ------------- Mise en forme finale FIT -----------------
 subplot(2,2,2)
@@ -462,7 +466,7 @@ axis([0.05 2 0.01 10000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
-title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2str(esd_max),'mm]']);
+title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2str(esd_max),'mm]'],'fontsize',10);
 
 %% ------------- Mise en forme finale RATIO -----------------
 subplot(2,2,3)
@@ -476,7 +480,7 @@ legend(legende,'Location','best');
 axis([0.05 2 0.5 2]);
 set(gca,'xscale','log');
 % set(gca,'yscale','log');
-title('Ratio of fit / reference');
+title('Ratio of fit / reference','fontsize',10);
 
 %% --------------- PLOT Ratio/shutter ----------------
 % data_list = {'profilename' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio'};
@@ -489,7 +493,7 @@ ylabel('RATIO (mean)','fontsize',12);
 xlabel('SHUTTER','fontsize',12);
 % axis([0.05 2 -2 2]);
 % set(gca,'xscale','log');
-title('Mean ratio / shutter');
+title('Mean ratio / shutter','fontsize',10);
 
 % -------------- Enregistrement figure ---------------
 disp('------------------------------------------------------')
