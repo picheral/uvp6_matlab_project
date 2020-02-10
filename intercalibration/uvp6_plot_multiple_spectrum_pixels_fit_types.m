@@ -10,7 +10,7 @@
 
 
 clear all
-% close all
+close all
 warning('OFF')
 scrsz = get(0,'ScreenSize');
 other_cast = 1;
@@ -27,13 +27,13 @@ type_plot = input('Select plot type (raw/calibrated) (default = r) ','s');
 if isempty(type_plot)
     type_plot = 'r';
 end
-esd_min = input('Min ESD [mm] (default = 0.10) ? ');
-if isempty(esd_min); esd_min = 0.10; end
+esd_min = input('Min ESD [mm] (default = 0.30) ? ');
+if isempty(esd_min); esd_min = 0.30; end
 esd_max = input('Max ESD [mm] (default = 0.70) ? ');
 if isempty(esd_max); esd_max = 0.7; end
 
-zmin = input('Min depth for all profiles (default = 0) ? ');
-if isempty(zmin);zmin = 0; end
+zmin = input('Min depth for all profiles (default = 40) ? ');
+if isempty(zmin);zmin = 40; end
 
 zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
@@ -49,8 +49,8 @@ disp('SELECT OPTION')
 disp(' 1 : all flexible')
 disp(' 2 : a unique reference and all samples from same project ')
 
-type_selection = input('Option (default = 1) ');
-if isempty(type_selection);type_selection = 1;end
+type_selection = input('Option (default = 2) ');
+if isempty(type_selection);type_selection = 2;end
 
 % sel_option = input('Process all samples from same base (n/y) ','s');
 % if isempty(sel_option); sel_option = 'n';end
@@ -205,19 +205,19 @@ data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshol
 
 % ----------------------- Creation de la figure ---------------------------
 fig5 = figure('numbertitle','off','name','UVP_spectres_pixels','Position',[10 50 1000 1000]);
-% -------- Figure RAW -----------------------------
-subplot(2,2,1)
-loglog(exp(camsm_ref_log),exp(refsum_log),[color(index_plot),'o']);
-legende(1) = {txt_ref};
-
-% -------- Figure FIT ---------------------------------------
-subplot(2,2,2)
-hold on
-loglog(x_ref,exp(y_ref),[color(index_plot),'-']);
+% % -------- Figure RAW -----------------------------
+% subplot(2,2,1)
+% loglog(exp(camsm_ref_log),exp(refsum_log),[color(index_plot),'o']);
+% legende(1) = {txt_ref};
+% 
+% % -------- Figure FIT ---------------------------------------
+% subplot(2,2,2)
+% hold on
+% loglog(x_ref,exp(y_ref),[color(index_plot),'-']);
 
 % ---------Figure ratio -----------------
-subplot(2,2,3)
-plot(x_ref,ones(numel(x_ref),1),[color(index_plot),'-']);
+% subplot(2,2,3)
+% plot(x_ref,ones(numel(x_ref),1),[color(index_plot),'-']);
 
 % -------- Figure Ratio/shutter ----------------
 subplot(2,2,4)
@@ -413,7 +413,7 @@ while other_cast == 1
     txt = [char(uvp_adj),' : ',char(base_adj(adj_record).profilename)];
     aa = txt == '_';
     txt(aa) = ' ';
-    legende(index_plot+1) = {txt};    %{char(uvp_adj)};
+    legende(index_plot) = {txt};    %{char(uvp_adj)};
     
     % -------------------------- Table données synthétiques ---------
     data_table(index_plot+1,:) = [Score aa_data_adj expo_data_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref)];
@@ -434,6 +434,9 @@ end
 
 %% ------------- Mise en forme finale RAW -----------------
 subplot(2,2,1)
+% plot ref
+loglog(exp(camsm_ref_log),exp(refsum_log),[color(1),'o']);
+legende(index_plot) = {txt_ref};
 if type_plot == 'c'
     xlabel('ADJUSTED ESD [mm]','fontsize',12);
 else
@@ -454,6 +457,8 @@ title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
 
 %% ------------- Mise en forme finale FIT -----------------
 subplot(2,2,2)
+% plot ref
+loglog(x_ref,exp(y_ref),[color(1),'-'], 'LineWidth', 1);
 if type_plot == 'c'
     xlabel('ADJUSTED ESD [mm]','fontsize',12);
 else
@@ -462,7 +467,8 @@ end
 ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
 % legend(legende);
 % axis([0.01 5 0.0001 1000]);
-axis([0.05 2 0.01 10000000]);
+% axis([0.05 2 0.01 10000000]);
+axis([0.2 1 0.01 10000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
@@ -470,6 +476,8 @@ title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2
 
 %% ------------- Mise en forme finale RATIO -----------------
 subplot(2,2,3)
+% plot ref
+plot(x_ref,ones(numel(x_ref),1),[color(1),'-']);
 if type_plot == 'c'
     xlabel('ADJUSTED ESD [mm]','fontsize',12);
 else
@@ -477,7 +485,8 @@ else
 end
 ylabel('RATIO','fontsize',12);
 legend(legende,'Location','best');
-axis([0.05 2 0.5 2]);
+% axis([0.05 2 0.5 2]);
+axis([0.2 1 0.5 2]);
 set(gca,'xscale','log');
 % set(gca,'yscale','log');
 title('Ratio of fit / reference','fontsize',10);
@@ -498,7 +507,7 @@ title('Mean ratio / shutter','fontsize',10);
 % -------------- Enregistrement figure ---------------
 disp('------------------------------------------------------')
 orient tall
-titre = [char(uvp_ref),'_',char(base_ref(rec_ref).profilename)];
+titre = [char(uvp_ref),'_',char(uvp_adj),'_',char(base_ref(rec_ref).profilename)];
 titre_file = input(['Input filename (default = ',titre,') '],'s');
 if isempty(titre_file);titre_file = titre;end
 set(gcf,'PaperPositionMode','auto')
