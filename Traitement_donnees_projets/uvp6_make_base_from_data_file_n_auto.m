@@ -61,7 +61,7 @@ raw_folder = [folder,'\raw\'];
 cd(raw_folder);
 
 % ----- SETTINGS -------------------------------
-zmin = 40;
+zmin = 100;
 disp("zmin is by default " + zmin)
 
 % ----- Results folder -------------------------

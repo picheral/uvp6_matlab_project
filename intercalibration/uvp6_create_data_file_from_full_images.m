@@ -39,6 +39,7 @@ mat_thres = input('Input threshold matrix (log1:1 = [17:1:28] = default, log1:2 
 if isempty(mat_thres); mat_thres = [17:1:28]; end
 
 
+
 %% Boucle sur les sequences sources de RAW
 % ------ Liste des répertoires séquence --------
 cd(raw_folder);
@@ -156,7 +157,7 @@ for i = 1 : N_seq
             % creation du nom d'image (fichier image à ouvrir et analyser)
             img_name = [time,'.png'];
             % Test if file exist (and look in subdirectories as well)
-            filelist = dir(fullfile([raw_folder,seq(i).name],'/*/',img_name));
+            filelist = dir(fullfile([raw_folder,seq(i).name],img_name));
             if ~isempty(filelist)                
                 % abs path filename
                 imgfile_pathname = [filelist.folder, '\',filelist.name];
@@ -187,7 +188,10 @@ for i = 1 : N_seq
                         end
                         
                         % segmentation
-                        img_bw = im2bw(img,threshold/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
+                        % 2020/05/10, correction threshold pour fitter avec HW conf et code embarqué
+                        seuil_seg = threshold + 1;
+                       
+                        img_bw = im2bw(img,seuil_seg/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
                         
                         % extraction des mesures AREA et GREY
                         objects = regionprops(img_bw, img,{'Area','PixelValues'});
