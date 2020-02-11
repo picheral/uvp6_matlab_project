@@ -26,6 +26,8 @@ seuil = 2;
 threshold = input('Input threshold for segmentation (CR for 2) ');
 if isempty(threshold); threshold = seuil; end
 
+% ---------------- CAS "s" : analyse -----------------
+% ---------------- CAS "c" : creation de matrices ----
 option = input('Process separately or combine by gain value (s/c)','s');
 if isempty(option); option = 's'; end
 
@@ -45,7 +47,14 @@ if strcmp(option,'s')
             disp(['Sequence ',list_seq(k).name])
             % ------------- Liste des images -------------------
 %             im_list = dir('save*.png');
-            im_list = dir('2019*.png');
+            im_list = dir('2020*.png');
+             
+            
+            
+            
+            
+            
+            
             if ~isempty(im_list)
                 % --------- Si au moins une image --------------
                 base = [];
