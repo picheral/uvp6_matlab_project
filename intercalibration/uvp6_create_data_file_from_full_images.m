@@ -157,7 +157,7 @@ for i = 1 : N_seq
             % creation du nom d'image (fichier image à ouvrir et analyser)
             img_name = [time,'.png'];
             % Test if file exist (and look in subdirectories as well)
-            filelist = dir(fullfile([raw_folder,seq(i).name],img_name));
+            filelist = dir(fullfile([raw_folder,seq(i).name],'\**\',img_name));
             if ~isempty(filelist)                
                 % abs path filename
                 imgfile_pathname = [filelist.folder, '\',filelist.name];
