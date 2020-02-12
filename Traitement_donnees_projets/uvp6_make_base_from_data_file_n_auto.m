@@ -56,13 +56,16 @@ if isempty(process_calib); process_calib = 'n'; end
 auto = input('Select manually the data range for each sample ? (n/y) ','s');
 if isempty(auto);auto = 'n';end
 
+if strcmp(auto,'n')
+    zmin = input('Select Zmin for all profiles (100) ');
+    if isempty(zmin); zmin = 100; end 
+    disp("zmin is by default " + zmin)
+end
+   
+
 % ----- RAW folder -----------------------------
 raw_folder = [folder,'\raw\'];
 cd(raw_folder);
-
-% ----- SETTINGS -------------------------------
-zmin = 100;
-disp("zmin is by default " + zmin)
 
 % ----- Results folder -------------------------
 results_folder = [folder,'\results\'];
