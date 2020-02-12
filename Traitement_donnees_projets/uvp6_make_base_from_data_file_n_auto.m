@@ -61,7 +61,7 @@ raw_folder = [folder,'\raw\'];
 cd(raw_folder);
 
 % ----- SETTINGS -------------------------------
-zmin = 40;
+zmin = 100;
 disp("zmin is by default " + zmin)
 
 % ----- Results folder -------------------------
@@ -398,7 +398,8 @@ while j < N_seq+1
                 else
                     dd = find(aa >= x1);
                 end
-                nb_d(h,5:902) = nansum(data_nb(aa(dd),5:902),1);
+                % passe de 5:902 à 3:900 le 12/02/2020
+                nb_d(h,5:902) = nansum(data_nb(aa(dd),3:900),1);
                 nb_d(h,4) = size(dd,1);
                 nb_d(h,3) = size(aa,1);
                 nb_d(h,2) = nanmean(data_nb(aa(dd),1));
