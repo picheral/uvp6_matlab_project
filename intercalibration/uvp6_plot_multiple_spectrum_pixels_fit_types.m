@@ -27,10 +27,10 @@ type_plot = input('Select plot type (raw/calibrated) (default = r) ','s');
 if isempty(type_plot)
     type_plot = 'r';
 end
-esd_min = input('Min ESD [mm] (default = 0.30) ? ');
-if isempty(esd_min); esd_min = 0.30; end
-esd_max = input('Max ESD [mm] (default = 0.70) ? ');
-if isempty(esd_max); esd_max = 0.7; end
+esd_min = input('Min ESD [mm] (default = 0.20) ? ');
+if isempty(esd_min); esd_min = 0.20; end
+esd_max = input('Max ESD [mm] (default = 0.60) ? ');
+if isempty(esd_max); esd_max = 0.6; end
 
 zmin = input('Min depth for all profiles (default = 40) ? ');
 if isempty(zmin);zmin = 40; end
@@ -468,7 +468,7 @@ ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
 % legend(legende);
 % axis([0.01 5 0.0001 1000]);
 % axis([0.05 2 0.01 10000000]);
-axis([0.2 1 0.01 10000000]);
+axis([0.1 1 0.01 10000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
@@ -486,7 +486,7 @@ end
 ylabel('RATIO','fontsize',12);
 legend(legende,'Location','best');
 % axis([0.05 2 0.5 2]);
-axis([0.2 1 0.5 2]);
+axis([0.1 1 0.5 2]);
 set(gca,'xscale','log');
 % set(gca,'yscale','log');
 title('Ratio of fit / reference','fontsize',10);
