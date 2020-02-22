@@ -27,10 +27,10 @@ type_plot = input('Select plot type (raw/calibrated) (default = r) ','s');
 if isempty(type_plot)
     type_plot = 'r';
 end
-esd_min = input('Min ESD [mm] (default = 0.30) ? ');
-if isempty(esd_min); esd_min = 0.30; end
-esd_max = input('Max ESD [mm] (default = 0.70) ? ');
-if isempty(esd_max); esd_max = 0.7; end
+esd_min = input('Min ESD [mm] (default = 0.20) ? ');
+if isempty(esd_min); esd_min = 0.20; end
+esd_max = input('Max ESD [mm] (default = 0.60) ? ');
+if isempty(esd_max); esd_max = 0.6; end
 
 zmin = input('Min depth for all profiles (default = 40) ? ');
 if isempty(zmin);zmin = 40; end
@@ -251,8 +251,8 @@ while other_cast == 1
             if base_nofile == 0
                 disp('----------- Base list --------------------------------');
                 disp([num2str(size(base_list,1)),' database in ', results_dir_adj]);
-                for i = 1:size(base_list)
-                    disp(['N°= ',num2str(i),' : ',base_list(i).name]);
+                for gg = 1:size(base_list)
+                    disp(['N°= ',num2str(gg),' : ',base_list(gg).name]);
                 end
             else
                 disp(['No database in ',results_dir_adj]);
@@ -338,7 +338,7 @@ while other_cast == 1
     
     
     % ----- Nombre de profils --------- (ancienne boucle)
-    rec_adj = adj_record + i -1;
+    rec_adj = adj_record; % + i -1;
 
     % ---------------------- AJUST --------------------------
     if isfield(base_adj,'histopx')
