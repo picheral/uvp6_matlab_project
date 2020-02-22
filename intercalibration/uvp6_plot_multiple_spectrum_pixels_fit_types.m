@@ -468,7 +468,7 @@ ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
 % legend(legende);
 % axis([0.01 5 0.0001 1000]);
 % axis([0.05 2 0.01 10000000]);
-axis([0.2 1 0.01 10000000]);
+axis([0.1 1 0.01 10000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
@@ -486,7 +486,7 @@ end
 ylabel('RATIO','fontsize',12);
 legend(legende,'Location','best');
 % axis([0.05 2 0.5 2]);
-axis([0.2 1 0.5 2]);
+axis([0.1 1 0.5 2]);
 set(gca,'xscale','log');
 % set(gca,'yscale','log');
 title('Ratio of fit / reference','fontsize',10);
