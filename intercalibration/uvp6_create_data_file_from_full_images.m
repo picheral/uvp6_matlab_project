@@ -43,7 +43,7 @@ if isempty(mat_thres); mat_thres = [17:1:28]; end
 %% Boucle sur les sequences sources de RAW
 % ------ Liste des répertoires séquence --------
 cd(raw_folder);
-seq = dir([cd '\2*']);
+seq = dir([cd '\20200221*']);
 N_seq = size(seq,1);
 
 for i = 1 : N_seq
@@ -61,7 +61,7 @@ for i = 1 : N_seq
         ACQline = fgetl(fid);
         
         
-        %% Creation de N répertoires correspondant aux N valeurs de seuil
+        %% Creation de N répertoires et N fichiers correspondant aux N valeurs de seuil
         for j = 1 :numel(mat_thres)
             % correction noms fichiers et repertoires
             threshold = mat_thres(j);
@@ -88,9 +88,9 @@ for i = 1 : N_seq
             thres_HWline = string(join(thres_HWline,','));
             
             % Copie des lignes HW et ACQ dans ces fichiers DATA            
-            fprintf(fid_uvp,'%s\r',thres_HWline);
-            fprintf(fid_uvp,'%s\r',line);
-            fprintf(fid_uvp,'%s\r',ACQline);
+            fprintf(fid_uvp,'%s\n',thres_HWline);
+            fprintf(fid_uvp,'%s\n',line);
+            fprintf(fid_uvp,'%s\n',ACQline);
             
             % Fermeture du fichier
             fclose(fid_uvp);
@@ -102,26 +102,27 @@ for i = 1 : N_seq
         end
         fclose(fid);
         
+        %% Boucle sur les lignes du fichier DATA
+        disp('----------------- Reading DATA file --------------------------')
+        
         % Table des metadata et data
         T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
         data = table2array(T(:,2));
         meta = table2array(T(:,1));
-        [n,m]=size(data);
-              
-        %% Boucle sur les lignes du fichier DATA
-        disp('----------------- Reading DATA file --------------------------')
-        
+        [n,m]=size(data);        
         
         % détection h pour zmin et zmax
-        % h est le numéro d'images
-        % la sequence sélectionnée sera la DESCENTE du profil
+        % h est le "numéro" d'images
+        % La sequence sélectionnée sera la DESCENTE du profil
+        % Obligation de parcourir tout le fichier dans le cas où zmax>max_prof,
+        % car il faut détecter la profondeur max en faisant attention aux
+        % yoyo
         hstart = 1;
         hend = 1;
         max_prof_data = -10;
         for h=1:n
             C = strsplit(meta{h},{','});
             time = char(C(1));
-            %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
             prof_data =  str2num(C{2});
             if (prof_data <= zmin) && (h <= hstart+1)
                 hstart = h;
@@ -132,13 +133,14 @@ for i = 1 : N_seq
             elseif (prof_data > zmax)
                 break
             end
-            last_prof_data = prof_data;
         end
         
+        % loop on each lines of data file
         deb = 1;
         index = 0;
+        % h est le "numéro" de ligne, donc d'images
         for h=hstart:hend
-            index = index+1;
+            index = index + 1;
             % progression
             if h/100==floor(h/100)
                 disp("image index : " + num2str(h))
@@ -146,14 +148,10 @@ for i = 1 : N_seq
             % -------- METADATA -------
             C = strsplit(meta{h},{','});
             time = char(C(1));
-            %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-            prof_data =  str2num(C{2}); %#ok<*ST2NM>
+            prof_data =  str2num(C{2});
             temp_data = str2num(C{3});
             Flag = str2num(C{4});
             
-            % Dans la gamme de profondeurs
-            
-            %             if prof_data > zmin && prof_data < zmax
             % creation du nom d'image (fichier image à ouvrir et analyser)
             img_name = [time,'.png'];
             % Test if file exist (and look in subdirectories as well)
@@ -172,9 +170,9 @@ for i = 1 : N_seq
                     end
                     
                     % boucle sur les seuils de segmentation
-                    
                     for j = 1 :numel(mat_thres)
                         threshold = mat_thres(j);
+                        % ATTENTION ! DANGER !
                         % DANS MATLAB >=
                         % DANS UVP6 >
                         
@@ -190,12 +188,10 @@ for i = 1 : N_seq
                         % segmentation
                         % 2020/05/10, correction threshold pour fitter avec HW conf et code embarqué
                         seuil_seg = threshold + 1;
-                       
                         img_bw = im2bw(img,seuil_seg/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
                         
                         % extraction des mesures AREA et GREY
                         objects = regionprops(img_bw, img,{'Area','PixelValues'});
-                        %             disp(['Processing ' im_list(i).name '...'])
                         % Image dim : 2056 x 2464 pixels
                         
                         % construction vecteur metadata
@@ -236,7 +232,6 @@ for i = 1 : N_seq
                         
                     end
                 end
-                %                 end
             end
         end
         disp('----------------- end of DATA file ----------------------')
@@ -265,8 +260,8 @@ for i = 1 : N_seq
             
             % boucle sur les lignes
             for m = 1:size(matrice,2)
-                fprintf(fid_uvp,'%s\r',line);
-                fprintf(fid_uvp,'%s\r',char(matrice{m}));
+                fprintf(fid_uvp,'%s\n',line);
+                fprintf(fid_uvp,'%s\n',char(matrice{m}));
                 
                 %                 disp(matrice{m})
             end
@@ -275,7 +270,6 @@ for i = 1 : N_seq
             fclose(fid_uvp);
             
         end
-        %         pause
     end
 end
 cd(folder);

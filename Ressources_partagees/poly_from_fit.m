@@ -1,6 +1,16 @@
-%% Process 
+%% poly_from_fit (formerly Process_data)
+% Polynomial computing of x, based on parameters from a fit
+%
+% inputd:
+%   x : number or array of numbers
+%   fitresult : polynomial parameters in a fitobject (cfit) structure
+%   fit_type : polynomial type ['poly1', 'poly2', 'poly3', 'poly4',
+%   'poly5', 'poly6']
+%
+% output:
+%   y : polynomial results of x
 
-function [y] = Process_data(x,fitresult,fit_type)
+function [y] = poly_from_fit(x,fitresult,fit_type)
 if strcmp(fit_type,'poly1')
         y = (fitresult.p1*x + fitresult.p2);
 elseif strcmp(fit_type,'poly2')

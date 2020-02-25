@@ -62,9 +62,9 @@ end
 disp('------------------------------------------------------')
 
 %% write HW and ACQ lines
-fprintf(WithDepth_file,'%s\r',HWline);
-fprintf(WithDepth_file,'%s\r',line);
-fprintf(WithDepth_file,'%s\r',ACQline);
+fprintf(WithDepth_file,'%s\n',HWline);
+fprintf(WithDepth_file,'%s\n',line);
+fprintf(WithDepth_file,'%s\n',ACQline);
 
 %% find ref depth for each data time
 disp("looking for depth information...")
@@ -85,10 +85,10 @@ disp("writing new data file with depth...")
 meta = join(meta,',');
 data_table_with_depth = join([meta,data],':');
 for line_nb = 1:size(data_table_with_depth,1)
-    fprintf(WithDepth_file,'%s\r',line);
-    fprintf(WithDepth_file,'%s\r',string(data_table_with_depth(line_nb)));
+    fprintf(WithDepth_file,'%s\n',line);
+    fprintf(WithDepth_file,'%s\n',string(data_table_with_depth(line_nb)));
 end
-fprintf(WithDepth_file,'%s\r',line);
+fprintf(WithDepth_file,'%s\n',line);
 disp("Modified file : " + fopen(WithDepth_file))
 fclose(WithDepth_file);
 disp('------------------------------------------------------')

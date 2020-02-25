@@ -145,12 +145,12 @@ if ~isempty(list_mat)
         % --- Ajustement polynomial sur spectre complet -----------------------
         [xData, yData] = prepareCurveData( log(pixsize), log(spectre_tot) );
         [fitresult_all, gof] = fit( xData, yData, ft );
-        [y_all] = Process_data(log(pixsize),fitresult_all,fit_type);
+        [y_all] = poly_from_fit(log(pixsize),fitresult_all,fit_type);
         
         % --- Ajustement polynomial sur spectre de taille réduit --------------------------
         [xData, yData] = prepareCurveData( log(pixsize(deb_x:end_x)), log(spectre_tot(deb_x:end_x)) );
         [fitresult_sel, gof] = fit( xData, yData, ft );
-        [y_sel] = Process_data(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
+        [y_sel] = poly_from_fit(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
         
         %% ---------- Figure ---------------------------------
         fig1 = figure('numbertitle','off','name','UVP6_cor_zonale','Position',[10 50 1300 1000]);
@@ -220,7 +220,7 @@ if ~isempty(list_mat)
                     % --- Ajustement polynomial sur spectre de taille réduit --------------------------
                     [xData, yData] = prepareCurveData( log(pixsize(deb_x:end_x)), log(spectre_zone(deb_x:end_x)) );
                     [fitresult_sel, gof] = fit( xData, yData, ft );
-                    [y_sel_zone] = Process_data(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
+                    [y_sel_zone] = poly_from_fit(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
                     
                     
                     % -------- Spectre réduit ----------------------------
