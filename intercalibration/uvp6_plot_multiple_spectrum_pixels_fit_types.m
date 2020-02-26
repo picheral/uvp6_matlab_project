@@ -13,7 +13,6 @@ clear all
 close all
 warning('OFF')
 scrsz = get(0,'ScreenSize');
-other_cast = 1;
 index_plot = 1;
 data_table = [];
 data_name = {};
@@ -23,37 +22,35 @@ disp('------------------------------------------------------')
 disp('--------------- START PROCESS ------------------------')
 disp('------------------------------------------------------')
 disp('------------------- OPTIONS --------------------------')
+% plot type
 type_plot = input('Select plot type (raw/calibrated) (default = r) ','s');
 if isempty(type_plot)
     type_plot = 'r';
 end
+
+% ESD range for fit and score
 esd_min = input('Min ESD [mm] (default = 0.40) ? ');
 if isempty(esd_min); esd_min = 0.40; end
 esd_max = input('Max ESD [mm] (default = 1.0) ? ');
 if isempty(esd_max); esd_max = 1.0; end
 
+% depth range
 zmin = input('Min depth for all profiles (default = 40) ? ');
 if isempty(zmin);zmin = 40; end
-
 zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
 
-color = 'rgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbcky';
-legende = {};
-
-Fit_data = input(['Enter fit level for data [3-6] (default = 3) ']);
+% polynomial degree
+Fit_data = input(['Enter poly fit level for data [3-6] (default = 3) ']);
 if isempty(Fit_data);      Fit_data=3;  end
 fit_type = ['poly', num2str(Fit_data)];
 
+% sample selection option
 disp('SELECT OPTION')
 disp(' 1 : all flexible')
 disp(' 2 : a unique reference and all samples from same project ')
-
 type_selection = input('Option (default = 2) ');
 if isempty(type_selection);type_selection = 2;end
-
-% sel_option = input('Process all samples from same base (n/y) ','s');
-% if isempty(sel_option); sel_option = 'n';end
 
 disp('------------------------------------------------------');
 
@@ -74,8 +71,7 @@ cd(project_folder_ref);
 results_dir_ref = [project_folder_ref,'\results\'];
 if isfolder(results_dir_ref)
     base_list = dir([results_dir_ref, 'base*.mat']);
-    base_nofile = isempty(base_list);
-    if base_nofile == 0
+    if ~isempty(base_list)
         disp('----------- Base list --------------------------------');
         disp([num2str(size(base_list,1)),' database in ', results_dir_ref]);
         for i = 1:size(base_list)
@@ -89,6 +85,7 @@ else
     disp(['Process cannot continue : no reference base in ',results_dir_ref]);
     return
 end
+
 % ------------------ Chargement de la base de référence -----------------
 disp('------------------------------------------------------');
 base_selected = 1;
@@ -98,10 +95,8 @@ if i > 1
 end
 
 % ---------------- Chargement de la base choisie ------------------
-toto=['load ',results_dir_ref,base_list(base_selected).name,';'];
-eval(toto);
-toto=['base_ref = ',base_list(base_selected).name(1:end-4),';'];
-eval(toto);
+load([results_dir_ref,base_list(base_selected).name]);
+base_ref = eval(base_list(base_selected).name(1:end-4));
 ligne_ref = size(base_ref,2);
 for i = 1 : ligne_ref
     disp(['Number : ',num2str(i),'   >  Profile : ',char(base_ref(i).profilename)]);
@@ -111,8 +106,6 @@ if isempty(rec_ref); rec_ref = 1; end
 
 
 %% Reading uvp5_configuration_data.txt REF
-%%
-
 if (strcmp(project_folder_ref(4:7),'uvp5'))
     filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
     [ aa_data_ref, expo_data_ref, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
@@ -124,7 +117,6 @@ else
 end
 
 %% Reading *.hdr REF
-%%
 if (strcmp(project_folder_ref(4:7),'uvp5'))
     filename=[project_folder_ref,'\raw\HDR',char(base_ref(rec_ref).histfile),'\HDR',...
         char(base_ref(rec_ref).histfile),'.hdr'];
@@ -204,6 +196,8 @@ data_name(index_plot) = {txt_ref};
 data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio'};
 
 % ----------------------- Creation de la figure ---------------------------
+color = 'rgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbcky';
+legende = {};
 fig5 = figure('numbertitle','off','name','UVP_spectres_pixels','Position',[10 50 1000 1000]);
 % % -------- Figure RAW -----------------------------
 % subplot(2,2,1)
@@ -226,6 +220,7 @@ plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o'])
 select_adj = 1;
 adj_record = 0;
 adj_first = 0;
+other_cast = 1;
 while other_cast == 1
     
     if select_adj == 1
@@ -271,10 +266,8 @@ while other_cast == 1
         end
         
         % ---------------- Chargement de la base choisie ------------------
-        toto=['load ',results_dir_adj,base_list(base_selected).name,';'];
-        eval(toto);
-        toto=['base_adj = ',base_list(base_selected).name(1:end-4),';'];
-        eval(toto);
+        load([results_dir_adj,base_list(base_selected).name]);
+        base_adj = eval(base_list(base_selected).name(1:end-4));
         ligne_adj = size(base_adj,2);
         % ------------- List of samples ---------------
         for k = 1 : ligne_adj
