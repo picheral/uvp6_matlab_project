@@ -3,9 +3,10 @@
 % Catalano, 26/02/2020
 
 
-disp("c'est partiii !!!!!!!!!!!")
+
 disk = upper(input('Disk to analyse (ex: U) ', 's'));
-filelist = dir([disk, ':\*intercalibrage*\results\*_datfile.txt']);
+filelist = dir([disk, ':\*\results\*_datfile.txt']);
+disp("c'est partiii !!!!!!!!!!!")
 %filelist = dir('U:\*203*intercalibrage*\results\*_datfile.txt');
 %idx = ismember({filelist.folder}, {'U:\uvp5_sn203_intercalibrage_20180122\results'});
 %filelist = filelist(~idx);
@@ -52,7 +53,7 @@ for i = 1:length(filelist)
     end
 end
 % save quality check matrix
-writecell(quality_check, 'U:\quality_check.csv');
+writecell(quality_check, [disk ':\quality_check.csv']);
 
     
     
