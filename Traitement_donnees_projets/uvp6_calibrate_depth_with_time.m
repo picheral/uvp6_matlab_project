@@ -71,7 +71,8 @@ disp("looking for depth information...")
 for line_nb = 1:size(meta,1)
     data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
     % interpolation and extrapolation of depth based on date time
-    depth = interp1(ref_datetime, ref_depth, data_datetime, 'linear','extrap');
+    [ref_datetime_unique, unique_index] = unique(ref_datetime);
+    depth = interp1(ref_datetime_unique, ref_depth(unique_index), data_datetime, 'linear','extrap');
     % test if extrapoltation gave negative depth
     if depth<0
         warning("Depth extrapolation gave a negative value")
