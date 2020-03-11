@@ -479,8 +479,13 @@ orient tall
 texte = project_folder_ref(4:end);
 aa = find(texte == '_');
 texte(aa) = ' ';
-title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
-
+if nb_of_ref == 1
+    title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
+else
+    title('Normalized SPECTRA','fontsize',10);
+    str = string(project_folder_ref_list);
+    annotation('textbox',[.2 .6 .3 .3],'String',str,'FitBoxToText','on');
+end
 %% ------------- Mise en forme finale FIT -----------------
 subplot(2,2,2)
 % plot ref
@@ -532,7 +537,6 @@ title('Mean ratio / shutter','fontsize',10);
 
 % -------------- Enregistrement figure ---------------
 disp('------------------------------------------------------')
-text(0,0, string(project_folder_ref_list));
 orient tall
 titre = [char(uvp_ref_title),'_',char(uvp_adj),'_',char(base_ref(rec_ref).profilename)];
 titre_file = input(['Input filename (default = ',titre,') '],'s');
