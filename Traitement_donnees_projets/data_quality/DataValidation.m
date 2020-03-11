@@ -26,7 +26,7 @@ function validation = DataValidation(image_numbers, part, image_numbers_util, pa
     set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.9, 0.9]);
     %% user validation
     validation = input('Is the data good ? ([y]/n) ', 's');
-    if isempty(validation)
+    if not(strcmp(validation, 'n'))
         validation = 'y';
     end
 end
