@@ -114,10 +114,10 @@ title(['CALIBRATED DATA'],'fontsize',14);
 
 % ------------- Part c --------------------------------------------------
 subplot(1,4,3)
-loglog((ref_area_mm2_calib),(data_similarity_score));
+loglog((ref_area_mm2_calib),(Score));
 legend('Score');
-miny = min([(data_score) (abs(score_hist-datahistref))]);
-maxy = max([(data_score) (abs(score_hist-datahistref))]);
+miny = min([(Score) (abs(score_hist-datahistref))]);
+maxy = max([(Score) (abs(score_hist-datahistref))]);
 axis([0.05 2 floor(miny) ceil(maxy)]);
 xlabel('CALIBRATED AREA [mm²]','fontsize',12);
 ylabel('Adjustment difference [relative]','fontsize',12);
@@ -125,10 +125,10 @@ title(['CONTROL'],'fontsize',14);
 
 % % ------------- Part c --------------------------------------------------
 % subplot(1,4,3)
-% loglog((ref_area_mm2_calib),(data_score));
+% loglog((ref_area_mm2_calib),(Score));
 % legend('Score');
-% miny = min([(data_score) (abs(score_hist-datahistref))]);
-% maxy = max([(data_score) (abs(score_hist-datahistref))]);
+% miny = min([(Score) (abs(score_hist-datahistref))]);
+% maxy = max([(Score) (abs(score_hist-datahistref))]);
 % axis([0.05 2 floor(miny) ceil(maxy)]);
 % xlabel('CALIBRATED AREA [mm²]','fontsize',12);
 % ylabel('Adjustment difference [relative]','fontsize',12);

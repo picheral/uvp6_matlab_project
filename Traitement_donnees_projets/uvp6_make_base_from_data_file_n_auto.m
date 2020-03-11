@@ -1,4 +1,4 @@
-  %% Procédure de mise en base des fichiers data de UVP6
+%% Procédure de mise en base des fichiers data de UVP6
 
 % Si mesures en aquarium, une profondeur fictive est calculee afin de se
 % retrouver dans le cas d'un profil "classique".
@@ -39,7 +39,7 @@ disp('---------------------------------------------------------------')
 disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
 
-% -------- Option creation base en plus vecteurs bruts --------------------
+% -------- Option creation base en plus des vecteurs bruts --------------------
 % les data.mat sont toujours créés :
 % Image status : Z, datenum, statut image (1: overexposed, 2 : black, 3 : lpm)
 create_profils = input('Process also profile database ? (y/n) ','s');
@@ -53,10 +53,10 @@ if isempty(process_calib); process_calib = 'n'; end
 % -------- AUTO --------------------------------
 % Par défaut, création d'une base avec les même profondeurs et metadata
 % pour tous les sample/sequence, sinon, toutes options possibles.
-auto = input('Select manually the data range for each sample ? (n/y) ','s');
-if isempty(auto);auto = 'n';end
+manually = input('Select manually the data range for each sample ? (n/y) ','s');
+if isempty(manually);manually = 'n';end
 
-if strcmp(auto,'n')
+if strcmp(manually,'n')
     zmin = input('Select Zmin for all profiles (100) ');
     if isempty(zmin); zmin = 100; end 
     disp("zmin is by default " + zmin)
@@ -77,28 +77,32 @@ end
 seq = dir([cd '\2*']);
 N_seq = size(seq,1);
 
-% ------ Boucle sur les répertoires ------------
+%% ------ Boucle sur les répertoires ------------
 j= 1;
 index = 0;
 sample = 0;
+% initialise base structure
+base(N_seq) = struct();
 while j < N_seq+1
-    sample = sample +1;
-%     profilename = [seq(j).name(1:15),'_sample_',num2str(sample)];
-    profilename = [seq(j).name(1:end),'_sample_',num2str(sample)];
+    %% read HW and ACQ lines of the sequence
+    sample = sample + 1;
+    profilename = [seq(j).name,'_sample_',num2str(sample)];
     disp('---------------------------------------------------------------')
     disp(['SAMPLE : ',char(profilename)]);
     txt = dir([seq(j).name '\*data.txt']);
+    
+    % open data.txt file
     % path is the path for the text file stored in each sequence folder
     path = [raw_folder, seq(j).name, '\', txt.name];
     fid = fopen(path);
+    
     % ----------------- Ligne HW -----------------
     tline = fgetl(fid);
-    
     %tline is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
-    A = strsplit(tline,{','});
+    hw_line = strsplit(tline,{','});
     
     %----- Vérification longueur ligne ----------
-    if size(A,2) == 45 || size(A,2) == 44
+    if size(hw_line,2) == 45 || size(hw_line,2) == 44
         X = 0;
     else
         X = -1;
@@ -107,51 +111,50 @@ while j < N_seq+1
     % ---- get all the metadata from the hardware line of the text file --
     % ---- premiere sequence ---------
     if j == 1
-        %         eval([base_name '=[];']);
-        sn = A{2};
-        day = A{25+X};%(1:end-4)
+        sn = hw_line{2};
+        day = hw_line{25+X};
         cruise = folder(4:end);
         base_name = ['base',folder(4:end)];
         pvmtype = ['uvp6_sn' sn];
         soft = 'uvp6';
-        light =  A{6};
+        light =  hw_line{6};
     end
-    shutter = str2num(A{17+X});
-    threshold = str2num(A{19+X});
-    volume = str2num(A{23+X});
-    gain = str2num(A{18+X});
-    pixel = str2num(A{22+X})/1000;
-    Aa = str2num(A{20});
-    Exp = str2num(A{21});
+    shutter = str2double(hw_line{17+X});
+    threshold = str2double(hw_line{19+X});
+    volume = str2double(hw_line{23+X});
+    gain = str2double(hw_line{18+X});
+    pixel = str2double(hw_line{22+X})/1000;
+    Aa = str2double(hw_line{20});
+    Exp = str2double(hw_line{21});
     
     % ------------ LIgne ACQ ----------------------------------
     tline = fgetl(fid);
     tline = fgetl(fid);
-    A = strsplit(tline,{','});
-    black_ratio = str2num(A{15+X});
-    %black_ratio = str2num(A{11+X});
+    acq_line = strsplit(tline,{','});
+    black_ratio = str2double(acq_line{15+X});
     
     % ------------- Fermeture fichier -------------------------
     fclose(fid);
     
-    eval([base_name '(sample).cruise = {cruise};']);
-    eval([base_name '(sample).raw_folder = {seq(j).name};']);
-    eval([base_name '(sample).pvmtype = {pvmtype};']);
-    eval([base_name '(sample).soft = {soft};']);
-    eval([base_name '(sample).profilename = {profilename};']);%         eval([base_name '=[];']);
-    eval([base_name '(sample).shutter = shutter;']);
-    eval([base_name '(sample).threshold = threshold;']);
-    eval([base_name '(sample).gain = gain;']);
-    eval([base_name '(sample).pixel_size= pixel;']);
-    eval([base_name '(sample).volimg0 = volume;']);
-    eval([base_name '(sample).black_ratio = black_ratio;']);
-    eval([base_name '(sample).a0 = Aa;']);
-    eval([base_name '(sample).exp0 = Exp;']);
-    eval([base_name '(sample).light = light;']);
+    base(sample).cruise = {cruise};
+    base(sample).raw_folder = {seq(j).name};
+    base(sample).pvmtype = {pvmtype};
+    base(sample).soft = {soft};
+    base(sample).profilename = {profilename};
+    base(sample).shutter = shutter;
+    base(sample).threshold = threshold;
+    base(sample).gain = gain;
+    base(sample).pixel_size= pixel;
+    base(sample).volimg0 = volume;
+    base(sample).black_ratio = black_ratio;
+    base(sample).a0 = Aa;
+    base(sample).exp0 = Exp;
+    base(sample).light = light;
     
+    %% read data of the sequence
     %T is the table with all the lines of the text file, seperated in two tables : first part is the begnning with the date and time, pressure and black image flag
+    %20190724-123151,22.31,34.50,1:  1,1048,41.7,14.5; 2,26,38.2,5.6;    3,1,66.0,28.5;
     T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-%     20190724-123151,22.31,34.50,1:  1,1048,41.7,14.5; 2,26,38.2,5.6;    3,1,66.0,28.5;
     data = table2array(T(:,2));
     meta = table2array(T(:,1));
     
@@ -164,10 +167,10 @@ while j < N_seq+1
     black_nb =      NaN*zeros(n,900);
     raw_nb =        NaN*zeros(n,900);
     image_status =  NaN*zeros(n,1);
-    %     prof_black = NaN*zeros(1,m);
-    % prof_black = [];
     
     % -------- Boucle sur les lignes (images) --------------
+    % h is the number of the line
+    % n is the max number of lines
     % for each image / each text file line
     % overexposed = 1
     % black = 2
@@ -177,49 +180,44 @@ while j < N_seq+1
         if h/500==floor(h/500)
             disp(num2str(h))
         end
-        % ------------ Ligne de zeros -----------------------
-        line = zeros(1,900);
         
         % -------- VECTEURS METADATA -------
         C = strsplit(meta{h},{','});
         time_data(h) = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-        prof_data(h) =  str2num(C{2});
-        Flag = str2num(C{4});
+        prof_data(h) =  str2double(C{2});
+        Flag = str2double(C{4});
         
         % --------- VECTEURS DATA -------------
-        if isempty(findstr('OVER',data{h})) && isempty(findstr('EMPTY',data{h}))
+        if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY'))
             % -------- DATA ------------
-            eval(['temp_matrix=[' data{h} '];']);
-            [o,p]=size(temp_matrix);
-            
-            for k=1:o
-                if temp_matrix(k,1)<=900
-                    line(temp_matrix(k,1)) = temp_matrix(k,2);
-                end
-            end
-            
+            % cast the data line in nb_classx4 numerical matrix
+            temp_matrix = str2num(data{h}); %#ok<ST2NM>
+            % limit to class of 900 pixels wide objects
+            line = temp_matrix(temp_matrix(:,1)<900, 2);
+            seen_classes_nb = length(line);
             if Flag == 1
-                raw_nb(h,:) = line;
+                raw_nb(h,:) = 0;
+                raw_nb(h,1:seen_classes_nb) = line;
                 image_status(h) = 3;
             else
-                black_nb(h,:) = line;
+                black_nb(h,:) = 0;
+                black_nb(h,1:seen_classes_nb) = line;
                 image_status(h) = 2;
             end
-            
-            
-        elseif ~isempty(findstr('OVER',data{h}))
+        elseif ~isempty(strfind(data{h},'OVER'))
+            % if the line is overexposed
             image_status(h) = 1;
-        elseif ~isempty(findstr('EMPTY',data{h}))
+        elseif ~isempty(strfind(data{h},'EMPTY'))
             if Flag == 1
-                raw_nb(h,:) = line;
+                raw_nb(h,:) = 0;
+                raw_nb(h,1:seen_classes_nb) = line;
                 image_status(h) = 3;
             else
-                black_nb(h,:) = line;
+                black_nb(h,:) = 0;
+                black_nb(h,1:seen_classes_nb) = line;
                 image_status(h) = 2;
             end
-            
         end
-        
     end
     disp('----------------- end of loop ----------------------')
     
@@ -237,13 +235,14 @@ while j < N_seq+1
    
     %% -------------- Creation de la base des profils "baseuvp6...." -----------------
     if strcmp(create_profils,'y')
-        %% -------- Enrgistrement table metadata -------------------
+        %% data preparation
+        % -------- Enrgistrement table metadata -------------------
         %     vect = {'Z' 'timenum' 'pixel_1' 'pixel_2' 'pixel_3' 'pixel_4' 'pixel_5'};
         %     T = array2table(black_nb(:,1:7),'VariableNames',vect);
         %     T.time = %
         
         % --------- Retrait des trames vides indiquées par NaN -----------------------
-        I = isnan(raw_nb(:,3));
+        I = isnan(data_nb(:,3));
         data_nb(I,:) = [];
         I = isnan(black_nb(:,3));
         black_nb(I,:) = [];
@@ -251,15 +250,39 @@ while j < N_seq+1
         % --------- Vecteur des images noires (Methode à vérifier) ------------
         vect_img_black = (black_ratio-1)*[1:numel(black_nb(:,1))];
         
+        % -------- Profondeur virtuelle pour bassin --------------------
+        if strcmp(process_calib,'y')
+            data_nb_lines_nb = size(data_nb);
+            prof_data = [1 :data_nb_lines_nb(1)]';
+            data_nb(:,1) = prof_data;
+        end
+        
+        % --------------------- Latitude / longitude -----------------
+        disp('---------------------------------------------------------------')
+        if strcmp(manually,'y')
+            latitude = input('Enter decimal latitude (- for S) ');
+            if isempty(latitude); latitude = 12.5;end
+            
+            longitude = input('Enter decimal longitude (- for W) ');
+            if isempty(longitude); longitude = 12.5;end
+            
+        else
+            latitude = 12.5;
+            longitude = 12.5;
+        end
+        base(sample).latitude = latitude;
+        base(sample).longitude = longitude;
+        disp('---------------------------------------------------------------')
+        
         % --------- Calcul du bruit pour UVPdb --------------------------
         disp('---------------------------------------------------------------')
         median_1px = nanmedian(black_nb(:,3));
         median_2px = nanmedian(black_nb(:,4));
         disp(['Black_nb median abundance of 1 pixel objects (UVPdb) : ',num2str(median_1px)])
         disp(['Black_nb median abundance of 2 pixel objects (UVPdb) : ',num2str(median_2px)])
-        
         disp('---------------------------------------------------------------')
         
+        %% plots
         % --------- DATA --------------------------------------
         fig1 = figure('numbertitle','off','name','UVP6_control','Position',[10 50 1100 1200]);
         subplot(3,2,1);
@@ -286,7 +309,6 @@ while j < N_seq+1
         % ------------ PROFIL NOISE -----------------
         subplot(3,2,3)
         for k=1:2
-            %         eval(['semilogx((', base_name, '(sample).raw_black(:,k)./',base_name,'(sample).raw_black(:,3)),-', base_name,'(sample).raw_black(:,1)),']);
             semilogy(vect_img_black,black_nb(:,k+2),'.');
             hold on
         end
@@ -298,25 +320,21 @@ while j < N_seq+1
         title(titre);
         legend('1 pixel','2 pixels','Location','best');
         
-        % -------- Profondeur virtuelle pour bassin --------------------
-        if strcmp(process_calib,'y')
-            data_nb_lines_nb = size(data_nb);
-            prof_data = [1 :data_nb_lines_nb(1)]';
-            data_nb(:,1) = prof_data;
-        end
         
-        % -------- Selection des données ----------------------------------
-        if strcmp(auto,'y')
+        %% -------- Selection des données ----------------------------------
+        % -------------- images selection -----------------
+        % first and last images selected by image nb or Depth
+        if strcmp(manually,'y')
             disp('---------------------------------------------------------------')
             depth_option = input('Choose selection option Image/Depth (i/d) ? ','s');
             if isempty(depth_option);depth_option = 'i';end
-            aa = find(data_nb(:,1) == max(data_nb(:,1)));
+            max_depth_index = find(data_nb(:,1) == max(data_nb(:,1)));
             if strcmp(depth_option,'i')
                 firstimg = input('Input first image for selection (DATA) (CR for 1) ');
                 if isempty(firstimg);firstimg = 1;end
-                disp(['Detected Image number at ',num2str(max(data_nb(:,1))),' dB : ' ,num2str(aa(1))])
-                lastimg = input(['Input last image for selection (DATA) (CR for ',num2str(aa(1)),') ']);
-                if isempty(lastimg);lastimg = aa(1);end
+                disp(['Detected max depth Image number at ',num2str(max(data_nb(:,1))),' dB : ' ,num2str(max_depth_index(1))])
+                lastimg = input(['Input last image for selection (DATA) (CR for ',num2str(max_depth_index(1)),') ']);
+                if isempty(lastimg);lastimg = max_depth_index(1);end
                 firstimg = max(firstimg,1);
                 lastimg = min(lastimg,numel(data_nb(:,1)));
             else
@@ -338,41 +356,22 @@ while j < N_seq+1
                 end
             end
         else
-            % -------------- Valeurs par défaut ( > 100m )-----------------
-            
+            % Valeurs par défaut ( > 100m )
             firstimg = find(data_nb(:,1) >= zmin);
             firstimg = firstimg(1);
             lastimg = max(data_nb(:,1));
             lastimg = find(data_nb(:,1) == lastimg);
-            
         end
         
-        % --------------------- Latitude / longitude / Time -----------------
-        
+        % ------------- time of first image -----------------
         time = data_nb(firstimg,2);
         disp(['First image time : ',char(datetime(datevec(time)))])
+        base(sample).datenum = time;
+        base(sample).datevect = datetime(datevec(time));
         disp('---------------------------------------------------------------')
-        if strcmp(auto,'y')
-            latitude = input('Enter decimal latitude (- for S) ');
-            longitude = input('Enter decimal longitude (- for W) ');
-            
-            if isempty(latitude); latitude = 12.5;end
-            if isempty(longitude); longitude = 12.5;end
-            
-            
-        else
-            latitude = 12.5;
-            longitude = 12.5;
-        end
         
-        eval([base_name '(sample).latitude = latitude;']);
-        eval([base_name '(sample).longitude = longitude;']);
-        
-        eval([base_name '(sample).datenum = time;']);
-        eval([base_name '(sample).datevect = datetime(datevec(time));']);
-        
-        % --------------------- Data selection -----------------------
-        firstimg_black = floor(firstimg/(black_ratio-1)) +1;
+        % --------------------- Data and black selection -----------------------
+        firstimg_black = floor(firstimg/(black_ratio-1))+1;
         lastimg_black = floor(lastimg/(black_ratio-1))+1;
         [aa bb] = size(black_nb);
         lastimg_black = min(aa,lastimg_black);
@@ -382,8 +381,6 @@ while j < N_seq+1
         
         black_nb = black_nb(firstimg_black  :lastimg_black , : );
         x2 = size(black_nb,1);
-        
-        %     [prof_black,x2] = max(prof_black);
         black_histo = [black_nb(:,1) black_nb(:,2) ones(x2,1) ones(x2,1) black_nb(:,3:7)];
         
 %         % -------- Profondeur virtuelle pour bassin --------------------
@@ -420,10 +417,9 @@ while j < N_seq+1
         end
         
         %All variables measured lately are stored in the base
-        eval([base_name '(sample).histopx = nb_d;']);
-        %     eval([base_name '(sample).raw_histopx = raw_nb(1:x1,1:900);']);
-        eval([base_name '(sample).raw_histopx = data_nb;']);
-        eval([base_name '(sample).raw_black = black_histo;']);
+        base(sample).histopx = nb_d;
+        base(sample).raw_histopx = data_nb;
+        base(sample).raw_black = black_histo;
         
         % ------------- SELECTION ------------------
         subplot(3,2,1);
@@ -451,7 +447,7 @@ while j < N_seq+1
         % ------------ PROFIL Abondance DATA -----------------
         subplot(3,2,4)
         for k=6:8
-            eval(['semilogx((', base_name, '(sample).histopx(:,k)./',base_name,'(sample).histopx(:,3)),-', base_name,'(sample).histopx(:,1))']);
+            semilogx((base(sample).histopx(:,k) ./ base(sample).histopx(:,3)), -base(sample).histopx(:,1));
             hold on
         end
         xlabel('Abundances','fontsize',12);
@@ -465,19 +461,19 @@ while j < N_seq+1
         
         % --------------- FIGURE spectre de tailles ---------------------
         % ------ Calcul DATA spectre de taille -----------------------
-        eval(['histo_px=',base_name,'(sample).histopx(:,5:end);']);
+        histo_px = base(sample).histopx(:,5:end);
         histo_mm2 = histo_px./(pixel^2);
         vol_img = volume;
-        eval(['adj_nb_img=',base_name,'(sample).histopx(:,3);']);
+        adj_nb_img = base(sample).histopx(:,3);
         vol_ech=vol_img*adj_nb_img;
         
         vol_ech=vol_ech*ones(1,size(histo_mm2,2));
         histo_mm2_vol_mean=nanmean(histo_mm2./vol_ech);
         
         % ------ Calcul BLACK spectre de taille -----------------------
-        eval(['histo_px_black=',base_name,'(sample).raw_black(:,5:9);']);
+        histo_px_black = base(sample).raw_black(:,5:9);
         histo_mm2_black = histo_px_black./(pixel^2);
-        eval(['adj_nb_img_black=',base_name,'(sample).raw_black(:,3);']);
+        adj_nb_img_black = base(sample).raw_black(:,3);
         vol_ech=vol_img*adj_nb_img_black;
         vol_ech=vol_ech*ones(1,5);
         histo_mm2_vol_mean_black=nanmean(histo_mm2_black./vol_ech);
@@ -511,7 +507,7 @@ while j < N_seq+1
         axis([0 6 0 1]);
         
         disp('---------------------------------------------------------------')
-        if strcmp(auto,'y')
+        if strcmp(manually,'y')
             process_option = input('Modify selection of data for the same sample ? (n/y) ','s');
             if isempty(process_option);process_option = 'n';end
             
@@ -545,7 +541,7 @@ end
 % ------------ Sauvegarde base ---------------------------
 if strcmp(create_profils,'y')
     cd(results_folder);
-    eval(['save ' base_name ,'.mat ', base_name])
+    save([base_name ,'.mat'] , base)
     disp('---------------------------------------------------------------')
     disp('------------- DATABASE saved : END of Process -----------------')
 end
