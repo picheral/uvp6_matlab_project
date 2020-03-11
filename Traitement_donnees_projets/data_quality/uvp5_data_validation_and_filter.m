@@ -43,16 +43,16 @@ for i = 1:length(filelist)
     %% data validation
     disp('------------------------------------------------')
     disp('Validation of the data...')
-    validation = DataValidation(T, T_util, dat_pathname);
+    validation = DataValidation(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
     %% filtering of bad data points
     if validation == 'n'
         % filtering
         disp('------------------------------------------------')
         disp('Filtering of bad data points...')
-        [data_filtered, movmean_window, threshold_offset] = DataFiltering(T, T_util, dat_pathname);
+        [im_filtered, part_filtered, movmean_window, threshold_offset] = DataFiltering(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
         disp(['movmean_window = ', num2str(movmean_window)])
         disp(['threshold_offset = ', num2str(threshold_offset)])
-        disp([height(T) - height(data_filtered), ' points has been rejected'])
+        disp([height(T) - length(part_filtered), ' points has been rejected'])
         % save new dat file
         
         disp('filtered data file in')

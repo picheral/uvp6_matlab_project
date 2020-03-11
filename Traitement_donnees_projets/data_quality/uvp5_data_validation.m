@@ -49,7 +49,7 @@ data_validation_filtering = cell(files_nb,3);
 
 %% loop on files
 %for i = 1:length(data_validation_filtering)
-for i = 800:length(data_validation_filtering)
+for i = 1:3
     %% load data from files
     dat_pathname = string(filelist{i,1});
     disp('--------------------------------------------------------------------------------')
@@ -71,7 +71,7 @@ for i = 800:length(data_validation_filtering)
     %% data validation
     disp('------------------------------------------------')
     disp('Validation of the data...')
-    validation = DataValidation(T, T_util, dat_pathname);
+    validation = DataValidation(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
     %% filtering of bad data points
     if validation == 'n'
         data_validation_filtering(i,:) = {dat_pathname, datestr(now), validation};

@@ -1,10 +1,12 @@
-function validation = DataValidation(T, T_util, dat_pathname)
+function validation = DataValidation(image_numbers, part, image_numbers_util, part_util, dat_pathname)
     % DATA_VALIDATION user validation to know if the data are good
     % plots data and depth filtered data and ask if there are good
     %
     % inputs:
-    %   T: data
-    %   T_util: already filtered data (depth filtered)
+    %   image_numbers: numbers of the data images
+    %   part: number of particles in data images
+    %   image_numbers_util: numbers of the filtered data images (depth filtered)
+    %   part_util: number of particles in filtered data images (depth filtered)
     %   dat_pathname: abs filename of data
     %
     %outputs:
@@ -12,12 +14,12 @@ function validation = DataValidation(T, T_util, dat_pathname)
     %
     %% plot particules numbers along the sequence
     subplot(2,1,1);
-    plot(T{:,1},T{:,15},'.');
+    plot(image_numbers,part,'.');
     xlabel('image number');
     ylabel('number of particules');
     %% plot depth filtered particules numbers along the sequence
     subplot(2,1,2)
-    plot(T_util{:,1},T_util{:,15},'.');
+    plot(image_numbers_util,part_util,'.');
     xlabel('depth filtered image number');
     ylabel('number of particules');
     sgtitle(regexprep(dat_pathname, {'\\', '\_'}, {'\\\\', '\\\_'}));
