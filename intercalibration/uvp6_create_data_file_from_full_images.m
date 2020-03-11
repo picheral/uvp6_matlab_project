@@ -38,12 +38,26 @@ if isempty(zmax);zmax = 100000; end
 mat_thres = input('Input threshold matrix (log1:1 = [17:1:28] = default, log1:2 = [10:5:30]) ');
 if isempty(mat_thres); mat_thres = [17:1:28]; end
 
+% create threshold in txt format for dealing with files and folders
+threstxt = strings(numel(mat_thres),1);
+for j = 1 :numel(mat_thres)
+    % correction noms fichiers et repertoires
+    threshold = mat_thres(j);
+    if threshold > 9 && threshold < 100
+        threstxt(j) = ['0',num2str(threshold)];
+    elseif  threshold > 0 && threshold < 100
+        threstxt(j) = ['00',num2str(threshold)];
+    else
+        threstxt(j) = num2str(threshold);
+    end
+end
+threstxt = char(threstxt);
 
 
 %% Boucle sur les sequences sources de RAW
 % ------ Liste des répertoires séquence --------
 cd(raw_folder);
-seq = dir([cd '\2*']);
+seq = dir([cd '\20200221-09*']);
 N_seq = size(seq,1);
 
 for i = 1 : N_seq
@@ -55,74 +69,33 @@ for i = 1 : N_seq
         % Ouverture des fichiers data pour lecture des trames HW et ACQ
         path = [raw_folder,seq(i).name,'\',seq(i).name, '_data.txt'];
         fid = fopen(path);
-        % ----------------- Ligne HW -----------------
+        % ----------------- Ligne HW and ACQ -----------------
         HWline = fgetl(fid);
         line = fgetl(fid);
         ACQline = fgetl(fid);
-        
-        
-        %% Creation de N répertoires correspondant aux N valeurs de seuil
-        for j = 1 :numel(mat_thres)
-            % correction noms fichiers et repertoires
-            threshold = mat_thres(j);
-            if threshold > 9 && threshold < 100
-                threstxt = ['0',num2str(threshold)];
-            elseif  threshold > 0 && threshold < 100
-                threstxt = ['00',num2str(threshold)];
-            else
-                threstxt = num2str(threshold);
-            end
-            
-            subfolder = [raw_folder,seq(i).name,'_',num2str(threstxt),'\'];
-            mkdir(subfolder);
-            
-            
-            % Creation des fichiers DATA pour chaque valeur de Threshold
-            cd(subfolder);
-            fid_uvp = fopen([seq(i).name,'_',num2str(threstxt),'_data.txt'],'w');
-            
-            % update the threshold of the HW line
-            % the threshold is at the 19th position in the line
-            thres_HWline = split(HWline,',');
-            thres_HWline(19) = {num2str(threshold)};
-            thres_HWline = string(join(thres_HWline,','));
-            
-            % Copie des lignes HW et ACQ dans ces fichiers DATA            
-            fprintf(fid_uvp,'%s\r',thres_HWline);
-            fprintf(fid_uvp,'%s\r',line);
-            fprintf(fid_uvp,'%s\r',ACQline);
-            
-            % Fermeture du fichier
-            fclose(fid_uvp);
-            
-            % matrice vide
-            %             data_txt_threstxt = [];
-            eval(['data_txt_',threstxt,' = {};']);
-            
-        end
         fclose(fid);
+        
+        %% Boucle sur les lignes du fichier DATA
+        disp('----------------- Reading DATA file --------------------------')
         
         % Table des metadata et data
         T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
         data = table2array(T(:,2));
         meta = table2array(T(:,1));
-        [n,m]=size(data);
-              
-        %% Boucle sur les lignes du fichier DATA
-        disp('----------------- Reading DATA file --------------------------')
-        
+        [n,m]=size(data);        
         
         % détection h pour zmin et zmax
-        % h est le numéro d'images
-        % la sequence sélectionnée sera la DESCENTE du profil
+        % h est le "numéro" d'images
+        % La sequence sélectionnée sera la DESCENTE du profil
+        % Obligation de parcourir tout le fichier dans le cas où zmax>max_prof,
+        % car il faut détecter la profondeur max en faisant attention aux
+        % yoyo
         hstart = 1;
         hend = 1;
         max_prof_data = -10;
         for h=1:n
             C = strsplit(meta{h},{','});
-            time = char(C(1));
-            %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-            prof_data =  str2num(C{2});
+            prof_data =  str2double(C{2});
             if (prof_data <= zmin) && (h <= hstart+1)
                 hstart = h;
             end
@@ -132,77 +105,65 @@ for i = 1 : N_seq
             elseif (prof_data > zmax)
                 break
             end
-            last_prof_data = prof_data;
         end
         
-        deb = 1;
+        % loop on each lines of data file
+        show_first_image_name = 1;
+        % creation of threshold data array
+        data_lines_nb = hend - hstart + 1;
+        data_txt_threshold = strings(numel(mat_thres),data_lines_nb);
+        % h est le "numéro" de ligne de data, donc d'images, dans le
+        % fichier original
+        % index est le numero de ligne dans le nouveau fichier
         index = 0;
         for h=hstart:hend
-            index = index+1;
+            index = index + 1;
             % progression
             if h/100==floor(h/100)
                 disp("image index : " + num2str(h))
             end
             % -------- METADATA -------
             C = strsplit(meta{h},{','});
-            time = char(C(1));
-            %             time_datenum = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-            prof_data =  str2num(C{2}); %#ok<*ST2NM>
-            temp_data = str2num(C{3});
-            Flag = str2num(C{4});
+            time = C{1};
+            prof_data =  C{2};
+            temp_data = C{3};
+            Flag = C{4};
             
-            % Dans la gamme de profondeurs
-            
-            %             if prof_data > zmin && prof_data < zmax
             % creation du nom d'image (fichier image à ouvrir et analyser)
             img_name = [time,'.png'];
             % Test if file exist (and look in subdirectories as well)
             filelist = dir(fullfile([raw_folder,seq(i).name],'\**\',img_name));
-            if ~isempty(filelist)                
+            if ~isempty(filelist)
                 % abs path filename
                 imgfile_pathname = [filelist.folder, '\',filelist.name];
                 % --------- DATA -------------
-                if isempty(findstr('OVER',data{h})) %&& isempty(findstr('EMPTY',data{h}))
+                if isempty(strfind(data{h},'OVER'))
                     % ouverture image
                     img = imread(imgfile_pathname);
                     % affichage du nom de la première image
-                    if deb == 1
+                    if show_first_image_name == 1
                         disp(['First image : ',img_name])
-                        deb = 0;
+                        show_first_image_name = 0;
                     end
                     
                     % boucle sur les seuils de segmentation
-                    
                     for j = 1 :numel(mat_thres)
-                        threshold = mat_thres(j);
+                        % ATTENTION ! DANGER !
                         % DANS MATLAB >=
                         % DANS UVP6 >
-                        
-                        % Formattage de la valeur de threshold pour affichage 
-                        if threshold > 9 && threshold < 100
-                            threstxt = ['0',num2str(threshold)];
-                        elseif  threshold > 0 && threshold < 100
-                            threstxt = ['00',num2str(threshold)];
-                        else
-                            threstxt = num2str(threshold);
-                        end
-                        
                         % segmentation
                         % 2020/05/10, correction threshold pour fitter avec HW conf et code embarqué
-                        seuil_seg = threshold + 1;
-                       
-                        img_bw = im2bw(img,seuil_seg/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
+                        seuil_seg = mat_thres(j) + 1;
+                        img_bw = imbinarize(img,seuil_seg/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
                         
                         % extraction des mesures AREA et GREY
                         objects = regionprops(img_bw, img,{'Area','PixelValues'});
-                        %             disp(['Processing ' im_list(i).name '...'])
                         % Image dim : 2056 x 2464 pixels
-                        
-                        % construction vecteur metadata
-                        data_line = [time,',',num2str(prof_data),',',num2str(temp_data),',',num2str(Flag),':'];
                         
                         if ~isempty(objects)
                             % il y a au moins UN objet
+                            % construction vecteur metadata
+                            data_line = [time,',',prof_data,',',temp_data,',',Flag,':'];
                             % ----------- Vecteurs ------------------------------------
                             area = cat(1,objects.Area);
                             mean_px = NaN * zeros(numel(area),1);
@@ -228,60 +189,61 @@ for i = 1 : N_seq
                             end
                         else
                             % aucun objet dans l'image
-                            data_line = [time,',',num2str(prof_data),',',num2str(temp_data),',',num2str(Flag),':EMPTY_IMAGE;'];
+                            data_line = [time,',',prof_data,',',temp_data,',',Flag,':EMPTY_IMAGE;'];
                         end
                         
                         % ajout dans la matrice du threshold
-                        eval(['data_txt_',threstxt,'(index) = {data_line};']);
-                        
+                        data_txt_threshold(j,index) = data_line;
                     end
                 end
-                %                 end
             end
         end
         disp('----------------- end of DATA file ----------------------')
         
+        
         %% sauvegarde des différents fichiers DATA
         for j = 1 :numel(mat_thres)
+            %% Creation de N répertoires et N fichiers correspondant aux N valeurs de seuil
+            disp(['Recording ',seq(i).name,'_',threstxt(j),'_data.txt'])
+            
             % correction noms fichiers et repertoires
-            threshold = mat_thres(j);
-            if threshold > 9 && threshold < 100
-                threstxt = ['0',num2str(threshold)];
-            elseif  threshold > 0 && threshold < 100
-                threstxt = ['00',num2str(threshold)];
-            else
-                threstxt = num2str(threshold);
-            end
-            disp(['Recording ',seq(i).name,'_',num2str(threstxt),'_data.txt'])
+            subfolder = [raw_folder,seq(i).name,'_',threstxt(j),'\'];
+            mkdir(subfolder);
             
-            subfolder = [raw_folder,seq(i).name,'_',num2str(threstxt),'\'];
-            
-            % écriture du fichier DATA (pour chaque valeur de Threshold)
+            % Creation des fichiers DATA pour chaque valeur de Threshold
             cd(subfolder);
-            fid_uvp = fopen([seq(i).name,'_',num2str(threstxt),'_data.txt'],'a');
+            fid_uvp = fopen([seq(i).name,'_',threstxt(j),'_data.txt'],'w');
             
-            % écriture matrice dans fichiers DATA
-            eval(['matrice = data_txt_',threstxt,';'])
+            % update the threshold of the HW line
+            % the threshold is at the 19th position in the line
+            thres_HWline = split(HWline,',');
+            thres_HWline(19) = {num2str(mat_thres(j))};
+            thres_HWline = string(join(thres_HWline,','));
             
+            % Copie des lignes HW et ACQ dans ces fichiers DATA            
+            fprintf(fid_uvp,'%s\n',thres_HWline);
+            fprintf(fid_uvp,'%s\n',line);
+            fprintf(fid_uvp,'%s\n',ACQline);
+            
+            
+            %% save data files            
+            % écriture du fichier DATA (pour chaque valeur de Threshold)            
+            % écriture matrice dans fichiers DATA            
             % boucle sur les lignes
-            for m = 1:size(matrice,2)
-                fprintf(fid_uvp,'%s\r',line);
-                fprintf(fid_uvp,'%s\r',char(matrice{m}));
-                
-                %                 disp(matrice{m})
+            for m = 1:data_lines_nb
+                fprintf(fid_uvp,'%s\n',line);
+                fprintf(fid_uvp,'%s\n',data_txt_threshold(j,m));
             end
             
             % Fermeture du fichier
             fclose(fid_uvp);
             
         end
-        %         pause
     end
 end
 cd(folder);
 
 disp('------------------------ END of PROCESS ----------------------')
-
 
 
 

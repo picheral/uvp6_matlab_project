@@ -27,10 +27,10 @@ type_plot = input('Select plot type (raw/calibrated) (default = r) ','s');
 if isempty(type_plot)
     type_plot = 'r';
 end
-esd_min = input('Min ESD [mm] (default = 0.20) ? ');
-if isempty(esd_min); esd_min = 0.20; end
-esd_max = input('Max ESD [mm] (default = 0.60) ? ');
-if isempty(esd_max); esd_max = 0.6; end
+esd_min = input('Min ESD [mm] (default = 0.40) ? ');
+if isempty(esd_min); esd_min = 0.40; end
+esd_max = input('Max ESD [mm] (default = 1.0) ? ');
+if isempty(esd_max); esd_max = 1.0; end
 
 zmin = input('Min depth for all profiles (default = 40) ? ');
 if isempty(zmin);zmin = 40; end
@@ -192,9 +192,9 @@ refsum=nanmean(refs);
 refsum_log = log(refsum);
 
 % -------- FIT sur données REF ------------------------------
-[fitresult] = createFit1_minimisation_uvp((camsm_ref(deb_x:end_x)),(refsum_log(deb_x:end_x)),0,fit_type,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
+[fitresult] = create_two_fits((camsm_ref(deb_x:end_x)),(refsum_log(deb_x:end_x)),fit_type,0,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
 x_ref = [esd_min:0.01:esd_max];
-[y_ref] = Process_data(x_ref,fitresult,fit_type);
+[y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
 
 %% -------------------------- Boucle sur les projets à ajouter ------------
 
@@ -391,14 +391,13 @@ while other_cast == 1
     end
 
     % -------- FIT sur données RAW ------------------------------
-    [fitresult] = createFit1_minimisation_uvp((camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),0,fit_type,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
-    [y] = Process_data(x,fitresult,fit_type);
+    [fitresult] = create_two_fits((camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),fit_type,0,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
+    [y] = poly_from_fit(x,fitresult,fit_type);
 
     % -------------- Pour calcul Score final -----------------------------
-    [y_adj] = Process_data(x_ref,fitresult,fit_type);
-    data_score = (abs(exp(y_adj)-exp(y_ref))./(exp(y_ref))).^2;
-    Score=nansum(data_score);
-
+    [y_adj] = poly_from_fit(x_ref,fitresult,fit_type);
+    Score = data_similarity_score(exp(y_adj), exp(y_ref));
+    
     % -------- Figure FIT ADJ -------------------------------------
     subplot(2,2,2)
     hold on

@@ -267,12 +267,12 @@ for j = 2 : nb_zones + 1
     % ---- mat area ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_area(2:end,j ));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_area] = Process_data(x,fitresult_all,fit_type);
+    [y_area] = poly_from_fit(x,fitresult_all,fit_type);
     
     % ---- mat grey ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_grey(2:end,j ));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_grey] = Process_data(x,fitresult_all,fit_type);
+    [y_grey] = poly_from_fit(x,fitresult_all,fit_type);
     
     % ------- POLY 2 pour ECARTS -------------------
     fit_type = ['poly2'];
@@ -282,22 +282,22 @@ for j = 2 : nb_zones + 1
     % ---- mat ecarts_area ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_ecarts_area(:,j-1));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_ecart_area] = Process_data(x,fitresult_all,fit_type);
+    [y_ecart_area] = poly_from_fit(x,fitresult_all,fit_type);
     
     % ---- mat ecarts_grey ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_ecarts_grey(:,j-1));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_ecart_grey] = Process_data(x,fitresult_all,fit_type);
+    [y_ecart_grey] = poly_from_fit(x,fitresult_all,fit_type);
     
     % ---- mat ecarts fit a ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_ecarts_spectre_fit_a(:,j-1));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_ecart_fit_a] = Process_data(x,fitresult_all,fit_type);
+    [y_ecart_fit_a] = poly_from_fit(x,fitresult_all,fit_type);
     
     % ---- mat ecarts fit b ----------
     [xData, yData] = prepareCurveData( mat_gain, mat_ecarts_spectre_fit_b(:,j-1));
     [fitresult_all, gof] = fit( xData, yData, ft ,opts);
-    [y_ecart_fit_b] = Process_data(x,fitresult_all,fit_type);
+    [y_ecart_fit_b] = poly_from_fit(x,fitresult_all,fit_type);
     
     % --------------- Matrices de correction ----------
     %     aa = find(mat_area(2:end,j ) <= area_ref);

@@ -298,6 +298,13 @@ while j < N_seq+1
         title(titre);
         legend('1 pixel','2 pixels','Location','best');
         
+        % -------- Profondeur virtuelle pour bassin --------------------
+        if strcmp(process_calib,'y')
+            data_nb_lines_nb = size(data_nb);
+            prof_data = [1 :data_nb_lines_nb(1)]';
+            data_nb(:,1) = prof_data;
+        end
+        
         % -------- Selection des données ----------------------------------
         if strcmp(auto,'y')
             disp('---------------------------------------------------------------')
@@ -379,10 +386,10 @@ while j < N_seq+1
         %     [prof_black,x2] = max(prof_black);
         black_histo = [black_nb(:,1) black_nb(:,2) ones(x2,1) ones(x2,1) black_nb(:,3:7)];
         
-        % -------- Profondeur virtuelle pour bassin --------------------
-        if strcmp(process_calib,'y')
-            data_nb(:,1) = [firstimg :lastimg]';
-        end
+%         % -------- Profondeur virtuelle pour bassin --------------------
+%         if strcmp(process_calib,'y')
+%             data_nb(:,1) = [firstimg :lastimg]';
+%         end
         
         % --------- Vecteur profondeurs --------------------------------
         [prof1,x1] = max(data_nb(:,1));
