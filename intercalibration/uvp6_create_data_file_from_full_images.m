@@ -57,7 +57,7 @@ threstxt = char(threstxt);
 %% Boucle sur les sequences sources de RAW
 % ------ Liste des répertoires séquence --------
 cd(raw_folder);
-seq = dir([cd '\20200221-09*']);
+seq = dir([cd '\2020*']);
 N_seq = size(seq,1);
 
 for i = 1 : N_seq
@@ -204,15 +204,15 @@ for i = 1 : N_seq
         %% sauvegarde des différents fichiers DATA
         for j = 1 :numel(mat_thres)
             %% Creation de N répertoires et N fichiers correspondant aux N valeurs de seuil
-            disp(['Recording ',seq(i).name,'_',threstxt(j),'_data.txt'])
+            disp(['Recording ',seq(i).name,'_',threstxt(j,:),'_data.txt'])
             
             % correction noms fichiers et repertoires
-            subfolder = [raw_folder,seq(i).name,'_',threstxt(j),'\'];
+            subfolder = [raw_folder,seq(i).name,'_',threstxt(j,:),'\'];
             mkdir(subfolder);
             
             % Creation des fichiers DATA pour chaque valeur de Threshold
             cd(subfolder);
-            fid_uvp = fopen([seq(i).name,'_',threstxt(j),'_data.txt'],'w');
+            fid_uvp = fopen([seq(i).name,'_',threstxt(j,:),'_data.txt'],'w');
             
             % update the threshold of the HW line
             % the threshold is at the 19th position in the line
