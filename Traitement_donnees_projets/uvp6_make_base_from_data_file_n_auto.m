@@ -541,7 +541,7 @@ end
 % ------------ Sauvegarde base ---------------------------
 if strcmp(create_profils,'y')
     cd(results_folder);
-    save([base_name ,'.mat'] , base)
+    save([base_name ,'.mat'] , 'base')
     disp('---------------------------------------------------------------')
     disp('------------- DATABASE saved : END of Process -----------------')
 end
