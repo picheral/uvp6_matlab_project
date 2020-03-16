@@ -111,7 +111,12 @@ while another_ref == 'y'
 
     % ---------------- Chargement de la base choisie ------------------
     load([results_dir_ref,base_list(base_selected).name]);
-    base_ref = eval(base_list(base_selected).name(1:end-4));
+    % try statement in order to deal with old and new base name syntaxe
+    try
+        base_ref = eval(base_list(base_selected).name(1:end-4));
+    catch
+        base_ref = base;
+    end
     ligne_ref = size(base_ref,2);
     for i = 1 : ligne_ref
         disp(['Number : ',num2str(i),'   >  Profile : ',char(base_ref(i).profilename)]);
@@ -288,14 +293,19 @@ while other_cast == 1
         % ------------------ Chargement de la base à ajuster -----------------
         disp('------------------------------------------------------');
         base_selected = 1;
-        if i > 1
+        if gg > 1
             base_selected = input('Enter number corresponding to selected uvp database. (default = 1) ');
             if isempty(base_selected); base_selected = 1;   end
         end
         
         % ---------------- Chargement de la base choisie ------------------
         load([results_dir_adj,base_list(base_selected).name]);
-        base_adj = eval(base_list(base_selected).name(1:end-4));
+        % try statement in order to deal with old and new base name syntaxe
+        try
+            base_adj = eval(base_list(base_selected).name(1:end-4));
+        catch
+            base_adj = base;
+        end
         ligne_adj = size(base_adj,2);
         % ------------- List of samples ---------------
         for k = 1 : ligne_adj
