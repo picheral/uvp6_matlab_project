@@ -28,8 +28,8 @@ end
 % ESD range for fit and score
 esd_min = input('Min ESD [mm] (default = 0.40) ? ');
 if isempty(esd_min); esd_min = 0.40; end
-esd_max = input('Max ESD [mm] (default = 1.0) ? ');
-if isempty(esd_max); esd_max = 1.0; end
+esd_max = input('Max ESD [mm] (default = 0.8) ? ');
+if isempty(esd_max); esd_max = 0.8; end
 
 % depth range
 zmin = input('Min depth for all profiles (default = 40) ? ');

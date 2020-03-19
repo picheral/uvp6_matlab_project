@@ -74,10 +74,20 @@ else
     disp('All metadata of the reference profile are OK.')
 end
 
+
 % --------------- Normalisation par pixel area ----------------------------
-ref_histo_px=base_ref(rec_ref).histopx(:,4+Smin_px_ref:4+Smax_px_ref);
+
+% ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% PATH DE CORRECTION D'URGENCE POUR FAIRE CORRESPONDRES LES 2 PROFILS QUI
+% NE COMMENCENT PAS à LA MEME PROFONDEUR
+histopx = base_ref(rec_ref).histopx;
+aa = find(histopx(:,1) >= 50);
+histopx = histopx(aa,:);
+% FIN DU PATCH
+
+ref_histo_px=histopx(:,4+Smin_px_ref:4+Smax_px_ref);
 ref_histo_mm2 = ref_histo_px./(pix_ref^2);
-ref_nb_img=base_ref(rec_ref).histopx(:,3);
+ref_nb_img=histopx(:,3);
 ref_vol_ech=volumeimageref*ref_nb_img;
 ref_vol_ech=ref_vol_ech*ones(1,size(ref_histo_mm2,2));
 ref_histo_mm2_vol=ref_histo_mm2./ref_vol_ech;
@@ -116,9 +126,18 @@ else
 end
 
 % --------------- Normalisation using pixel area --------------------------
-adj_histo_px=base_adj(rec_adj).histopx(:,4+Smin_px_adj:4+Smax_px_adj);
+
+% ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% PATH DE CORRECTION D'URGENCE POUR FAIRE CORRESPONDRES LES 2 PROFILS QUI
+% NE COMMENCENT PAS à LA MEME PROFONDEUR
+histopx = base_adj(rec_adj).histopx;
+aa = find(histopx(:,1) >= 50);
+histopx = histopx(aa,:);
+% FIN DU PATCH
+
+adj_histo_px=histopx(:,4+Smin_px_adj:4+Smax_px_adj);
 adj_histo_mm2 = adj_histo_px./(pix_adj^2);
-adj_nb_img=base_adj(rec_adj).histopx(:,3);
+adj_nb_img=histopx(:,3);
 adj_vol_ech=volumeimage*adj_nb_img;
 adj_vol_ech=adj_vol_ech*ones(1,size(adj_histo_mm2,2));
 % pixsize_adj = [pixel_min:size(adj_histo_mm2,2)];
