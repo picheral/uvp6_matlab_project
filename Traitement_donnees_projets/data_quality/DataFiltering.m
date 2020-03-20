@@ -1,4 +1,4 @@
-function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFiltering(image_numbers, part, image_numbers_util, part_util, dat_pathname)
+function [im_filtered, part_filtered, movmean_window, threshold_percent] = DataFiltering(image_numbers, part, image_numbers_util, part_util, dat_pathname)
     % DATA_FILTERING tool to manually delete bad data points
     % plots data and depth filtered data with the filter limits and bad
     % data points.
@@ -19,7 +19,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFi
     %   threshold
     %
     movmean_window = 50;
-    threshold_percent = 50;
+    threshold_percent = 0.5;
     filter_is_good = 'n';
     disp('bad data points are under the moving average minus an offset')
     while not(strcmp(filter_is_good, 'y'))
@@ -30,22 +30,21 @@ function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFi
         end
         threshold_offset_entry = input(['Enter percent of moving mean for threshold [', num2str(threshold_percent), '] ']);
         if ~isempty(threshold_offset_entry)
-            threshold_percent = threshold_offset_entry;
+            threshold_percent = threshold_offset_entry/100;
         end
-        threshold_factor = 100 - threshold_percent/100;
         %% moving stats and filter data
         % raw data
         mov_mean = movmean(part, movmean_window);
-        part_filtered = part(part>mov_mean-threshold_factor*mov_mean);
-        im_filtered = image_numbers(part>mov_mean-threshold_factor*mov_mean);
-        part_filtered_rejected = part(part<=mov_mean-threshold_factor*mov_mean);
-        im_filtered_rejected = image_numbers(part<=mov_mean-threshold_factor*mov_mean);
+        part_filtered = part(part>threshold_percent*mov_mean);
+        im_filtered = image_numbers(part>threshold_percent*mov_mean);
+        part_filtered_rejected = part(part<=threshold_percent*mov_mean);
+        im_filtered_rejected = image_numbers(part<=threshold_percent*mov_mean);
         % filtered data
         mov_mean_util = movmean(part_util, movmean_window);
-        part_util_filtered = part_util(part_util>mov_mean_util-threshold_factor*mov_mean_util);
-        im_util_filtered = image_numbers(part_util>mov_mean_util-threshold_factor*mov_mean_util);
-        part_util_filtered_rejected = part_util(part_util<=mov_mean_util-threshold_factor*mov_mean_util);
-        im_util_filtered_rejected = image_numbers_util(part_util<=mov_mean_util-threshold_factor*mov_mean_util);
+        part_util_filtered = part_util(part_util>threshold_percent*mov_mean_util);
+        im_util_filtered = image_numbers(part_util>threshold_percent*mov_mean_util);
+        part_util_filtered_rejected = part_util(part_util<=threshold_percent*mov_mean_util);
+        im_util_filtered_rejected = image_numbers_util(part_util<=threshold_percent*mov_mean_util);
         %% plots
         % all data plot
         clf;
@@ -54,7 +53,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFi
         hold on
         plot(im_filtered_rejected,part_filtered_rejected,'+r');
         hold on
-        plot(image_numbers, mov_mean - threshold_factor*mov_mean,'--g');
+        plot(image_numbers, threshold_percent*mov_mean,'--g');
         str = {['movmean_window: ', num2str(movmean_window)], ['threshold_percent: ', num2str(threshold_percent)], ['bad data points: ', num2str(length(part_filtered_rejected))]};
         annotation('textbox' ,[.07 .69 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
         xlabel('image number');
@@ -66,7 +65,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFi
         hold on
         plot(im_util_filtered_rejected,part_util_filtered_rejected,'+r');
         hold on
-        plot(image_numbers_util, mov_mean_util - threshold_factor*mov_mean_util,'--g');
+        plot(image_numbers_util, threshold_percent*mov_mean_util,'--g');
         str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
         annotation('textbox', [.07 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
         xlabel('image number');
