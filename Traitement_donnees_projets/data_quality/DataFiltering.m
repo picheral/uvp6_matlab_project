@@ -32,7 +32,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_factor] = DataFi
         if ~isempty(threshold_offset_entry)
             threshold_percent = threshold_offset_entry;
         end
-        threshold_factor = 100 - threshold_percent;
+        threshold_factor = 100 - threshold_percent/100;
         %% moving stats and filter data
         % raw data
         mov_mean = movmean(part, movmean_window);
