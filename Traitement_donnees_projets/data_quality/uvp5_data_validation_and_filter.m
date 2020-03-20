@@ -49,15 +49,15 @@ for i = 1:length(filelist)
         % filtering
         disp('------------------------------------------------')
         disp('Filtering of bad data points...')
-        [im_filtered, part_filtered, movmean_window, threshold_offset] = DataFiltering(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
+        [im_filtered, part_filtered, movmean_window, threshold_percent] = DataFiltering(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
         disp(['movmean_window = ', num2str(movmean_window)])
-        disp(['threshold_offset = ', num2str(threshold_offset)])
+        disp(['threshold_percent = ', num2str(threshold_percent*100)])
         disp([height(T) - length(part_filtered), ' points has been rejected'])
         % save new dat file
         
         disp('filtered data file in')
         % save params
-        data_validation_filtering(i,:) = {dat_pathname, datestr(now), validation, movmean_window, threshold_offset};
+        data_validation_filtering(i,:) = {dat_pathname, datestr(now), validation, movmean_window, threshold_percent};
     else
         disp('------------------------------------------------')
         disp('Data are good. NO data filter has been applied')

@@ -54,7 +54,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_percent] = DataF
         plot(im_filtered_rejected,part_filtered_rejected,'+r');
         hold on
         plot(image_numbers, threshold_percent*mov_mean,'--g');
-        str = {['movmean_window: ', num2str(movmean_window)], ['threshold_percent: ', num2str(threshold_percent)], ['bad data points: ', num2str(length(part_filtered_rejected))]};
+        str = {['movmean_window: ', num2str(movmean_window)], ['threshold_percent: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_filtered_rejected))]};
         annotation('textbox' ,[.07 .69 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
         xlabel('image number');
         ylabel('number of particules');
@@ -66,7 +66,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_percent] = DataF
         plot(im_util_filtered_rejected,part_util_filtered_rejected,'+r');
         hold on
         plot(image_numbers_util, threshold_percent*mov_mean_util,'--g');
-        str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
+        str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
         annotation('textbox', [.07 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
         xlabel('image number');
         ylabel('number of particules');
