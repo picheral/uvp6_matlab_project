@@ -80,6 +80,7 @@ function [im_filtered, part_filtered, movmean_window, threshold_offset] = DataFi
         disp('------------------------------------------------')
     end
     saveas(gcf,[dat_pathname(1:end-4), '_filtering.png']);
+    savefig(gcf,[dat_pathname(1:end-4), '_filtering.fig']);
 end
 
 
