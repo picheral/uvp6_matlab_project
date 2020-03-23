@@ -36,10 +36,13 @@ if size(base_list) > 1
 end
 
 % ---------------- Chargement de la base choisie ------------------
-toto=['load ',results_dir,base_list(base_selected).name,';'];
-eval(toto);
-toto=['base = ',base_list(base_selected).name(1:end-4),';'];
-eval(toto);
+load([results_dir,base_list(base_selected).name]);
+% try statement in order to deal with old and new base name syntaxe
+try
+    base = eval(base_list(base_selected).name(1:end-4));
+catch
+    base = base;
+end
 ligne_ref = size(base,2);
 for i = 1 : ligne_ref
     disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);

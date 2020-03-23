@@ -75,15 +75,22 @@ else
 end
 
 
+% find the deepest first depth between the two base, in order to compare
+% profiles in the same range of depth
+firstdepth_ref = nanmin(base_ref(rec_ref).histopx(:,1));
+firstdepth_adj = nanmin(base_adj(rec_adj).histopx(:,1));
+if max(firstdepth_ref, firstdepth_adj) == firstdepth_ref
+    firstdepth = firstdepth_ref;
+else
+    firstdepth = firstdepth_adj;
+end
+
 % --------------- Normalisation par pixel area ----------------------------
 
-% ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% PATH DE CORRECTION D'URGENCE POUR FAIRE CORRESPONDRES LES 2 PROFILS QUI
-% NE COMMENCENT PAS à LA MEME PROFONDEUR
+% take only useful profile
 histopx = base_ref(rec_ref).histopx;
-aa = find(histopx(:,1) >= 50);
+aa = find(histopx(:,1) >= firstdepth);
 histopx = histopx(aa,:);
-% FIN DU PATCH
 
 ref_histo_px=histopx(:,4+Smin_px_ref:4+Smax_px_ref);
 ref_histo_mm2 = ref_histo_px./(pix_ref^2);
@@ -127,13 +134,10 @@ end
 
 % --------------- Normalisation using pixel area --------------------------
 
-% ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% PATH DE CORRECTION D'URGENCE POUR FAIRE CORRESPONDRES LES 2 PROFILS QUI
-% NE COMMENCENT PAS à LA MEME PROFONDEUR
+% take only useful profile
 histopx = base_adj(rec_adj).histopx;
-aa = find(histopx(:,1) >= 50);
+aa = find(histopx(:,1) >= firstdepth);
 histopx = histopx(aa,:);
-% FIN DU PATCH
 
 adj_histo_px=histopx(:,4+Smin_px_adj:4+Smax_px_adj);
 adj_histo_mm2 = adj_histo_px./(pix_adj^2);
