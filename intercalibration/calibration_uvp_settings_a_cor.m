@@ -96,7 +96,7 @@ ref_histo_px = histopx_ref(:,5:end);
 %ref_histo_px=histopx_ref(:,4+Smin_px_ref:4+Smax_px_ref); % TO BE DELETED
 %mis en commentaire pour afficher tout le range
 ref_histo_mm2 = ref_histo_px./(pix_ref^2);
-ref_nb_img=histopx_ref(:,3);
+ref_nb_img=histopx_ref(:,4);
 ref_vol_ech=volumeimageref*ref_nb_img;
 ref_vol_ech=ref_vol_ech*ones(1,size(ref_histo_mm2,2));
 ref_histo_mm2_vol=ref_histo_mm2./ref_vol_ech;
@@ -145,7 +145,7 @@ histopx_adj = histopx(aa,:);
 adj_histo_px=histopx_adj(:,5:end);
 %adj_histo_px=histopx_adj(:,4+Smin_px_adj:4+Smax_px_adj); % TO BE DELETED
 adj_histo_mm2 = adj_histo_px./(pix_adj^2);
-adj_nb_img=histopx_adj(:,3);
+adj_nb_img=histopx_adj(:,4);
 adj_vol_ech=volumeimage*adj_nb_img;
 adj_vol_ech=adj_vol_ech*ones(1,size(adj_histo_mm2,2));
 % pixsize_adj = [pixel_min:size(adj_histo_mm2,2)];
@@ -281,9 +281,9 @@ set(gca,'yscale','log');
 subplot(1,4,4)
 % ------------------- part 4 ----------------------------------------------
 % Profiles matching check
-plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,3)/volumeimageref, histopx_ref(:,1), 'r');
+plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,4)/volumeimageref, histopx_ref(:,1), 'r');
 hold on
-plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,3)/volumeimage, histopx_adj(:,1), 'g');
+plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,4)/volumeimage, histopx_adj(:,1), 'g');
 legend('ref profile','adj profile');
 title(['particles profiles'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
