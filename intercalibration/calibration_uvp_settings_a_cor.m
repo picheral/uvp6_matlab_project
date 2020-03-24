@@ -7,7 +7,7 @@ function [Fit_range] = calibration_uvp_settings_a_cor
 global project_folder_ref results_dir_ref Fit_range Smin_px_adj Smin_px_ref esd_min adj_histo_mm2 adj_vol_ech ref_esd_calib Smax_px_ref pixsize_ref Smax_px_adj pixsize_adj...
     adj_histo_mm2_vol_mean ref_esd_calib_log ref_histo_mm2_vol_mean_red_log esd_max fit_type EC_factor pix_ref pix_adj X0 rec_ref rec_adj base_ref base_adj aa_data_ref expo_data_ref img_vol_data_ref...
     img_vol_data_adj ref_histo_mm2_vol_mean ref_histo_ab ref_esd_x adj_histo_ab adj_esd_x ref_histo_ab_mean_red adj_histo_ab_mean_red uvp_ref uvp_adj adj_histo_px ref_norm_vect adj_norm_vect...
-    ref_histo_ab_mean_red_norm adj_histo_ab_mean_red_norm ref_norm_vect_calib ref_histo_ab_mean_red_norm_calib aa_ref expo_ref ref_esd_calib_all ref_area_mm2_calib
+    ref_histo_ab_mean_red_norm adj_histo_ab_mean_red_norm ref_norm_vect_calib ref_histo_ab_mean_red_norm_calib aa_ref expo_ref ref_esd_calib_all ref_area_mm2_calib...
 
 
 % fit_type = 'poly6';
@@ -80,21 +80,21 @@ end
 firstdepth_ref = nanmin(base_ref(rec_ref).histopx(:,1));
 firstdepth_adj = nanmin(base_adj(rec_adj).histopx(:,1));
 if max(firstdepth_ref, firstdepth_adj) == firstdepth_ref
-    firstdepth = firstdepth_ref;
+    first_depth = firstdepth_ref;
 else
-    firstdepth = firstdepth_adj;
+    first_depth = firstdepth_adj;
 end
 
 % --------------- Normalisation par pixel area ----------------------------
 
 % take only useful profile
 histopx = base_ref(rec_ref).histopx;
-aa = find(histopx(:,1) >= firstdepth);
-histopx = histopx(aa,:);
+aa = find(histopx(:,1) >= first_depth);
+histopx_ref = histopx(aa,:);
 
-ref_histo_px=histopx(:,4+Smin_px_ref:4+Smax_px_ref);
+ref_histo_px=histopx_ref(:,4+Smin_px_ref:4+Smax_px_ref);
 ref_histo_mm2 = ref_histo_px./(pix_ref^2);
-ref_nb_img=histopx(:,3);
+ref_nb_img=histopx_ref(:,3);
 ref_vol_ech=volumeimageref*ref_nb_img;
 ref_vol_ech=ref_vol_ech*ones(1,size(ref_histo_mm2,2));
 ref_histo_mm2_vol=ref_histo_mm2./ref_vol_ech;
@@ -136,12 +136,12 @@ end
 
 % take only useful profile
 histopx = base_adj(rec_adj).histopx;
-aa = find(histopx(:,1) >= firstdepth);
-histopx = histopx(aa,:);
+aa = find(histopx(:,1) >= first_depth);
+histopx_adj = histopx(aa,:);
 
-adj_histo_px=histopx(:,4+Smin_px_adj:4+Smax_px_adj);
+adj_histo_px=histopx_adj(:,4+Smin_px_adj:4+Smax_px_adj);
 adj_histo_mm2 = adj_histo_px./(pix_adj^2);
-adj_nb_img=histopx(:,3);
+adj_nb_img=histopx_adj(:,3);
 adj_vol_ech=volumeimage*adj_nb_img;
 adj_vol_ech=adj_vol_ech*ones(1,size(adj_histo_mm2,2));
 % pixsize_adj = [pixel_min:size(adj_histo_mm2,2)];
@@ -201,7 +201,7 @@ adj_histo_ab_mean_red = adj_histo_ab_mean(1:numel(adj_esd_x));
     
 
 fig1 = figure('name','RAW data','Position',[50 50 1500 600]);
-subplot(1,3,1)
+subplot(1,4,1)
 % ------------------- part 1 ----------------------------------------------
 loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro')
 % loglog(ref_esd_x,ref_histo_ab_mean_red,'ro');
@@ -217,7 +217,7 @@ axis([0.005 2 0.01 1000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 
-subplot(1,3,2)
+subplot(1,4,2)
 % ------------------- part 2 ----------------------------------------------
 % loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro')
 % loglog(ref_esd_x,ref_histo_ab_mean_red,'ro');
@@ -240,7 +240,7 @@ axis([0.05 2 0.01 1000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 
-subplot(1,3,3)
+subplot(1,4,3)
 % ------------------- part 3 ----------------------------------------------
 semilogy(ref_ab_vect_ecotaxa,'ro');
 hold on
@@ -253,6 +253,17 @@ ylabel('ABUNDANCE [#/L]','fontsize',12);
 axis([0 15 0.01 50000]);
 % set(gca,'xscale','log');
 set(gca,'yscale','log');
+
+subplot(1,4,4)
+% ------------------- part 4 ----------------------------------------------
+% Profiles matching check
+plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,3)/volumeimageref, histopx_ref(:,1));
+hold on
+plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,3)/volumeimage, histopx_adj(:,1));
+legend('ref profile','adj profile');
+title(['particles profiles'],'fontsize',14);
+xlabel('particles number [part]','fontsize',12);
+ylabel('depth [m]','fontsize',12);
 
 % ---------------------- Save figure --------------------------------------
 orient tall
