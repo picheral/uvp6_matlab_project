@@ -164,7 +164,7 @@ if strcmp(option_sel,'n')
         recpx = 'y';
     else
         recpx=input('Process pixel histogramms ? (n/y) ','s');
-        manual_filter = input('Manualy validate and filter each sequence for light failure detection (n/y) ? ','s');
+        manual_filter = input('Filter each sequence for light failure detection (No, Auto, Manual : n/a/m ) ? ','s');
         pasvert =      input('Input depth bin size (m) (default = 5) ');
         depth_offset =      input('Input depth_offset (m) (default = 1.2) ');
         matvert = input(['Input depth intervals (default is [2.5:5:6000]) ']);
@@ -498,7 +498,7 @@ for bbb = 2 : numel(TXT_base);
         disp('-------------------------------------------------------');
         
         %   ------------------- Theo Depth ----------------
-        if strcmp( process_depth,'y');
+        if strcmp( process_depth,'y')
             lat=base(fichier).latitude;
             long=-base(fichier).longitude;
             if abs(lat) > 71
