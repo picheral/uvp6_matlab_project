@@ -92,14 +92,17 @@ histopx = base_ref(rec_ref).histopx;
 aa = find(histopx(:,1) >= first_depth);
 histopx_ref = histopx(aa,:);
 
-ref_histo_px=histopx_ref(:,4+Smin_px_ref:4+Smax_px_ref);
+ref_histo_px = histopx_ref(:,5:end);
+%ref_histo_px=histopx_ref(:,4+Smin_px_ref:4+Smax_px_ref); % TO BE DELETED
+%mis en commentaire pour afficher tout le range
 ref_histo_mm2 = ref_histo_px./(pix_ref^2);
-ref_nb_img=histopx_ref(:,3);
+ref_nb_img=histopx_ref(:,4);
 ref_vol_ech=volumeimageref*ref_nb_img;
 ref_vol_ech=ref_vol_ech*ones(1,size(ref_histo_mm2,2));
 ref_histo_mm2_vol=ref_histo_mm2./ref_vol_ech;
 % pixsize_ref = [pixel_min:size(ref_histo_mm2,2)];
-pixsize_ref = [Smin_px_ref:Smax_px_ref];
+%pixsize_ref = [Smin_px_ref:Smax_px_ref]; % TO BE DELETED
+pixsize_ref = [1:size(ref_histo_px,2)-4];
 ref_esd_calib = 2*((aa_ref*(pixsize_ref.^expo_ref)./pi).^0.5);
 ref_esd_calib_all = 2*((aa_ref*([1:500].^expo_ref)./pi).^0.5);
 ref_esd_calib_log = log(ref_esd_calib);
@@ -139,14 +142,15 @@ histopx = base_adj(rec_adj).histopx;
 aa = find(histopx(:,1) >= first_depth);
 histopx_adj = histopx(aa,:);
 
-adj_histo_px=histopx_adj(:,4+Smin_px_adj:4+Smax_px_adj);
+adj_histo_px=histopx_adj(:,5:end);
+%adj_histo_px=histopx_adj(:,4+Smin_px_adj:4+Smax_px_adj); % TO BE DELETED
 adj_histo_mm2 = adj_histo_px./(pix_adj^2);
-adj_nb_img=histopx_adj(:,3);
+adj_nb_img=histopx_adj(:,4);
 adj_vol_ech=volumeimage*adj_nb_img;
 adj_vol_ech=adj_vol_ech*ones(1,size(adj_histo_mm2,2));
 % pixsize_adj = [pixel_min:size(adj_histo_mm2,2)];
-pixsize_adj = [Smin_px_adj:Smax_px_adj];
-adj_histo_mm2_vol_mean=nanmean(adj_histo_mm2./adj_vol_ech);     % refait ci dessous après retrait valeurs manquantes de surface
+%pixsize_adj = [Smin_px_adj:Smax_px_adj]; % TO BE DELETED
+pixsize_adj = [1:size(adj_histo_mm2,2)-4];
 
 adj_histo_ab = (adj_histo_px./adj_vol_ech);
 adj_esd_x = 2*(((pix_adj^2)*(pixsize_adj)./pi).^0.5);
@@ -208,6 +212,9 @@ loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro
 hold on
 loglog([1:numel(adj_histo_mm2_vol_mean)].*(pix_adj^2),adj_histo_mm2_vol_mean,'go');
 % loglog(adj_esd_x,adj_histo_ab_mean_red,'go');
+hold on
+xline(pi*(esd_min/2)^2, '--b');
+xline(pi*(esd_max/2)^2, '--b');
 legend(uvp_ref,uvp_adj);
 title(['RAW DATA (normalized/pxarea)'],'fontsize',14);
 xlabel('RAW AREA [mm²]','fontsize',12);
@@ -231,6 +238,9 @@ hold on
 adj_esd_x = adj_esd_x(1:end-1);
 adj_histo_ab_mean_red_norm = adj_histo_ab_mean_red(1:end-1)./adj_norm_vect;
 loglog(adj_esd_x,adj_histo_ab_mean_red_norm,'go');
+hold on
+xline(esd_min, '--b');
+xline(esd_max, '--b');
 legend(uvp_ref,uvp_adj);
 title(['RAW DATA (normalized/esd)'],'fontsize',14);
 xlabel('RAW ESD [mm]','fontsize',12);
@@ -245,6 +255,20 @@ subplot(1,4,3)
 semilogy(ref_ab_vect_ecotaxa,'ro');
 hold on
 semilogy(adj_ab_vect_ecotaxa,'go');
+hold on
+% find first and last class in the esd range
+class_max = 1;
+class_min = 1;
+for i=1:length(esd_vect_ecotaxa)
+    if esd_max >= esd_vect_ecotaxa(i)
+        class_max = i;
+    end
+    if esd_min >= esd_vect_ecotaxa(i)
+        class_min = i;
+    end
+end
+xline(class_min, '--b');
+xline(class_max, '--b');
 legend(uvp_ref,uvp_adj);
 title(['RAW DATA [per class]'],'fontsize',14);
 xlabel('ESD CLASS [#]','fontsize',12);
@@ -257,13 +281,42 @@ set(gca,'yscale','log');
 subplot(1,4,4)
 % ------------------- part 4 ----------------------------------------------
 % Profiles matching check
-plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,3)/volumeimageref, histopx_ref(:,1));
+plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,4)/volumeimageref, histopx_ref(:,1), 'r');
 hold on
-plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,3)/volumeimage, histopx_adj(:,1));
+plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,4)/volumeimage, histopx_adj(:,1), 'g');
 legend('ref profile','adj profile');
 title(['particles profiles'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
 ylabel('depth [m]','fontsize',12);
+
+
+% ------------------- input range  ----------------------------------------
+% ref
+ref_histo_mm2_vol_mean = ref_histo_mm2_vol_mean(:,Smin_px_ref:Smax_px_ref);
+ref_histo_ab = ref_histo_ab(:,Smin_px_ref:Smax_px_ref);
+ref_histo_ab_mean_red = ref_histo_ab_mean_red(:,Smin_px_ref:Smax_px_ref);
+ref_histo_ab_mean_red_norm = ref_histo_ab_mean_red_norm(:,Smin_px_ref:Smax_px_ref-1);
+ref_histo_ab_mean_red_norm_calib = ref_histo_ab_mean_red_norm_calib(:,Smin_px_ref:Smax_px_ref-1);
+ref_esd_x = ref_esd_x(Smin_px_ref : Smax_px_ref - 1); % -1 because we already put out the last element
+ref_norm_vect = ref_norm_vect(Smin_px_ref : Smax_px_ref);
+ref_norm_vect_calib = ref_norm_vect_calib(Smin_px_ref : Smax_px_ref);
+ref_esd_calib = ref_esd_calib(Smin_px_ref : Smax_px_ref);
+ref_esd_calib_log = ref_esd_calib_log(Smin_px_ref : Smax_px_ref);
+ref_esd_calib_all = ref_esd_calib_all(Smin_px_ref : Smax_px_ref);
+ref_area_mm2_calib = ref_area_mm2_calib(Smin_px_ref : Smax_px_ref);
+pixsize_ref = pixsize_ref(Smin_px_ref : Smax_px_ref);
+% adj
+adj_histo_px = adj_histo_px(:,Smin_px_adj:Smax_px_adj);
+adj_histo_mm2 = adj_histo_mm2(:,Smin_px_adj:Smax_px_adj);
+adj_histo_mm2_vol_mean = adj_histo_mm2_vol_mean(:,Smin_px_adj:Smax_px_adj);
+adj_vol_ech = adj_vol_ech(:,Smin_px_adj:Smax_px_adj);
+adj_histo_ab = adj_histo_ab(:,Smin_px_adj:Smax_px_adj);
+adj_histo_ab_mean_red = adj_histo_ab_mean_red(:,Smin_px_adj:Smax_px_adj);
+adj_histo_ab_mean_red_norm = adj_histo_ab_mean_red_norm(:,Smin_px_adj:Smax_px_adj-1);
+adj_esd_x = adj_esd_x(Smin_px_adj : Smax_px_adj - 1);
+adj_norm_vect = adj_norm_vect(Smin_px_adj : Smax_px_adj);
+pixsize_adj = pixsize_adj(Smin_px_adj : Smax_px_adj);
+
 
 % ---------------------- Save figure --------------------------------------
 orient tall

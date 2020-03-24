@@ -163,7 +163,7 @@ while another_ref == 'y'
     if isfield(base_ref,'histopx')
         aa = find(base_ref(rec_ref).histopx(:,2) >= zmin & base_ref(rec_ref).histopx(:,2) <= zmax);
         refpix=base_ref(rec_ref).histopx(aa,5:end);
-        nombreimages=base_ref(rec_ref).histopx(aa,3);
+        nombreimages=base_ref(rec_ref).histopx(aa,4);
     elseif isfield(base_ref,'data_nb')
         aa = find(base_ref(rec_ref).data_nb(:,2) >= zmin & base_ref(rec_ref).data_nb(:,2) <= zmax);
         refpix=base_ref(rec_ref).data_nb(:,5:end);
@@ -375,7 +375,7 @@ while other_cast == 1
     if isfield(base_adj,'histopx')
         aa = find(base_adj(rec_adj).histopx(:,2) >= zmin & base_adj(rec_adj).histopx(:,2) <= zmax);
         data=base_adj(rec_adj).histopx(:,5:end);
-        nombreimages=base_adj(rec_adj).histopx(:,3);
+        nombreimages=base_adj(rec_adj).histopx(:,4);
     elseif isfield(base_adj,'data_nb')
         aa = find(base_adj(rec_adj).data_nb(:,2) >= zmin & base_adj(rec_adj).data_nb(:,2) <= zmax);
         data=base_adj(rec_adj).data_nb(:,5:end);
