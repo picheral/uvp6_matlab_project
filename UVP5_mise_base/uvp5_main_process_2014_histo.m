@@ -187,7 +187,7 @@ elseif process_histo == 1
             disp(['Total of descent images = ',num2str(numel(dd))])
             disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
             disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2)])
+            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
             
             % flag bad data points (keeping pressure flag)
             Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);

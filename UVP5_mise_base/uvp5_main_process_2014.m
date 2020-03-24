@@ -159,17 +159,17 @@ process_calib = 'n';
 manual_filter = 'n';
 
 if strcmp(option_sel,'n')
+    manual_filter = input('Filter each sequence for light failure detection (No, Auto, Manual : n/a/m ) ? ','s');
     process_calib = input('Process data from aquarium inter-calibration ? (n/y) ','s');
+    recpx=input('Process pixel histogramms ? (n/y) ','s');
     if strcmp(process_calib,'y')
         recpx = 'y';
-    else
-        recpx=input('Process pixel histogramms ? (n/y) ','s');
-        manual_filter = input('Filter each sequence for light failure detection (No, Auto, Manual : n/a/m ) ? ','s');
+    else        
         pasvert =      input('Input depth bin size (m) (default = 5) ');
         depth_offset =      input('Input depth_offset (m) (default = 1.2) ');
         matvert = input(['Input depth intervals (default is [2.5:5:6000]) ']);
         
-%         calibration = input('Adjust particule abundances and biovolume using calibration results (y/n) ? ','s');
+        %         calibration = input('Adjust particule abundances and biovolume using calibration results (y/n) ? ','s');
         load_meta = input('Load metadata into base (y/n) ?  ','s');
         skip_histo = input('SKIP process again already processed histogramms (y/n) ?  ','s');
         save_histo = input('Save histogramms as separate txt files (n/y) ?  ','s');
@@ -599,13 +599,11 @@ for bbb = 2 : numel(TXT_base);
     %% ------------ Bruit UVP5hd --------------------------------------
     if strcmp(project_name(1:3),'sn2')
         for fichier=1:ligne
-            
             if strcmp(process_calib,'y')
                 UVP5_check_noise_aquarium(base,fichier,results_dir);
-            else
-                UVP5_check_noise(base,fichier,results_dir);
+                %             else
+                %                 UVP5_check_noise(base,fichier,results_dir);
             end
-            
         end
     end
     
