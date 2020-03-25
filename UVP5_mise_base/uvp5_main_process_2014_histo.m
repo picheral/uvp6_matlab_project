@@ -181,23 +181,22 @@ elseif process_histo == 1
             % filtering
             disp('------------------------------------------------')
             disp('Filtering of bad data points...')
-            %                 [im_filtered, data_filtered, movmean_window, threshold_percent] = DataFiltering(Image, Part, Image(Pressure>10), Part(Pressure>10), tta);
             [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
-            disp(['Movmean_window = ', num2str(movmean_window)])
-            disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-            disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
-            dd = find(listecor(:,3) == 1);
-            disp(['Total of descent images = ',num2str(numel(dd))])
-            disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
-            disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+%             disp(['Movmean_window = ', num2str(movmean_window)])
+%             disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+%             disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+%             dd = find(listecor(:,3) == 1);
+%             disp(['Total of descent images = ',num2str(numel(dd))])
+%             disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
+%             disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
+%             disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
             
             % flag bad data points (keeping pressure flag)
             Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);
-            
             listecor(:,3) = Flag;
+            
             base(fichier).reject_img_percent = 100*numel(part_util_filtered_rejected)/numel(listecor(:,1));
-            base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
+%             base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
         else
             disp('------------------------------------------------')
             disp('NO data filter has been applied')

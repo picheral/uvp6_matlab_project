@@ -165,11 +165,11 @@ if strcmp(option_sel,'n')
     recpx=input('Process pixel histogramms ? (n/y) ','s');
     if strcmp(process_calib,'y')
         recpx = 'y';
-    else        
+    else
         pasvert =      input('Input depth bin size (m) (default = 5) ');
         depth_offset =      input('Input depth_offset (m) (default = 1.2) ');
         matvert = input(['Input depth intervals (default is [2.5:5:6000]) ']);
-        process_map = (['Process station map (n/y) ','s']);
+        process_map = input('Process station map (n/y) ','s');
         %         calibration = input('Adjust particule abundances and biovolume using calibration results (y/n) ? ','s');
         load_meta = input('Load metadata into base (y/n) ?  ','s');
         skip_histo = input('SKIP process again already processed histogramms (y/n) ?  ','s');
@@ -601,6 +601,21 @@ for bbb = 2 : numel(TXT_base);
         base(fichier).datfile.temp_interne = Temp_interne;
         base(fichier).datfile.peltier = Peltier;
         base(fichier).datfile.temp_cam = Temp_cam;
+        % ---------------- Filtrage ----------------------
+        
+        [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
+        disp(['Movmean_window = ', num2str(movmean_window)])
+        disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+        disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+        dd = find(listecor(:,3) == 1);
+        disp(['Total of descent images = ',num2str(numel(dd))])
+        disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
+        disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
+        disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+        base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
+        base(fichier).tot_utilized_img = numel(im_filtered);
+        base(fichier).filter_movmean = movmean_window;
+        base(fichier).filter_threshold_percent = threshold_percent*100;
     end
     
     %% ------------ Bruit UVP5hd --------------------------------------
@@ -653,7 +668,7 @@ for bbb = 2 : numel(TXT_base);
     uvp5_main_process_2014_maj_metafile(base,meta_dir,meta_file);
     
     %% ++++++++++++++++++++++++++++ PLOT CARTE STN Mission ++++++++++++++++++++++++++++++++++
-    if strcmpp(process_map,'y')
+    if strcmp(process_map,'y')
         uvp5_main_process_2014_plot_cruise_map(base,results_dir);
     end
     
@@ -679,7 +694,7 @@ for bbb = 2 : numel(TXT_base);
     %% ----------------- VERIFICATION HISNB vides ------------------------
     
     disp('----------------------------------------------------------------------')
-    for fichier=1:ligne;
+    for fichier=1:ligne
         if isempty(base(fichier).hisnb)
             disp(['HISNB empty for ',char(base(fichier).profilename),'  record : ',num2str(fichier)]);
         end
@@ -697,12 +712,12 @@ for bbb = 2 : numel(TXT_base);
     
     %% ++++++++++++++++++++++++++++++++ Création archives ODV +++++++++++
     ctddebut = 1;
-    if (strcmp(process_odv,'y'));
+    if (strcmp(process_odv,'y'))
         % ---------- Fichiers ODV LPM et CTD ---------------
         [base,ctddebut] = uvp5_process_odv_lpm_ctd(base,results_dir,base_new,include_ctd);
         
         % --------------- ZOOPLANKTON ---------------------
-        if nbzoo >=1;
+        if nbzoo >=1
             [base] = uvp5_process_odv_zoo_ctd(base,results_dir,base_new,ctddebut,include_zoo_det,exclude_detritus);
         end %nbzoo
     end

@@ -39,7 +39,7 @@ press_util = listecor(aa,2);
 movmean_window = 25;
 threshold_percent = 0.8;
 filter_is_good = 'n';
-disp('bad data points are under the moving average minus an offset')
+% disp('bad data points are under the moving average minus an offset')
 while not(strcmp(filter_is_good, 'y'))
     % ---------- Cas ajustage manuel ----------------------
     if manual_filter == 'm'
@@ -99,6 +99,8 @@ while not(strcmp(filter_is_good, 'y'))
     end
     clf(fig)
 end
+           
+
 end
 
 
