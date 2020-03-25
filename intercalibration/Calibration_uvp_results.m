@@ -10,6 +10,8 @@ global  project_folder_adj project_folder_ref pixel_min esd_max fit_type...
     ShutterSpeed_ref SMBase_ref light1_adj light2_adj light1_ref light2_ref...
     Smin_px_adj Smin_px_ref esd_min ratio_mean
 disp('-------------------------------------------------------------------------');
+disp(['Processing date     : ',datestr(now,31)])
+disp('-------------------------------------------------------------------------');
 disp(['Min ESD       [mm]  : ',num2str(esd_min)]);
 disp(['Max ESD       [mm]  : ',num2str(esd_max)]);
 disp(['Mnimisation start   : [',num2str(X0(1)),' ',num2str(X0(2)),']']);
