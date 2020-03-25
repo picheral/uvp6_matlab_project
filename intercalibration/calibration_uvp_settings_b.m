@@ -9,7 +9,7 @@ global results_dir_ref datahistref adj_histo_mm2 adj_vol_ech ref_esd_calib ref_e
     pix_ref pix_adj X0 rec_ref rec_adj base_ref base_adj aa_data_ref expo_data_ref...
     img_vol_data_ref img_vol_data_adj aa_adj expo_adj ref_histo_mm2_vol_mean uvp_ref uvp_adj Score...
     min_calib max_calib Fit_range adj_esd_x ref_esd_x ref_area_mm2_calib adj_area_mm2_calib ratio_mean project_folder_adj...
-    esd_vect_ecotaxa ref_histo_ab adj_histo_ab...
+    esd_vect_ecotaxa ref_histo_ab adj_histo_ab depth
 
 ref_histo_mm2_vol_mean_log = log(ref_histo_mm2_vol_mean);
 % ----------- FIT on ADJUSTED ---------------------------------------------
@@ -136,20 +136,57 @@ semilogy(ref_calib_vect_ecotaxa,'ro');
 hold on
 semilogy(adj_calib_vect_ecotaxa,'go');
 legend(uvp_ref,uvp_adj);
-title(['CALIBRATED DATA [per class]'],'fontsize',14);
-xlabel('ESD CLASS [#]','fontsize',12);
+title(['CALIBRATED DATA'],'fontsize',14);
+xlabel('CALIBRATED ESD CLASS [#]','fontsize',12);
 ylabel('ABUNDANCE [#/L]','fontsize',12);
 axis([0 15 0.01 50000]);
 
 % -------------- Part d ----------------------------------
+% subplot(1,4,4)
+% semilogx(ref_area_mm2_calib,ratio);
+% xlabel('CALIBRATED AREA [mm²]','fontsize',12);
+% ylabel('RATIO','fontsize',12);
+% axis([0.05 2 0.5 2]);
+% set(gca,'xscale','log');
+% % set(gca,'yscale','log');
+% title(['Ratio of fit / reference (mean = ',num2str(nanmean(ratio)),')']);
+
+% -------------- Part d ----------------------------------
+% compute local spectrum slope
+affine_fit = fittype({'x'});
+ref_histo_ab_red_log = log(ref_histo_ab(:,1:numel(ref_esd_calib)));
+ref_local_spectr_slope = zeros(size(ref_histo_ab_red_log,1),1);
+for i=1:length(ref_local_spectr_slope)
+    % delete -inf values from log
+    x = ref_esd_calib';
+    y = ref_histo_ab_red_log(i,:)';
+    aa = find(y == -Inf);
+    x(aa) = [];
+    y(aa) = [];
+    p = fit(x,y,affine_fit);
+    ref_local_spectr_slope(i) = p.a;
+end
+adj_histo_ab_red_log = log(adj_histo_ab(:,1:numel(adj_esd_calib)));
+adj_local_spectr_slope = zeros(size(adj_histo_ab_red_log,1),1);
+for i=1:length(adj_local_spectr_slope)
+    % delete -inf values from log
+    x = adj_esd_calib';
+    y = adj_histo_ab_red_log(i,:)';
+    aa = find(y == -Inf);
+    x(aa) = [];
+    y(aa) = [];
+    p = fit(x,y,affine_fit);
+    adj_local_spectr_slope(i) = p.a;
+end
+% plot spectrum slop along the depth
 subplot(1,4,4)
-semilogx(ref_area_mm2_calib,ratio);
-xlabel('CALIBRATED AREA [mm²]','fontsize',12);
-ylabel('RATIO','fontsize',12);
-axis([0.05 2 0.5 2]);
-set(gca,'xscale','log');
-% set(gca,'yscale','log');
-title(['Ratio of fit / reference (mean = ',num2str(nanmean(ratio)),')']);
+plot(ref_local_spectr_slope,-depth,'r');
+hold on
+plot(adj_local_spectr_slope,-depth,'g');
+title('local calibrated spectrum slope');
+xlabel('spectrum slope [#/L/mm]','fontsize',12);
+ylabel('depth [m]','fontsize',12);
+legend(uvp_ref,uvp_adj);
 
 % ---------------------- Save figure --------------------------------------
 orient tall
