@@ -8,6 +8,7 @@ global project_folder_ref results_dir_ref Fit_range Smin_px_adj Smin_px_ref esd_
     adj_histo_mm2_vol_mean ref_esd_calib_log ref_histo_mm2_vol_mean_red_log esd_max fit_type EC_factor pix_ref pix_adj X0 rec_ref rec_adj base_ref base_adj aa_data_ref expo_data_ref img_vol_data_ref...
     img_vol_data_adj ref_histo_mm2_vol_mean ref_histo_ab ref_esd_x adj_histo_ab adj_esd_x ref_histo_ab_mean_red adj_histo_ab_mean_red uvp_ref uvp_adj adj_histo_px ref_norm_vect adj_norm_vect...
     ref_histo_ab_mean_red_norm adj_histo_ab_mean_red_norm ref_norm_vect_calib ref_histo_ab_mean_red_norm_calib aa_ref expo_ref ref_esd_calib_all ref_area_mm2_calib esd_vect_ecotaxa...
+    depth
 
 
 % fit_type = 'poly6';
@@ -281,9 +282,9 @@ set(gca,'yscale','log');
 subplot(1,4,4)
 % ------------------- part 4 ----------------------------------------------
 % Profiles matching check
-semilogx((histopx_ref(:,6)+histopx_ref(:,7))./histopx_ref(:,4)/volumeimageref, histopx_ref(:,1), 'r');
+semilogx((histopx_ref(:,6)+histopx_ref(:,7))./histopx_ref(:,4)/volumeimageref, -histopx_ref(:,1), 'r');
 hold on
-semilogx((histopx_adj(:,6)+histopx_adj(:,7))./histopx_adj(:,4)/volumeimage, histopx_adj(:,1), 'g');
+semilogx((histopx_adj(:,6)+histopx_adj(:,7))./histopx_adj(:,4)/volumeimage, -histopx_adj(:,1), 'g');
 legend(uvp_ref,uvp_adj);
 title(['particles profiles for 2pix+3pix'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
