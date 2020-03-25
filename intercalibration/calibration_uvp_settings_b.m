@@ -47,37 +47,6 @@ end
 %%
 fig2 = figure('name','ADJUSTED data','Position',[700 50 1500 600]);
 % ------------------- part a ----------------------------------------------
-subplot(1,4,2)
-loglog(exp(ref_esd_calib_log),exp(datahistref),'r-');
-hold on
-loglog(exp(adj_esd_calib_log),exp(yresults_adj),'g--');
-if strcmp(uvp_ref,'uvp5-sn203')
-%     % -------------- AJout limites sur graphes si ref = sn203 -----------------
-%     aa_ref_min = exp(-5.974);
-%     expo_ref_min = 1.071;
-%     aa_ref_max = exp(-5.3);
-%     expo_ref_max = 1.203;
-%     ref_esd_calib_minx = log(2*((aa_ref_min*(pixsize_ref.^expo_ref_min)./pi).^0.5));
-%     [fitresult] = createFit1_minimisation_uvp(ref_esd_calib_minx,ref_histo_mm2_vol_mean_log,0,Fit_range);
-%     [min_calib] = Process_data(ref_esd_calib_minx,fitresult,Fit_range);
-%     ref_esd_calib_maxx = log(2*((aa_ref_max*(pixsize_ref.^expo_ref_max)./pi).^0.5));
-%     [fitresult] = createFit1_minimisation_uvp(ref_esd_calib_maxx,ref_histo_mm2_vol_mean_log,0,Fit_range);
-%     [max_calib] = Process_data(ref_esd_calib_maxx,fitresult,Fit_range);
-%     
-%     hold on
-%     loglog(exp(ref_esd_calib_minx),exp(min_calib),'k--');
-%     hold on
-%     loglog(exp(ref_esd_calib_maxx),exp(max_calib),'k--');
-else
-    legend('reference fit','adjusted fit','ref range');
-end
-legend(uvp_ref,uvp_adj);
-axis([0.05 2 0.01 1000000]);
-xlabel('CALIBRATED ESD [mm]','fontsize',12);
-ylabel('ABUNDANCES [#/L]','fontsize',12);
-title(['FINAL ADJUSTMENTS'],'fontsize',14);
-
-% ------------------- part b ----------------------------------------------
 subplot(1,4,1)
 loglog((ref_area_mm2_calib),ref_histo_mm2_vol_mean,'ro');
 hold on
@@ -112,6 +81,37 @@ axis([0.001 2 0.01 1000000]);
 xlabel('CALIBRATED AREA [mm²]','fontsize',12);
 ylabel('ABUNDANCES [#/mm²/L]','fontsize',12);
 title(['CALIBRATED DATA'],'fontsize',14);
+
+% ------------------- part b ----------------------------------------------
+subplot(1,4,2)
+loglog(exp(ref_esd_calib_log),exp(datahistref),'r-');
+hold on
+loglog(exp(adj_esd_calib_log),exp(yresults_adj),'g--');
+if strcmp(uvp_ref,'uvp5-sn203')
+%     % -------------- AJout limites sur graphes si ref = sn203 -----------------
+%     aa_ref_min = exp(-5.974);
+%     expo_ref_min = 1.071;
+%     aa_ref_max = exp(-5.3);
+%     expo_ref_max = 1.203;
+%     ref_esd_calib_minx = log(2*((aa_ref_min*(pixsize_ref.^expo_ref_min)./pi).^0.5));
+%     [fitresult] = createFit1_minimisation_uvp(ref_esd_calib_minx,ref_histo_mm2_vol_mean_log,0,Fit_range);
+%     [min_calib] = Process_data(ref_esd_calib_minx,fitresult,Fit_range);
+%     ref_esd_calib_maxx = log(2*((aa_ref_max*(pixsize_ref.^expo_ref_max)./pi).^0.5));
+%     [fitresult] = createFit1_minimisation_uvp(ref_esd_calib_maxx,ref_histo_mm2_vol_mean_log,0,Fit_range);
+%     [max_calib] = Process_data(ref_esd_calib_maxx,fitresult,Fit_range);
+%     
+%     hold on
+%     loglog(exp(ref_esd_calib_minx),exp(min_calib),'k--');
+%     hold on
+%     loglog(exp(ref_esd_calib_maxx),exp(max_calib),'k--');
+else
+    legend('reference fit','adjusted fit','ref range');
+end
+legend(uvp_ref,uvp_adj);
+axis([0.05 2 0.01 1000000]);
+xlabel('CALIBRATED ESD [mm]','fontsize',12);
+ylabel('ABUNDANCES [#/L]','fontsize',12);
+title(['FINAL ADJUSTMENTS'],'fontsize',14);
 
 % ------------- Part c --------------------------------------------------
 % subplot(1,4,3)

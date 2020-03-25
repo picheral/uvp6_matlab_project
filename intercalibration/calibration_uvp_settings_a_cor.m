@@ -281,11 +281,11 @@ set(gca,'yscale','log');
 subplot(1,4,4)
 % ------------------- part 4 ----------------------------------------------
 % Profiles matching check
-plot(histopx_ref(:,4+Smin_px_ref)./histopx_ref(:,4)/volumeimageref, histopx_ref(:,1), 'r');
+semilogx((histopx_ref(:,6)+histopx_ref(:,7))./histopx_ref(:,4)/volumeimageref, histopx_ref(:,1), 'r');
 hold on
-plot(histopx_adj(:,4+Smin_px_adj)./histopx_adj(:,4)/volumeimage, histopx_adj(:,1), 'g');
-legend('ref profile','adj profile');
-title(['particles profiles'],'fontsize',14);
+semilogx((histopx_adj(:,6)+histopx_adj(:,7))./histopx_adj(:,4)/volumeimage, histopx_adj(:,1), 'g');
+legend(uvp_ref,uvp_adj);
+title(['particles profiles for 2pix+3pix'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
 ylabel('depth [m]','fontsize',12);
 
