@@ -157,6 +157,7 @@ matverti = [2.5:5:6000];
 calibration = [];
 process_calib = 'n';
 manual_filter = 'n';
+process_map = 'n';
 
 if strcmp(option_sel,'n')
     manual_filter = input('Filter each sequence for light failure detection (No, Auto, Manual : n/a/m ) ? ','s');
@@ -168,7 +169,7 @@ if strcmp(option_sel,'n')
         pasvert =      input('Input depth bin size (m) (default = 5) ');
         depth_offset =      input('Input depth_offset (m) (default = 1.2) ');
         matvert = input(['Input depth intervals (default is [2.5:5:6000]) ']);
-        
+        process_map = (['Process station map (n/y) ','s']);
         %         calibration = input('Adjust particule abundances and biovolume using calibration results (y/n) ? ','s');
         load_meta = input('Load metadata into base (y/n) ?  ','s');
         skip_histo = input('SKIP process again already processed histogramms (y/n) ?  ','s');
@@ -185,6 +186,7 @@ if strcmp(option_sel,'n')
     end
 end
 % -------------- Valeurs par défaut ---------------
+if isempty(process_map); process_map = 'n';end
 if isempty(manual_filter); manual_filter = 'n'; end
 if isempty(load_meta); load_meta = 'y'; end
 if isempty(skip_histo); skip_histo = 'y'; end
@@ -214,8 +216,8 @@ if strcmp(process_depth,'y')
     %cd('E:\Matlab65\toolbox\Marc\m_map\private');
     mmaplist = {'C:\Users\picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\m_map\private\' 'C:\Users\zooprocess partage\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\m_map\private' 'C:\Program Files\MATLAB\R2012a\toolbox\m_map\private\','E:\Documents\Matlab_toolbox\Marc\m_map\private\','D:\Documents\Matlab_toolbox\Marc\m_map\private\','C:\Program Files\MATLAB\R2009b\toolbox\Marc\m_map\private\' 'C:\Documents\Documents\Matlab_toolbox\Marc\m_map'};
     move_mmap = [];
-    for o = 1:numel(mmaplist);
-        if exist(char(mmaplist(o))) == 7;
+    for o = 1:numel(mmaplist)
+        if exist(char(mmaplist(o))) == 7
             move_mmap = ['cd(''',char(mmaplist(o)),''')'];
         end
     end
@@ -252,7 +254,7 @@ cd(drive);
 bb = dir(drive);
 index = 0;
 biglist={};
-for m = 1:numel(bb);
+for m = 1:numel(bb)
     project_folder = bb(m).name;
     if strncmp(project_folder,'uvp5_sn',7)
         filename = [bb(m).name,'\PID_process\Pid_results\Dat1_validated\category_list.txt'];
@@ -325,12 +327,12 @@ for bbb = 2 : numel(TXT_base);
     
     % ---------------- Existence de fichiers dans RESULTS
     results_dir = [project_folder,'\results\'];
-    if isdir(results_dir);
+    if isdir(results_dir)
         disp([results_dir,' folder exists.']);
         % --------- Existence de fichiers BRU
         bru_list = dir([results_dir, '*.bru']);
         bru_nofile = isempty(bru_list);
-        if bru_nofile == 0;
+        if bru_nofile == 0
             disp([num2str(size(bru_list,1)), ' bru files.']);
         else
             disp(['No bru files in ',results_dir]);
@@ -339,7 +341,7 @@ for bbb = 2 : numel(TXT_base);
         % --------- Existence de fichiers datfile.txt
         datfile_list = dir([results_dir, '*datfile.txt']);
         datfile_nofile = isempty(datfile_list);
-        if datfile_nofile == 0;
+        if datfile_nofile == 0
             disp([num2str(size(datfile_list,1)), ' datfile.txt files.']);
         else
             disp(['No datfile.txt files in ',results_dir]);
@@ -347,10 +349,10 @@ for bbb = 2 : numel(TXT_base);
         % --------- Existence d'une base dans results
         base_list = dir([results_dir, 'base*.mat']);
         base_nofile = isempty(base_list);
-        if base_nofile == 0;
+        if base_nofile == 0
             disp('----------- Base list --------------------------------');
             disp([num2str(size(base_list,1)),' database in ', results_dir]);
-            for i = 1:size(base_list);
+            for i = 1:size(base_list)
                 disp(['N°= ',num2str(i),' : ',base_list(i).name]);
             end
         else
@@ -364,7 +366,7 @@ for bbb = 2 : numel(TXT_base);
     
     % ---------- Existence de fichiers dans DAT1_validated
     validated_dir = [project_folder,'\PID_process\Pid_results\Dat1_validated\'];
-    if isdir(validated_dir);
+    if isdir(validated_dir)
         % Existence de fichiers dat1.txt
         dat1txtval_list = dir([validated_dir, '*dat1.txt']);
         dat1txt_nofile = isempty(dat1txtval_list);
@@ -374,7 +376,7 @@ for bbb = 2 : numel(TXT_base);
     
     % ---------- Existence de fichiers CTD
     ctdcnv_dir = [project_folder,'\ctd_data_cnv\'];
-    if isdir(ctdcnv_dir);
+    if isdir(ctdcnv_dir)
         % Existence de fichiers cnv
         cnv_list = dir([validated_dir, '*.cnv']);
         cnv_nofile = isempty(cnv_list);
@@ -385,7 +387,7 @@ for bbb = 2 : numel(TXT_base);
     % ---------- Existence de fichiers RAW
     disp('---------------------------------------------------------------------');
     raw_dir = [project_folder,'\raw\'];
-    if isdir(raw_dir);
+    if isdir(raw_dir)
         % Existence de fichiers raw
         raw_list = dir([raw_dir]);
         raw_nofile = isempty(raw_list);
@@ -393,7 +395,7 @@ for bbb = 2 : numel(TXT_base);
         raw_nofile = 1;
     end
     
-    if raw_nofile == 0;
+    if raw_nofile == 0
         rawzip_dir = [project_folder,'\raw\HDR*.zip'];
         rawzip_list = dir(rawzip_dir);
         hdrfolder = size(raw_list,1)-size(rawzip_list,1)-2;
@@ -411,10 +413,10 @@ for bbb = 2 : numel(TXT_base);
     if strcmp(calibration,'y'); base_new = ['baseuvp5_',project_name,'_cal'];end
     
     % ----------- MAJ possible si une base existe ----------
-    if ((isempty(create_base)|| strcmp(create_base,'u'))&& base_nofile == 0);
+    if ((isempty(create_base)|| strcmp(create_base,'u'))&& base_nofile == 0)
         % -------Update database------
         create_base = 'u';
-        if ~strcmp(general_process,'b');
+        if ~strcmp(general_process,'b')
             if numel(base_list) == 1
                 base_selected = 1;
             else
@@ -444,7 +446,7 @@ for bbb = 2 : numel(TXT_base);
     %% ++++++++++++++++++ Création ou mise à jour de la base +++++++++++++++++
     
     %% --------------- Mise à jour des metadata à partir du fichier header ----------
-    if strcmp(load_meta,'y');
+    if strcmp(load_meta,'y')
         % Fonction de lecture des entetes
         [base compteur ligne] = uvp5_main_process_2014_metadata(base,raw_dir,meta_dir,meta_file,create_base,results_dir);
     else
@@ -593,7 +595,12 @@ for bbb = 2 : numel(TXT_base);
     disp('-------------------------------------------------------');
     disp('--------------- PROCESSING DATFILES -------------------');
     for fichier=1:ligne
-        base = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset);
+        [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib);
+        base(fichier).datfile.image = Image;
+        base(fichier).datfile.pressure = Pressure/10;
+        base(fichier).datfile.temp_interne = Temp_interne;
+        base(fichier).datfile.peltier = Peltier;
+        base(fichier).datfile.temp_cam = Temp_cam;
     end
     
     %% ------------ Bruit UVP5hd --------------------------------------
@@ -646,7 +653,9 @@ for bbb = 2 : numel(TXT_base);
     uvp5_main_process_2014_maj_metafile(base,meta_dir,meta_file);
     
     %% ++++++++++++++++++++++++++++ PLOT CARTE STN Mission ++++++++++++++++++++++++++++++++++
-    uvp5_main_process_2014_plot_cruise_map(base,results_dir);
+    if strcmpp(process_map,'y')
+        uvp5_main_process_2014_plot_cruise_map(base,results_dir);
+    end
     
     % -------------- Graphe des temperatures / pressure ------------------------
     uvp5_main_process_2014_print_temp_depth(base,results_dir);
