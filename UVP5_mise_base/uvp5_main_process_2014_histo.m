@@ -164,35 +164,45 @@ elseif process_histo == 1
         
         %% ------------ Data quality check ----------------------------
         % data validation
-        if manual_filter == 'y'
+        validation = 'ok';
+        base(fichier).reject_img_percent = 0;
+        if manual_filter == 'm'
             disp('------------------------------------------------')
             disp('Validation of the data...')
-            disp('depth filter : 10m')
             % --------- Affichage pour déterminer si le profil mérite d'être filtré
-            validation = DataValidation(listecor, results_dir, base(fichier).profilename);
-            
-            % filtering of bad data points
-            if validation == 'n'
-                % filtering
-                disp('------------------------------------------------')
-                disp('Filtering of bad data points...')
-%                 [im_filtered, data_filtered, movmean_window, threshold_percent] = DataFiltering(Image, Part, Image(Pressure>10), Part(Pressure>10), tta);
-                [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename);
-                disp(['movmean_window = ', num2str(movmean_window)])
-                disp(['threshold_percent = ', num2str(threshold_percent*100)])
-                disp(['Number of rejected images = ',num2str(numel(part_util_filtered_rejected))])
-                disp(['Percentage of rejected images = ',num2str(numel(100*numel(part_util_filtered_rejected)/numel(listecor(:,1))))])
-
-                % flag bad data points (keeping pressure flag)
-                Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);
-                listecor(:,3) = Flag;
-            else
-                disp('------------------------------------------------')
-                disp('Data are good. NO data filter has been applied')
-            end
-            clf;
-            close all
+            validation = DataValidation(listecor, results_dir, base(fichier).profilename); 
         end
+        
+        % filtering of bad data points
+        if strcmp(validation, 'n') || strcmp(manual_filter , 'a')
+            % filtering
+            disp('------------------------------------------------')
+            disp('Filtering of bad data points...')
+            %                 [im_filtered, data_filtered, movmean_window, threshold_percent] = DataFiltering(Image, Part, Image(Pressure>10), Part(Pressure>10), tta);
+            [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
+            disp(['Movmean_window = ', num2str(movmean_window)])
+            disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+            disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+            dd = find(listecor(:,3) == 1);
+            disp(['Total of descent images = ',num2str(numel(dd))])
+            disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
+            disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
+            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+            
+            % flag bad data points (keeping pressure flag)
+            Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);
+            
+            listecor(:,3) = Flag;
+            base(fichier).reject_img_percent = 100*numel(part_util_filtered_rejected)/numel(listecor(:,1));
+            base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
+        else
+            disp('------------------------------------------------')
+            disp('NO data filter has been applied')
+            
+        end
+        clf;
+        close all
+       
                 
         %% ---------------- Selection sur le BRU -------------------
         % ----------- BRU : Corriger pour le N° d'image OK ! -------------------

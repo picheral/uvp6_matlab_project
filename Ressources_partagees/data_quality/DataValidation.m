@@ -58,6 +58,6 @@ validation = input('Is the data good ? ([y]/n) ', 's');
 if not(strcmp(validation, 'n'))
     validation = 'y';
 end
-clf(fig);
+% clf(fig);
 
 end
