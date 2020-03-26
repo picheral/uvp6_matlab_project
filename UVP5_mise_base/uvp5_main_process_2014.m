@@ -595,8 +595,8 @@ for bbb = 2 : numel(TXT_base);
     disp('-------------------------------------------------------');
     disp('--------------- PROCESSING DATFILES -------------------');
     for fichier=1:ligne
-        [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib);
-        base(fichier).datfile.image = Image;
+        [Imagelist, Pressure, Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib);
+        base(fichier).datfile.image = Imagelist;
         base(fichier).datfile.pressure = Pressure/10;
         base(fichier).datfile.temp_interne = Temp_interne;
         base(fichier).datfile.peltier = Peltier;

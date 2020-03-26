@@ -2,7 +2,7 @@
 % Picheral, 2017/03, 2020/03/25
 
 
-function [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib)
+function [Imagelist Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib)
 
 % ---------- Chargement _datfile.txt -------------
 datfile=[results_dir,char(base(fichier).profilename), '_datfile.txt'];
@@ -14,7 +14,7 @@ else
     % ------------- Chargement si pas déjà dans la base -----------
     if isfield(base(fichier),'datfile')
         %         if ~isfield(base(fichier).datfile,'temp_interne')
-        %             chargement = 1;
+                    chargement = 1;
         %         end
     else
         % ---------- On force le chargement ---------- (2020/03/25)
@@ -29,7 +29,7 @@ if chargement == 1
     fid=fopen(datfile);
     compteur = 1;
     Pressure = [];
-    Image = [];
+    Imagelist = [];
     Flag = [];
     Temp_interne = [];
     Peltier = [];
@@ -55,7 +55,7 @@ if chargement == 1
             flag = 1;
         end
         Pressure = [Pressure;pressure];
-        Image = [Image;image];
+        Imagelist = [Imagelist;image];
         Flag = [Flag;flag];
         Part = [Part;str2double(part)];
         Temp_interne = [Temp_interne temp_interne];
@@ -67,8 +67,8 @@ if chargement == 1
     end             % end of loop to open one file
     fclose(fid);
     Temp_interne = Temp_interne';
-    %     liste = [Image Pressure/10 Flag];
-    %     base(fichier).datfile.image = Image;
+    %     liste = [Imagelist Pressure/10 Flag];
+    %     base(fichier).datfile.image = Imagelist;
     %     base(fichier).datfile.pressure = Pressure/10;
     %     base(fichier).datfile.temp_interne = Temp_interne;
     %     base(fichier).datfile.peltier = Peltier;
@@ -85,15 +85,15 @@ if chargement == 1
     
     % ------------- DERNIERE image ----------------------------
     if strcmp(base(fichier).profilename,'tara_123_00_a'); imglast = 4620;end
-    gg = find(Image == imglast);
-    if isempty(gg);               gg = numel(Image);    end
+    gg = find(Imagelist == imglast);
+    if isempty(gg);               gg = numel(Imagelist);    end
     
     % Profondeur premiere image OK
     % ----------- Corriger pour le N° d'image OK ! -------------------
-    kk = find(Image >= imgprem);
+    kk = find(Imagelist >= imgprem);
     
     % ---------- Création de liste qui contient tout ce qui est utile -
-    liste = [ Image(kk(1):gg(end)) Pressure(kk(1):gg(end))/10 Flag(kk(1):gg(end)) Part(kk(1):gg(end)) ];
+    liste = [ Imagelist(kk(1):gg(end)) Pressure(kk(1):gg(end))/10 Flag(kk(1):gg(end)) Part(kk(1):gg(end)) ];
     
     %         zimgprem = liste(1,2);
     %         disp(['Profondeur DEB = ',num2str(zimgprem),'   First Img = ',num2str(imgprem),'   Last Img = ',num2str(imglast)]);
