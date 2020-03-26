@@ -36,10 +36,19 @@ press_util = listecor(aa,2);
 % part_util = listecor(:,4);
 % press_util = listecor(:,2);
 
-movmean_window = 25;
-threshold_percent = 0.8;
+% -------------------- Selection méthode ----------------
+method = 'jo';
+
+if strcmp(method,'c')
+    movmean_window = 25;
+    threshold_percent = 0.8;
+elseif strcmp(method,'jo')
+    mult = 0.6; % multiplier of the quantile under which points are considered outliers
+    movmean_window = 16;
+    threshold_percent = 0.75;
+end
 filter_is_good = 'n';
-disp('bad data points are under the moving average minus an offset')
+% disp('bad data points are under the moving average minus an offset')
 while not(strcmp(filter_is_good, 'y'))
     % ---------- Cas ajustage manuel ----------------------
     if manual_filter == 'm'
@@ -53,14 +62,34 @@ while not(strcmp(filter_is_good, 'y'))
             threshold_percent = threshold_offset_entry/100;
         end
     end
-    %% moving stats and filter data
+    
+    % ------- moyenne mobile ----------------------------------
     mov_mean_util = movmean(part_util, movmean_window);
-    part_util_filtered = part_util(part_util>threshold_percent*mov_mean_util);
-    press_util_filtered = press_util(part_util>threshold_percent*mov_mean_util);
-    im_util_filtered = image_numbers_util(part_util>threshold_percent*mov_mean_util);
-    part_util_filtered_rejected = part_util(part_util<=threshold_percent*mov_mean_util);
-    im_util_filtered_rejected = image_numbers_util(part_util<=threshold_percent*mov_mean_util);
-    press_util_filtered_rejected = press_util(part_util<=threshold_percent*mov_mean_util);
+    
+    if strcmp(method,'c')
+        %% ------ moving stats and filter data (Camille/Fabien) --------
+        part_util_filtered = part_util(part_util>threshold_percent*mov_mean_util);
+        press_util_filtered = press_util(part_util>threshold_percent*mov_mean_util);
+        im_util_filtered = image_numbers_util(part_util>threshold_percent*mov_mean_util);
+        part_util_filtered_rejected = part_util(part_util<=threshold_percent*mov_mean_util);
+        im_util_filtered_rejected = image_numbers_util(part_util<=threshold_percent*mov_mean_util);
+        press_util_filtered_rejected = press_util(part_util<=threshold_percent*mov_mean_util);
+    elseif strcmp(method,'jo')
+        %% ----- methode JO Irisson ------------------------------------
+        % prepare storage for the quantile
+        n = size(part_util,1);
+        q = nan(n,1);
+        % compute the quantile in a moving window
+        for i=1:n-movmean_window
+            q(i) = quantile(mov_mean_util(i:(i+movmean_window)), threshold_percent);
+        end
+        part_util_filtered = part_util(part_util >= mult * q);
+        press_util_filtered = press_util(part_util >= mult * q);
+        im_util_filtered = image_numbers_util(part_util >= mult * q);
+        part_util_filtered_rejected =            part_util(part_util < mult * q);
+        im_util_filtered_rejected =     image_numbers_util(part_util < mult * q);
+        press_util_filtered_rejected = press_util(part_util < mult * q);
+    end
     
     %% ---------------------- plots ----------------
     fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 600 600]);
@@ -69,7 +98,7 @@ while not(strcmp(filter_is_good, 'y'))
     plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
-    plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
+%     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
     
     %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
@@ -99,6 +128,8 @@ while not(strcmp(filter_is_good, 'y'))
     end
     clf(fig)
 end
+
+
 end
 
 

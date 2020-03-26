@@ -8,7 +8,7 @@ function [base ] = uvp5_main_process_2014_histo(base,skip_histo,fichier,recpx,uv
 %% ++++++++++++++++++ Vecteur de classes de taille en Biovolume (mm3/L) ++++++++++++++++++++++
 %     mini=1*10^-3;       % in mm
 %     maxi=30;            % in mm
-%     pas=2^(1/3); 
+%     pas=2^(1/3);
 [classe0,taille0,medi0,minor,maxor,step]=pasvar_marc;%(mini,maxi,pas);            % Choix du pas variable (echelle octaves detaillee)
 [classe0y classe0x]=size(classe0);
 
@@ -85,81 +85,84 @@ elseif process_histo == 1
         imglast = (base(fichier).lastimage);
         minpixelarea = min(file(:,colsurf));
         
-        %% ------------- Chargement du fichier immersions issu du DAT ------------
-        name= [char(base(fichier).profilename) '_datfile.txt'];
-        disp(['Loading ', name])
-        fid=fopen(tta);
-        compteur = 1;
-        Pressure = [];
-        Image = [];
-        Flag = [];
-        Part = [];
+        %% ------------- Chargement du fichier immersions issu du DAT ------------        
+        %         name= [char(base(fichier).profilename) '_datfile.txt'];
+        %         disp(['Loading ', name])
+        %         fid=fopen(tta);
+        %         compteur = 1;
+        %         Pressure = [];
+        %         Image = [];
+        %         Flag = [];
+        %         Part = [];
+        %
+        %         pressure_prev = 0;
+        %
+        %         while 1                     % loop on the number of lines of the file
+        %             tline = fgetl(fid);
+        %             if ~ischar(tline), break, end
+        %             dotcom=findstr(tline,';');  % find the end of petit gros column
+        %             image = tline(1:dotcom(1)-1);
+        %             pressure = tline(dotcom(2)+1:dotcom(3)-1);
+        %             part = tline(dotcom(14)+1:dotcom(15)-1);
+        %
+        %             % -------- Correction hauteur UVP5 ----------------
+        %             pressure = str2num(pressure) + depth_offset * 10;
+        %             %                 disp(['Image=',image,'---pressure=',pressure]);
+        %
+        %             % ----------------- Codage descente --------------------
+        %             %             if pressure_prev > pressure   % descente ou meme profondeur ! (>= ajouté 20120525)
+        % %             if pressure_prev >= pressure   % descente ou meme profondeur ! (>= ajouté 20120525)
+        %             if pressure_prev > pressure % Corrigé 2019/10/06
+        %                 flag = 0;
+        %             else
+        %                 flag = 1;
+        %             end
+        %             Pressure = [Pressure;pressure];
+        %             Image = [Image;str2num(image)];
+        %             Flag = [Flag;flag];
+        %             Part = [Part;str2double(part)];
+        %             compteur=compteur+1;
+        %             if compteur == 1000*floor(compteur/1000)
+        %                 disp(['line = ',num2str(compteur)]);
+        %             end
+        %             pressure_prev = pressure;
+        %         end             % end of loop to open one file
+        %         fclose(fid);
         
-        pressure_prev = 0;
-        
-        while 1                     % loop on the number of lines of the file
-            tline = fgetl(fid);
-            if ~ischar(tline), break, end
-            dotcom=findstr(tline,';');  % find the end of petit gros column
-            image = tline(1:dotcom(1)-1);
-            pressure = tline(dotcom(2)+1:dotcom(3)-1);
-            part = tline(dotcom(14)+1:dotcom(15)-1);
-            
-            % -------- Correction hauteur UVP5 ----------------
-            pressure = str2num(pressure) + depth_offset * 10;
-            %                 disp(['Image=',image,'---pressure=',pressure]);
-            
-            % ----------------- Codage descente --------------------
-            %             if pressure_prev > pressure   % descente ou meme profondeur ! (>= ajouté 20120525)
-%             if pressure_prev >= pressure   % descente ou meme profondeur ! (>= ajouté 20120525)
-            if pressure_prev > pressure % Corrigé 2019/10/06
-                flag = 0;
-            else
-                flag = 1;
-            end
-            Pressure = [Pressure;pressure];   
-            Image = [Image;str2num(image)];
-            Flag = [Flag;flag];
-            Part = [Part;str2double(part)];
-            compteur=compteur+1;
-            if compteur == 1000*floor(compteur/1000)
-                disp(['line = ',num2str(compteur)]);
-            end
-            pressure_prev = pressure;
-        end             % end of loop to open one file
-        
-        % ------------- Profils pseudo horizontaux pour calibrage --------
-        if strcmp(process_calib,'y')
-                Pressure = [1:numel(Pressure)]';
-                Flag = ones(numel(Pressure),1);
-        end
-        
-        fclose(fid);
-               
-        % ------------- DERNIERE image ----------------------------
-        if strcmp(base(fichier).profilename,'tara_123_00_a'); imglast = 4620;end
-        gg = find(Image == imglast);
-        if isempty(gg);               gg = numel(Image);    end
-        
-        % Profondeur premiere image OK
-        % ----------- Corriger pour le N° d'image OK ! -------------------
-        kk = find(Image >= imgprem);
-        
-        % ---------- Création de liste qui contient tout ce qui est utile -
-        liste = [ Image(kk(1):gg(end)) Pressure(kk(1):gg(end))/10 Flag(kk(1):gg(end)) Part(kk(1):gg(end)) ];
-        
-        zimgprem = liste(1,2);
+        %         % ------------- Profils pseudo horizontaux pour calibrage --------
+        %         if strcmp(process_calib,'y')
+        %                 Pressure = [1:numel(Pressure)]';
+        %                 Flag = ones(numel(Pressure),1);
+        %         end
+        %
+        %         % ------------- DERNIERE image ----------------------------
+        %         if strcmp(base(fichier).profilename,'tara_123_00_a'); imglast = 4620;end
+        %         gg = find(Image == imglast);
+        %         if isempty(gg);               gg = numel(Image);    end
+        %
+        %         % Profondeur premiere image OK
+        %         % ----------- Corriger pour le N° d'image OK ! -------------------
+        %         kk = find(Image >= imgprem);
+        %
+        %         % ---------- Création de liste qui contient tout ce qui est utile -
+        %         liste = [ Image(kk(1):gg(end)) Pressure(kk(1):gg(end))/10 Flag(kk(1):gg(end)) Part(kk(1):gg(end)) ];
+        %
+
+        %         %              imgprem = 1;
+        %
+        %         % ----------- Corriger pour Zmax ---------------------------------
+        %         zmax = max(liste(:,2));
+        %         gg = find(liste(:,2) == zmax);
+        %
+        %         %% ----------- On travaille maintenant avec listcor -----------------------
+        %         listecor = liste(1:gg(1),:);
+        %        
+        % -------------- Fonction de chargement et filtrage du DAT entre firstimage et zmax ainsi que descente --------    
+        [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib);
+        zimgprem = listecor(1,2);
         disp(['Profondeur DEB = ',num2str(zimgprem),'   First Img = ',num2str(imgprem),'   Last Img = ',num2str(imglast)]);
-        %              imgprem = 1;
-        
-        % ----------- Corriger pour Zmax ---------------------------------
-        zmax = max(liste(:,2));
-        gg = find(liste(:,2) == zmax);
-        
-        %% ----------- On travaille maintenant avec listcor -----------------------
-        listecor = liste(1:gg(1),:);
-                
         [listesize c]=size(listecor);
+        zmax = max(listecor(:,2));
         disp(['Profondeur MAX = ',num2str(zmax)]);
         
         %% ------------ Data quality check ----------------------------
@@ -170,7 +173,7 @@ elseif process_histo == 1
             disp('------------------------------------------------')
             disp('Validation of the data...')
             % --------- Affichage pour déterminer si le profil mérite d'être filtré
-            validation = DataValidation(listecor, results_dir, base(fichier).profilename); 
+            validation = DataValidation(listecor, results_dir, base(fichier).profilename);
         end
         
         % filtering of bad data points
@@ -178,23 +181,22 @@ elseif process_histo == 1
             % filtering
             disp('------------------------------------------------')
             disp('Filtering of bad data points...')
-            %                 [im_filtered, data_filtered, movmean_window, threshold_percent] = DataFiltering(Image, Part, Image(Pressure>10), Part(Pressure>10), tta);
             [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
-            disp(['Movmean_window = ', num2str(movmean_window)])
-            disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-            disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
-            dd = find(listecor(:,3) == 1);
-            disp(['Total of descent images = ',num2str(numel(dd))])
-            disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
-            disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+%             disp(['Movmean_window = ', num2str(movmean_window)])
+%             disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+%             disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+%             dd = find(listecor(:,3) == 1);
+%             disp(['Total of descent images = ',num2str(numel(dd))])
+%             disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
+%             disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
+%             disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
             
             % flag bad data points (keeping pressure flag)
             Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);
-            
             listecor(:,3) = Flag;
+            
             base(fichier).reject_img_percent = 100*numel(part_util_filtered_rejected)/numel(listecor(:,1));
-            base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
+%             base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
         else
             disp('------------------------------------------------')
             disp('NO data filter has been applied')
@@ -202,8 +204,8 @@ elseif process_histo == 1
         end
         clf;
         close all
-       
-                
+        
+        
         %% ---------------- Selection sur le BRU -------------------
         % ----------- BRU : Corriger pour le N° d'image OK ! -------------------
         kk = find(file(:,1) == imgprem);
@@ -474,122 +476,122 @@ elseif process_histo == 1
                 histocumred(i,j)=histocumred(i,j-1)+histocired(j);
             end
         end
-%         if horizontal == 0
-            %-----------------------------------------------------------------------------------------------------------------------------
-            %% Affichage de la figure, tracé à partir des immersions moyennes réelles des blocs
-            scrsz = get(0,'ScreenSize');
-            fig = figure('numbertitle','off','name',strcat('UVP5 ',char(base(fichier).histfile)),'Position',[10 50 scrsz(3)/2.2 scrsz(4)-150]);
-            couleur=['bk'];
-            yaxemax=0;
-            yaxemin=0;
-            titre=(['RAW file : ',char(base(fichier).histfile),'   CAST : ',char(base(fichier).profilename)]);
-            
-            gg = find(titre == '_');
-            titre(gg) = ' ';
-            yaxemaxvit=max(yaxemax,max(listecor(:,2)));
-            yaxemax=yaxemaxvit;
-            profmin=-100*ceil(yaxemax/100);
-            
-            % Trace du profil de descente
-            subplot (2,3,1)
-            sampleratio=[];
-            hh=plot(liste(:,1),-liste(:,2),'b');
-            hold on
-            hh=plot(listecor(:,1),-listecor(:,2),'r');
-            xlabel(['Image nb'],'fontsize',8);
-            ylabel(['Depth (m)'],'fontsize',8);
-            xmax=1000*ceil(max(liste(:,1))/1000);
+        %         if horizontal == 0
+        %-----------------------------------------------------------------------------------------------------------------------------
+        %% Affichage de la figure, tracé à partir des immersions moyennes réelles des blocs
+        scrsz = get(0,'ScreenSize');
+        fig = figure('numbertitle','off','name',strcat('UVP5 ',char(base(fichier).histfile)),'Position',[10 50 scrsz(3)/2.2 scrsz(4)-150]);
+        couleur=['bk'];
+        yaxemax=0;
+        yaxemin=0;
+        titre=(['RAW file : ',char(base(fichier).histfile),'   CAST : ',char(base(fichier).profilename)]);
+        
+        gg = find(titre == '_');
+        titre(gg) = ' ';
+        yaxemaxvit=max(yaxemax,max(listecor(:,2)));
+        yaxemax=yaxemaxvit;
+        profmin=-100*ceil(yaxemax/100);
+        
+        % Trace du profil de descente
+        subplot (2,3,1)
+        sampleratio=[];
+        hh=plot(liste(:,1),-liste(:,2),'b');
+        hold on
+        hh=plot(listecor(:,1),-listecor(:,2),'r');
+        xlabel(['Image nb'],'fontsize',8);
+        ylabel(['Depth (m)'],'fontsize',8);
+        xmax=1000*ceil(max(liste(:,1))/1000);
+        axis([0 xmax profmin 0]);
+        set(gca,'xlim',[0 xmax],'fontsize',8);
+        text(0,-.1*profmin,titre,'color',couleur(1),'fontsize',15);
+        
+        % Trace du vol / bloc
+        somme = sum(histonb(:,3))*volume/1000;
+        subplot (2,3,2)
+        sampleratio=[];
+        hh=plot(volume*histonb(:,3)/pasvert,-histonb(:,2),'k');
+        xlabel(['Vol ech / m (L)'],'fontsize',8);
+        xmax=10*ceil(max(volume*histonb(:,3)/pasvert)/10);
+        axis([0 xmax profmin 0]);
+        text(0.3*xmax,0.5*profmin,['S= ',num2str(somme) ' m3'],'color','r','fontsize',8);
+        set(gca,'xlim',[0 xmax],'fontsize',8);
+        
+        maxpx=max(find(median(histopx(:,5:end)',2)==max(median(histopx(:,5:25)',2))));
+        
+        % Trace des spectres bruts detailles (classes par classes de biovol)
+        subplot (2,3,3)
+        semilogy(histonb(:,4:end)','b')
+        % Plot du spectre median
+        hold on
+        plot(median(histonb(:,4:end)',2),'m','linewidth',2)
+        axis([0 ccbv .0001 1000]);
+        set(gca,'fontsize',8);
+        if strcmp(calibration,'y');
+            xlabel(['Spectra (#/Classe) (calib)'],'fontsize',8);
+        else
+            xlabel(['Spectra (#/Classe)'],'fontsize',8);
+        end
+        ylabel(['Particules (#/BvClass)'],'fontsize',8);
+        
+        % Tracé des profils verticaux detailles des nombres/L
+        
+        x3 = nansum(base(fichier).hisnb(:,4:13),2);
+        x4 = nansum(base(fichier).hisnb(:,14:16),2);
+        x5 = nansum(base(fichier).hisnb(:,17:20),2);
+        z_hist = -1 * base(fichier).hisnb(:,2);
+        
+        subplot (2,3,4)
+        hh=plot(x3,z_hist,'b');
+        xlabel(['Particules 0.06-0.53 mm esd (#/L)'],'fontsize',8);
+        ylabel(['Depth (m)'],'fontsize',8);
+        xmax = 500 * ceil(max(x3)/500);
+        axis([0 xmax profmin 0]);
+        set(gca,'fontsize',8);
+        % Ecriture du nom de fichier source
+        texte7=[' Data file : ' char(base(fichier).histfile) '.bru'];
+        text(0.01,profmin*1.15,texte7 ,'color',couleur(1),'fontsize',12)
+        
+        subplot (2,3,5)
+        hh=plot(x4,z_hist,'b');
+        xlabel(['Particules 0.53-1.06 mm esd (#/L)'],'fontsize',8);
+        ylabel(['Depth (m)'],'fontsize',8);
+        if ~isnan(x4)
+            %                 xmax = min([ceil(max(x4)), 1000]);
+            xmax = 500 * ceil(max(x4)/500);
+            xmax = max([xmax, 1]);
             axis([0 xmax profmin 0]);
-            set(gca,'xlim',[0 xmax],'fontsize',8);
-            text(0,-.1*profmin,titre,'color',couleur(1),'fontsize',15);
-            
-            % Trace du vol / bloc
-            somme = sum(histonb(:,3))*volume/1000;
-            subplot (2,3,2)
-            sampleratio=[];
-            hh=plot(volume*histonb(:,3)/pasvert,-histonb(:,2),'k');
-            xlabel(['Vol ech / m (L)'],'fontsize',8);
-            xmax=10*ceil(max(volume*histonb(:,3)/pasvert)/10);
-            axis([0 xmax profmin 0]);
-            text(0.3*xmax,0.5*profmin,['S= ',num2str(somme) ' m3'],'color','r','fontsize',8);
-            set(gca,'xlim',[0 xmax],'fontsize',8);
-            
-            maxpx=max(find(median(histopx(:,5:end)',2)==max(median(histopx(:,5:25)',2))));
-            
-            % Trace des spectres bruts detailles (classes par classes de biovol)
-            subplot (2,3,3)
-            semilogy(histonb(:,4:end)','b')
-            % Plot du spectre median
-            hold on
-            plot(median(histonb(:,4:end)',2),'m','linewidth',2)
-            axis([0 ccbv .0001 1000]);
-            set(gca,'fontsize',8);
-            if strcmp(calibration,'y');
-                xlabel(['Spectra (#/Classe) (calib)'],'fontsize',8);
-            else
-                xlabel(['Spectra (#/Classe)'],'fontsize',8);
-            end
-            ylabel(['Particules (#/BvClass)'],'fontsize',8);
-            
-            % Tracé des profils verticaux detailles des nombres/L
-            
-            x3 = nansum(base(fichier).hisnb(:,4:13),2);
-            x4 = nansum(base(fichier).hisnb(:,14:16),2);
-            x5 = nansum(base(fichier).hisnb(:,17:20),2);
-            z_hist = -1 * base(fichier).hisnb(:,2);
-            
-            subplot (2,3,4)
-            hh=plot(x3,z_hist,'b');
-            xlabel(['Particules 0.06-0.53 mm esd (#/L)'],'fontsize',8);
-            ylabel(['Depth (m)'],'fontsize',8);
-            xmax = 500 * ceil(max(x3)/500);
-            axis([0 xmax profmin 0]);
-            set(gca,'fontsize',8);
-            % Ecriture du nom de fichier source
-            texte7=[' Data file : ' char(base(fichier).histfile) '.bru'];
-            text(0.01,profmin*1.15,texte7 ,'color',couleur(1),'fontsize',12)
-            
-            subplot (2,3,5)
-            hh=plot(x4,z_hist,'b');
-            xlabel(['Particules 0.53-1.06 mm esd (#/L)'],'fontsize',8);
-            ylabel(['Depth (m)'],'fontsize',8);
-            if ~isnan(x4)
-%                 xmax = min([ceil(max(x4)), 1000]);
-                xmax = 500 * ceil(max(x4)/500);
-                xmax = max([xmax, 1]);
-                axis([0 xmax profmin 0]);
-            end
-            set(gca,'fontsize',8);
-            
-            subplot (2,3,6)
-            hh=plot(x5,z_hist,'b');
-            xlabel(['Particules 1.06-2.66 mm esd (#/L)'],'fontsize',8);
-            ylabel(['Depth (m)'],'fontsize',8);
-            if ~isnan(x5)
-                xmax = min([0.1 * ceil(max(x5)/0.1), 1000]);
-                axis([0 1 profmin 0]);
-            end
-            set(gca,'fontsize',8);
-            
-            % ----------------- Sauvegarde IMAGE --------------------------------
-            orient tall
-            saveas(fig,[results_dir,'cast_',char(base(fichier).profilename),'.png']);
-            close(fig);
-            % Sauvegarde du diametre equivalent pour laquelle il y a le plus de particules
-            maxsm=2*((aa*(maxpx.^exp)./pi).^0.5);                       % ESD
-            maxsm=.001*ceil(maxsm*1000);                                % Arrondi
-            % Ajout des informations sur les classes
-            base(fichier).minor =                     minor;
-            base(fichier).maxor =                     maxor;
-            base(fichier).step =                      step;
-            base(fichier).minorred =                  minorred;
-            base(fichier).maxorred =                  maxorred;
-            base(fichier).stepred =                   stepred;
-            base(fichier).maxesd0 =                   maxsm;
-            base(fichier).zimgprem0 =                 zimgprem;
-            base(fichier).nbimgok0 =                  nbimgprocessed;
-            base(fichier).minpixelsurf0 =             minpixelarea;
-%         end
+        end
+        set(gca,'fontsize',8);
+        
+        subplot (2,3,6)
+        hh=plot(x5,z_hist,'b');
+        xlabel(['Particules 1.06-2.66 mm esd (#/L)'],'fontsize',8);
+        ylabel(['Depth (m)'],'fontsize',8);
+        if ~isnan(x5)
+            xmax = min([0.1 * ceil(max(x5)/0.1), 1000]);
+            axis([0 1 profmin 0]);
+        end
+        set(gca,'fontsize',8);
+        
+        % ----------------- Sauvegarde IMAGE --------------------------------
+        orient tall
+        saveas(fig,[results_dir,'cast_',char(base(fichier).profilename),'.png']);
+        close(fig);
+        % Sauvegarde du diametre equivalent pour laquelle il y a le plus de particules
+        maxsm=2*((aa*(maxpx.^exp)./pi).^0.5);                       % ESD
+        maxsm=.001*ceil(maxsm*1000);                                % Arrondi
+        % Ajout des informations sur les classes
+        base(fichier).minor =                     minor;
+        base(fichier).maxor =                     maxor;
+        base(fichier).step =                      step;
+        base(fichier).minorred =                  minorred;
+        base(fichier).maxorred =                  maxorred;
+        base(fichier).stepred =                   stepred;
+        base(fichier).maxesd0 =                   maxsm;
+        base(fichier).zimgprem0 =                 zimgprem;
+        base(fichier).nbimgok0 =                  nbimgprocessed;
+        base(fichier).minpixelsurf0 =             minpixelarea;
+        %         end
     else
         disp(['File ',char(base(fichier).profilename),' (bru or _datfile) does not exist in ',char(results_dir)]);
     end                                                 % Fin du test sur l'existence du fichier BRU et LISTE
