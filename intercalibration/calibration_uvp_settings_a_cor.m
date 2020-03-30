@@ -2,15 +2,22 @@
 % Picheral Lombard 2017/11
 % Updated 2019/06/11
 
-function [Fit_range] = calibration_uvp_settings_a_cor
+function [process_params, ref_cast, adj_cast] = calibration_uvp_settings_a_cor(ref_cast, adj_cast, ref_base, adj_base)
 
-global project_folder_ref results_dir_ref Fit_range Smin_px_adj Smin_px_ref esd_min adj_histo_mm2 adj_vol_ech ref_esd_calib Smax_px_ref pixsize_ref Smax_px_adj pixsize_adj...
-    adj_histo_mm2_vol_mean ref_esd_calib_log ref_histo_mm2_vol_mean_red_log esd_max fit_type EC_factor pix_ref pix_adj X0 rec_ref rec_adj base_ref base_adj aa_data_ref expo_data_ref img_vol_data_ref...
-    img_vol_data_adj ref_histo_mm2_vol_mean ref_histo_ab ref_esd_x adj_histo_ab adj_esd_x ref_histo_ab_mean_red adj_histo_ab_mean_red uvp_ref uvp_adj adj_histo_px ref_norm_vect adj_norm_vect...
-    ref_histo_ab_mean_red_norm adj_histo_ab_mean_red_norm ref_norm_vect_calib ref_histo_ab_mean_red_norm_calib aa_ref expo_ref ref_esd_calib_all ref_area_mm2_calib esd_vect_ecotaxa...
-    depth
+% ----------------- used variables  ---------------------------------------
+project_folder_ref = ref_cast.project_folder;
+results_dir_ref = ref_cast.results_dir;
+uvp_ref = ref_cast.uvp;
+pix_ref = ref_cast.pix;
+img_vol_data_ref = ref_cast.img_vol_data;
+aa_data_ref = ref_cast.aa_data;
+expo_data_ref = ref_cast.expo_data;
 
+uvp_adj = adj_cast.uvp;
+pix_adj = adj_cast.pix;
+img_vol_data_adj = adj_cast.img_vol_data;
 
+% --------------- process params user inputs  -----------------------------
 % fit_type = 'poly6';
 EC_factor = 0.01;
 % pixel_min = input('Enter value of first pixel class (default = 1) ');
@@ -50,17 +57,17 @@ Smin_mm = pi * (esd_min/2)^2;
 Smin_px_ref = ceil(Smin_mm/(pix_ref^2));
 Smin_px_adj = ceil(Smin_mm/(pix_adj^2));
 
+
 %% REFERENCE (REF)
-%%
 % -------------- Checks --------------------------------------------------
 if (strcmp(project_folder_ref(4:7),'uvp5'))
-    aa_ref = base_ref(rec_ref).a0;
+    aa_ref = ref_base.a0;
 else
-    aa_ref = base_ref(rec_ref).a0/1000000;
+    aa_ref = ref_base.a0/1000000;
     aa_data_ref = aa_data_ref/1000000;
 end
-expo_ref = base_ref(rec_ref).exp0;
-volumeimageref=base_ref(rec_ref).volimg0;
+expo_ref = ref_base.exp0;
+volumeimageref=ref_base.volimg0;
 if (aa_ref ~= aa_data_ref || expo_ref ~= expo_data_ref || volumeimageref ~= img_vol_data_ref)
     disp('The calibration parameters of the reference UVP are not the same in the data base and in the configuration file. Check them !!! ');
     disp('Configuration_data');
@@ -78,8 +85,8 @@ end
 
 % find the deepest first depth between the two base, in order to compare
 % profiles in the same range of depth
-firstdepth_ref = nanmin(base_ref(rec_ref).histopx(:,1));
-firstdepth_adj = nanmin(base_adj(rec_adj).histopx(:,1));
+firstdepth_ref = nanmin(ref_base.histopx(:,1));
+firstdepth_adj = nanmin(adj_base.histopx(:,1));
 if max(firstdepth_ref, firstdepth_adj) == firstdepth_ref
     first_depth = firstdepth_ref;
 else
@@ -89,7 +96,7 @@ end
 % --------------- Normalisation par pixel area ----------------------------
 
 % take only useful profile
-histopx = base_ref(rec_ref).histopx;
+histopx = ref_base.histopx;
 aa = find(histopx(:,1) >= first_depth);
 histopx_ref = histopx(aa,:);
 
@@ -122,10 +129,10 @@ for i=1:numel(ref_esd_calib)-1
     ref_norm_vect_calib(i) = ref_esd_calib(i+1) - ref_esd_calib(i);  
 end
 
+
 %% AJUSTED (DATA)
-%%
 % -------------- Checks --------------------------------------------------
-volumeimage=base_adj(rec_adj).volimg0;
+volumeimage=adj_base.volimg0;
 if volumeimage ~= img_vol_data_adj
     disp('The image volume of the adjusted UVP is not the same in the data base and in the configuration file. Check the file !!! ');
     disp('Configuration_data');
@@ -139,7 +146,7 @@ end
 % --------------- Normalisation using pixel area --------------------------
 
 % take only useful profile
-histopx = base_adj(rec_adj).histopx;
+histopx = adj_base.histopx;
 aa = find(histopx(:,1) >= first_depth);
 histopx_adj = histopx(aa,:);
 
@@ -162,10 +169,10 @@ for i=1:numel(adj_esd_x)-1
     adj_norm_vect(i) = adj_esd_x(i+1) - adj_esd_x(i);  
 end
 
+
 %% Calcul des vecteurs
-%%
 % ------------------- Same Depth range for both profiles ------------------
-depth=base_ref(rec_ref).histopx(:,1);
+depth=ref_base.histopx(:,1);
 [i,j]=size(ref_histo_mm2_vol);
 [k,l]=size(adj_histo_mm2);
 minsize=min(i,k);
@@ -205,6 +212,7 @@ adj_histo_ab_mean_red = adj_histo_ab_mean(1:numel(adj_esd_x));
 [adj_ab_vect_ecotaxa]= sum_ab_classe(adj_esd_x,esd_vect_ecotaxa,adj_histo_ab_mean_red);
     
 
+%% PLOTS
 fig1 = figure('name','RAW data','Position',[50 50 1500 600]);
 subplot(1,4,1)
 % ------------------- part 1 ----------------------------------------------
@@ -290,7 +298,15 @@ title(['particles profiles for 2pix+3pix'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
 ylabel('depth [m]','fontsize',12);
 
+% ---------------------- Save figure --------------------------------------
+orient tall
+titre = ['RAW_data_' char(ref_cast.profilename)];
+set(gcf,'PaperPositionMode','auto')
+print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
+% close(fig1);
 
+
+%% FUNCTION RETURNS
 % ------------------- input range  ----------------------------------------
 % ref
 ref_histo_mm2_vol_mean = ref_histo_mm2_vol_mean(:,Smin_px_ref:Smax_px_ref);
@@ -318,13 +334,47 @@ adj_esd_x = adj_esd_x(Smin_px_adj : Smax_px_adj - 1);
 adj_norm_vect = adj_norm_vect(Smin_px_adj : Smax_px_adj);
 pixsize_adj = pixsize_adj(Smin_px_adj : Smax_px_adj);
 
+% ----------- return computed variables  ----------------------------------
+ref_cast.pixsize = pixsize_ref;
+ref_cast.Smin_px = Smin_px_ref;
+ref_cast.Smax_px = Smax_px_ref;
+ref_cast.aa = aa_ref;
+ref_cast.expo = expo_ref;
+ref_cast.esd_x = ref_esd_x;
+ref_cast.esd_calib = ref_esd_calib;
+ref_cast.esd_calib_log = ref_esd_calib_log;
+ref_cast.esd_calib_all = ref_esd_calib_all;
+ref_cast.area_mm2_calib = ref_area_mm2_calib;
+ref_cast.norm_vect = ref_norm_vect;
+ref_cast.norm_vect_calib = ref_norm_vect_calib;
+ref_cast.histo_mm2_vol_mean = ref_histo_mm2_vol_mean;
+ref_cast.histo_mm2_vol_mean_red_log = ref_histo_mm2_vol_mean_red_log;
+ref_cast.histo_ab = ref_histo_ab;
+ref_cast.histo_ab_mean_red = ref_histo_ab_mean_red;
+ref_cast.hisot_ab_mean_red_norm = ref_histo_ab_mean_red_norm;
+ref_cast.histo_ab_mean_red_norm_calib = ref_histo_ab_mean_red_norm_calib;
 
-% ---------------------- Save figure --------------------------------------
-orient tall
-titre = ['RAW_data_' char(base_ref(rec_ref).profilename)];
-set(gcf,'PaperPositionMode','auto')
-print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
-% close(fig1);
+adj_cast.pixsize = pixsize_adj;
+adj_cast.vol_ech = adj_vol_ech;
+adj_cast.Smin_px = Smin_px_adj;
+adj_cast.Smax_px = Smax_px_adj;
+adj_cast.esd_x = adj_esd_x;
+adj_cast.norm_vect = adj_norm_vect;
+adj_cast.histo_px = adj_histo_px;
+adj_cast.histo_mm2 = adj_histo_mm2;
+adj_cast.histo_mm2_vol_mean = adj_histo_mm2_vol_mean;
+adj_cast.histo_ab = adj_histo_ab;
+adj_cast.histo_ab_mean_red = adj_histo_ab_mean_red;
+adj_cast.histo_ab_mean_norm = adj_histo_ab_mean_red_norm;
+
+process_params.esd_min = esd_min;
+process_params.esd_max = esd_max;
+process_params.fit_type = fit_type;
+process_params.Fit_range = Fit_range;
+process_params.EC_factor = EC_factor;
+process_params.X0 = X0;
+process_params.esd_vect_ecotaxa = esd_vect_ecotaxa;
+process_params.depth = depth;
 
 end
 

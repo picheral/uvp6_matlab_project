@@ -2,15 +2,34 @@
 % Picheral Lombard 2017/11
 
 
-function calibration_uvp_settings_b
+function [process_params, ref_cast, adj_cast] = calibration_uvp_settings_b(process_params, ref_cast, adj_cast, datahistref, aa_adj, expo_adj)
 
-global results_dir_ref datahistref adj_histo_mm2 adj_vol_ech ref_esd_calib ref_esd_calib_log pixel_min Smax_px_ref...
-    pixsize_ref Smax_px_adj pixsize_adj adj_histo_mm2_vol_mean x_new_log ref_histo_mm2_vol_mean_log esd_max fit_type EC_factor...
-    pix_ref pix_adj X0 rec_ref rec_adj base_ref base_adj aa_data_ref expo_data_ref...
-    img_vol_data_ref img_vol_data_adj aa_adj expo_adj ref_histo_mm2_vol_mean uvp_ref uvp_adj Score...
-    min_calib max_calib Fit_range adj_esd_x ref_esd_x ref_area_mm2_calib adj_area_mm2_calib ratio_mean project_folder_adj...
-    esd_vect_ecotaxa ref_histo_ab adj_histo_ab depth
 
+% ----------------- used variables  ---------------------------------------
+results_dir_ref = ref_cast.results_dir;
+uvp_ref = ref_cast.uvp;
+pix_ref = ref_cast.pix;
+ref_esd_calib = ref_cast.esd_calib;
+ref_esd_calib_log = ref_cast.esd_calib_log;
+ref_area_mm2_calib = ref_cast.area_mm2_calib;
+ref_histo_mm2_vol_mean = ref_cast.histo_mm2_vol_mean;
+ref_histo_ab = ref_cast.histo_ab;
+ref_profilename = ref_cast.profilename;
+
+project_folder_adj = adj_cast.project_folder;
+uvp_adj = adj_cast.uvp;
+pix_adj = adj_cast.pix;
+pixsize_adj = adj_cast.pixsize;
+adj_vol_ech = adj_cast.vol_ech;
+adj_histo_mm2 = adj_cast.histo_mm2;
+adj_histo_mm2_vol_mean = adj_cast.histo_mm2_vol_mean;
+adj_histo_ab = adj_cast.histo_ab;
+
+fit_type = process_params.fit_type;
+esd_vect_ecotaxa = process_params.esd_vect_ecotaxa;
+depth = process_params.depth;
+
+%% FIT
 ref_histo_mm2_vol_mean_log = log(ref_histo_mm2_vol_mean);
 % ----------- FIT on ADJUSTED ---------------------------------------------
 adj_esd_calib = 2*((aa_adj*(pixsize_adj.^expo_adj)./pi).^0.5);
@@ -27,6 +46,7 @@ ref_esd_calib_log = log(ref_esd_calib);
 [fitresult] = create_two_fits(adj_esd_calib_log,adj_histo_mm2_vol_mean_log,fit_type,0,adj_esd_calib_log,adj_histo_mm2_vol_mean_log,fit_type);
 [yresults_adj] = poly_from_fit(adj_esd_calib_log,fitresult,fit_type);
 
+%% SCORE
 % -------------- Pour calcul Score final -----------------------------
 [score_hist] = poly_from_fit(ref_esd_calib_log,fitresult,fit_type);
 % data_score_old=((abs(score_hist-datahistref)./(datahistref + 4).^EC_factor).^2);
@@ -43,8 +63,8 @@ else
     ratio = 1;
 end
 
+
 %% FIGURES
-%%
 fig2 = figure('name','ADJUSTED data','Position',[700 50 1500 600]);
 % ------------------- part a ----------------------------------------------
 subplot(1,4,1)
@@ -190,12 +210,12 @@ legend(uvp_ref,uvp_adj);
 
 % ---------------------- Save figure --------------------------------------
 orient tall
-titre = ['CALIBRATED_data_' char(base_ref(rec_ref).profilename)];
+titre = ['CALIBRATED_data_' char(ref_profilename)];
 set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
 
+
 %% MINIMISATION space
-%%
 results=[];
 AAs=[];
 expss=[];
@@ -215,7 +235,7 @@ for i=mini_min:0.0005:mini_max
     exps=[];
     for j=1:0.025:maxe
         X2=[i j];
-        res=histofunction7_new(X2);
+        res=histofunction7_new(X2,datahistref, pixsize_adj, adj_histo_mm2_vol_mean, ref_esd_calib_log, fit_type);
         if (isinf(res)|| res < 0); res = NaN; end
         result=[result res];
         aas=[aas i];
@@ -226,7 +246,6 @@ for i=mini_min:0.0005:mini_max
     expss=[expss;exps];
 end
 %% Figure minimisation
-%%
 fig3 = figure('name','Minimisation','Position',[250 50 400 400]);
 figure(fig3);
 pcolor(AAs,expss,log(results))
@@ -244,8 +263,18 @@ plot(aa_adj,expo_adj,'m+');
 title(['Minimisation landscape'],'fontsize',14);
 orient tall
 % ---------------------- Save figure --------------------------------------
-titre = ['Minimisation_landscape_' char(base_ref(rec_ref).profilename)];
+titre = ['Minimisation_landscape_' char(ref_profilename)];
 set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
 
+
+%% FUNCTION RETURNS
+% ----------- return computed variables  ----------------------------------
+ref_cast.esd_calib_log = ref_esd_calib_log;
+adj_cast.histo_mm2_vol_mean = adj_histo_mm2_vol_mean;
+process_params.Score = Score;
+process_params.ratio_mean = ratio_mean;
 end
+
+
+

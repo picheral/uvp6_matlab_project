@@ -1,6 +1,5 @@
-function EC=histofunction7_new(X)
+function EC=histofunction7_new(X, datahistref, pixsize_adj, adj_histo_mm2_vol_mean, ref_esd_calib_log, fit_type)
 
-global datahistref pixsize_adj adj_histo_mm2_vol_mean ref_esd_calib_log fit_type 
 warning('off')
 aa=X(1);
 expo=X(2);

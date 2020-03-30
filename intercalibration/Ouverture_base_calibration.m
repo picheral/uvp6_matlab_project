@@ -1,21 +1,24 @@
 %% Ouverture base pour operation calibrage
 % Picheral 2017/11,; 2019/03
 
-function[project_folder_ref results_dir base record uvp] = Ouverture_base_calibration(type)
+function[uvp_base, uvp_cast] = Ouverture_base_calibration(type)
 
 selectprojet = 0;
 while (selectprojet == 0)
     disp(['>> Select UVP ',char(type),' project directory']);
     project_folder_ref = uigetdir('',['Select UVP ',char(type),' project directory']);
-    if strcmp(project_folder_ref(4:6),'uvp');  selectprojet = 1;
-    else disp(['Selected project ' project_folder_ref ' is not correct. ']); end
+    if strcmp(project_folder_ref(4:6),'uvp')
+        selectprojet = 1;
+    else
+        disp(['Selected project ' project_folder_ref ' is not correct. ']);
+    end
 end
 % ------------- Liste des bases --------------------
 results_dir = [project_folder_ref,'\results\'];
-if isdir(results_dir);
+if isfolder(results_dir)
     base_list = dir([results_dir, 'base*.mat']);
     base_nofile = isempty(base_list);
-    if base_nofile == 0;
+    if base_nofile == 0
         disp('----------- Base list --------------------------------');
         disp([num2str(size(base_list,1)),' database in ', results_dir]);
         for i = 1:size(base_list)
@@ -57,4 +60,17 @@ uvp(ee) = '-';
 % --------------- Changement de répertoire ------------------------
 cd(project_folder_ref);
 
+%---------------- Build return stucture -----------------------------------
+uvp_cast.project_folder = project_folder_ref;
+uvp_cast.results_dir = results_dir;
+uvp_cast.record = record;
+uvp_cast.uvp = uvp;
+uvp_cast.profilename = base(record).profilename;
+
+uvp_base = base(record);
+
 end
+
+
+
+
