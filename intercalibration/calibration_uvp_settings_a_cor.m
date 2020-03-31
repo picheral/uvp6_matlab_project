@@ -2,7 +2,7 @@
 % Picheral Lombard 2017/11
 % Updated 2019/06/11
 
-function [ref_cast, adj_cast] = calibration_uvp_settings_a_cor(process_params, ref_cast, adj_cast, ref_base, adj_base)
+function [ref_cast, adj_cast, Srange_px_ref, Srange_px_adj] = calibration_uvp_settings_a_cor(process_params, ref_cast, adj_cast, ref_base, adj_base)
 
 % ----------------- used variables  ---------------------------------------
 project_folder_ref = ref_cast.project_folder;
@@ -280,37 +280,12 @@ print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
 
 
 %% FUNCTION RETURNS
-% ------------------- input range  ----------------------------------------
-% ref
-ref_histo_mm2_vol_mean = ref_histo_mm2_vol_mean(:,Smin_px_ref:Smax_px_ref);
-ref_histo_ab = ref_histo_ab(:,Smin_px_ref:Smax_px_ref);
-ref_histo_ab_mean_red = ref_histo_ab_mean_red(:,Smin_px_ref:Smax_px_ref);
-ref_histo_ab_mean_red_norm = ref_histo_ab_mean_red_norm(:,Smin_px_ref:Smax_px_ref-1);
-ref_histo_ab_mean_red_norm_calib = ref_histo_ab_mean_red_norm_calib(:,Smin_px_ref:Smax_px_ref-1);
-ref_esd_x = ref_esd_x(Smin_px_ref : Smax_px_ref - 1); % -1 because we already put out the last element
-ref_norm_vect = ref_norm_vect(Smin_px_ref : Smax_px_ref);
-ref_norm_vect_calib = ref_norm_vect_calib(Smin_px_ref : Smax_px_ref);
-ref_esd_calib = ref_esd_calib(Smin_px_ref : Smax_px_ref);
-ref_esd_calib_log = ref_esd_calib_log(Smin_px_ref : Smax_px_ref);
-ref_esd_calib_all = ref_esd_calib_all(Smin_px_ref : Smax_px_ref);
-ref_area_mm2_calib = ref_area_mm2_calib(Smin_px_ref : Smax_px_ref);
-pixsize_ref = pixsize_ref(Smin_px_ref : Smax_px_ref);
-% adj
-adj_histo_px = adj_histo_px(:,Smin_px_adj:Smax_px_adj);
-adj_histo_mm2 = adj_histo_mm2(:,Smin_px_adj:Smax_px_adj);
-adj_histo_mm2_vol_mean = adj_histo_mm2_vol_mean(:,Smin_px_adj:Smax_px_adj);
-adj_vol_ech = adj_vol_ech(:,Smin_px_adj:Smax_px_adj);
-adj_histo_ab = adj_histo_ab(:,Smin_px_adj:Smax_px_adj);
-adj_histo_ab_mean_red = adj_histo_ab_mean_red(:,Smin_px_adj:Smax_px_adj);
-adj_histo_ab_mean_red_norm = adj_histo_ab_mean_red_norm(:,Smin_px_adj:Smax_px_adj-1);
-adj_esd_x = adj_esd_x(Smin_px_adj : Smax_px_adj - 1);
-adj_norm_vect = adj_norm_vect(Smin_px_adj : Smax_px_adj);
-pixsize_adj = pixsize_adj(Smin_px_adj : Smax_px_adj);
 
 % ----------- return computed variables  ----------------------------------
 ref_cast.pixsize = pixsize_ref;
 ref_cast.Smin_px = Smin_px_ref;
 ref_cast.Smax_px = Smax_px_ref;
+ref_cast.vol_ech = ref_vol_ech;
 ref_cast.aa = aa_ref;
 ref_cast.expo = expo_ref;
 ref_cast.esd_x = ref_esd_x;
@@ -320,11 +295,13 @@ ref_cast.esd_calib_all = ref_esd_calib_all;
 ref_cast.area_mm2_calib = ref_area_mm2_calib;
 ref_cast.norm_vect = ref_norm_vect;
 ref_cast.norm_vect_calib = ref_norm_vect_calib;
+ref_cast.histo_px = ref_histo_px;
+ref_cast.histo_mm2 = ref_histo_mm2;
 ref_cast.histo_mm2_vol_mean = ref_histo_mm2_vol_mean;
 ref_cast.histo_mm2_vol_mean_red_log = ref_histo_mm2_vol_mean_red_log;
 ref_cast.histo_ab = ref_histo_ab;
 ref_cast.histo_ab_mean_red = ref_histo_ab_mean_red;
-ref_cast.hisot_ab_mean_red_norm = ref_histo_ab_mean_red_norm;
+ref_cast.histo_ab_mean_red_norm = ref_histo_ab_mean_red_norm;
 ref_cast.histo_ab_mean_red_norm_calib = ref_histo_ab_mean_red_norm_calib;
 ref_cast.depth = depth;
 
@@ -339,9 +316,11 @@ adj_cast.histo_mm2 = adj_histo_mm2;
 adj_cast.histo_mm2_vol_mean = adj_histo_mm2_vol_mean;
 adj_cast.histo_ab = adj_histo_ab;
 adj_cast.histo_ab_mean_red = adj_histo_ab_mean_red;
-adj_cast.histo_ab_mean_norm = adj_histo_ab_mean_red_norm;
+adj_cast.histo_ab_mean_red_norm = adj_histo_ab_mean_red_norm;
 adj_cast.depth = depth;
 
+Srange_px_ref = [Smin_px_ref, Smax_px_ref];
+Srange_px_adj = [Smin_px_adj, Smax_px_adj];
 
 end
 
