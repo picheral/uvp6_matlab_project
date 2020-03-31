@@ -1,7 +1,7 @@
 %% Ouverture base pour operation calibrage
 % Picheral 2017/11,; 2019/03
 
-function[uvp_base, uvp_cast] = Ouverture_base_calibration(type)
+function[uvp_base, uvp_cast] = CalibrationUvpOpenBase(type)
 
 selectprojet = 0;
 while (selectprojet == 0)
