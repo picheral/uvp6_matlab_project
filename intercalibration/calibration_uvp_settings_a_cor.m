@@ -5,7 +5,6 @@
 function [ref_cast, adj_cast, Srange_px_ref, Srange_px_adj] = calibration_uvp_settings_a_cor(process_params, ref_cast, adj_cast, ref_base, adj_base)
 
 % ----------------- used variables  ---------------------------------------
-project_folder_ref = ref_cast.project_folder;
 pix_ref = ref_cast.pix;
 img_vol_data_ref = ref_cast.img_vol_data;
 aa_data_ref = ref_cast.aa_data;
@@ -17,6 +16,7 @@ img_vol_data_adj = adj_cast.img_vol_data;
 esd_min = process_params.esd_min;
 esd_max = process_params.esd_max;
 esd_vect_ecotaxa = process_params.esd_vect_ecotaxa;
+depth = process_params.depth;
 
 % -------------- Ranges ---------------------------------------------------
 Smax_mm = pi * (esd_max/2)^2;
@@ -29,47 +29,24 @@ Smin_px_adj = ceil(Smin_mm/(pix_adj^2));
 
 
 %% REFERENCE (REF)
-% -------------- Checks --------------------------------------------------
-if (strcmp(project_folder_ref(4:7),'uvp5'))
-    aa_ref = ref_base.a0;
-else
-    aa_ref = ref_base.a0/1000000;
-    aa_data_ref = aa_data_ref/1000000;
-end
-expo_ref = ref_base.exp0;
-volumeimageref=ref_base.volimg0;
-if (aa_ref ~= aa_data_ref || expo_ref ~= expo_data_ref || volumeimageref ~= img_vol_data_ref)
-    disp('The calibration parameters of the reference UVP are not the same in the data base and in the configuration file. Check them !!! ');
-    disp('Configuration_data');
-    disp(['Image volume [L]    : ',num2str(img_vol_data_ref)]);
-    disp(['Aa                  : ',num2str(aa_data_ref)]);
-    disp(['Exp                 : ',num2str(expo_data_ref)]);
-    disp('BASE');
-    disp(['Image volume [L]    : ',num2str(volumeimageref)]);
-    disp(['Aa                  : ',num2str(aa_ref)]);
-    disp(['Exp                 : ',num2str(expo_ref)]);
-    ref_cast.img_vol_data = volumeimageref;
-else
-    disp('All metadata of the reference profile are OK.')
-end
-
-
 % find the deepest first depth between the two base, in order to compare
 % profiles in the same range of depth
-firstdepth_ref = nanmin(ref_base.histopx(:,1));
-firstdepth_adj = nanmin(adj_base.histopx(:,1));
-if max(firstdepth_ref, firstdepth_adj) == firstdepth_ref
-    first_depth = firstdepth_ref;
-else
-    first_depth = firstdepth_adj;
-end
+% firstdepth_ref = nanmin(ref_base.histopx(:,1));
+% firstdepth_adj = nanmin(adj_base.histopx(:,1));
+% if max(firstdepth_ref, firstdepth_adj) == firstdepth_ref
+%     first_depth = firstdepth_ref;
+% else
+%     first_depth = firstdepth_adj;
+% end
 
 % --------------- Normalisation par pixel area ----------------------------
 
-% take only useful profile
-histopx = ref_base.histopx;
-aa = find(histopx(:,1) >= first_depth);
-histopx_ref = histopx(aa,:);
+% % take only useful profile
+% histopx = ref_base.histopx;
+% aa = find(histopx(:,1) >= first_depth);
+% histopx_ref = histopx(aa,:);
+
+histopx_ref=ref_cast.histopx;
 
 ref_histo_px = histopx_ref(:,5:end);
 %ref_histo_px=histopx_ref(:,4+Smin_px_ref:4+Smax_px_ref); % TO BE DELETED
@@ -102,25 +79,14 @@ end
 
 
 %% AJUSTED (DATA)
-% -------------- Checks --------------------------------------------------
-volumeimage=adj_base.volimg0;
-if volumeimage ~= img_vol_data_adj
-    disp('The image volume of the adjusted UVP is not the same in the data base and in the configuration file. Check the file !!! ');
-    disp('Configuration_data');
-    disp(['Image volume [L]    : ',num2str(img_vol_data_adj)]);
-    disp('BASE');
-    disp(['Image volume [L]    : ',num2str(volumeimage)]);
-    adj_cast.img_vol_data = volumeimage;
-else
-    disp('All metadata of the adjusted profile are OK.')
-end
-
 % --------------- Normalisation using pixel area --------------------------
 
 % take only useful profile
-histopx = adj_base.histopx;
-aa = find(histopx(:,1) >= first_depth);
-histopx_adj = histopx(aa,:);
+% histopx = adj_base.histopx;
+% aa = find(histopx(:,1) >= first_depth);
+% histopx_adj = histopx(aa,:);
+
+histopx_adj = adj_cast.histopx;
 
 adj_histo_px=histopx_adj(:,5:end);
 %adj_histo_px=histopx_adj(:,4+Smin_px_adj:4+Smax_px_adj); % TO BE DELETED
@@ -144,16 +110,17 @@ end
 
 %% Calcul des vecteurs
 % ------------------- Same Depth range for both profiles ------------------
-depth=ref_base.histopx(:,1);
-[i,j]=size(ref_histo_mm2_vol);
-[k,l]=size(adj_histo_mm2);
-minsize=min(i,k);
-adj_histo_mm2=adj_histo_mm2(1:minsize,:);
-ref_histo_mm2_vol=ref_histo_mm2_vol(1:minsize,:);
-ref_histo_ab = ref_histo_ab(1:minsize,:);
-depth=depth(1:minsize,:);
-adj_vol_ech=adj_vol_ech(1:minsize,:);
-adj_histo_ab = adj_histo_ab(1:minsize,:);
+% depth=ref_base.histopx(:,1);
+% [i,j]=size(ref_histo_mm2_vol);
+% [k,l]=size(adj_histo_mm2);
+% minsize=min(i,k);
+% adj_histo_mm2=adj_histo_mm2(1:minsize,:);
+% ref_histo_mm2_vol=ref_histo_mm2_vol(1:minsize,:);
+% ref_histo_ab = ref_histo_ab(1:minsize,:);
+% depth=depth(1:minsize,:);
+% adj_vol_ech=adj_vol_ech(1:minsize,:);
+% adj_histo_ab = adj_histo_ab(1:minsize,:);
+
 ref_histo_ab_mean = nanmean(ref_histo_ab);
 
 % ------------------- Retrait valeurs manquantes surface (20180313)--------
@@ -191,7 +158,6 @@ adj_histo_ab_mean_red_norm = adj_histo_ab_mean_red(1:end-1)./adj_norm_vect;
 
 
 %% FUNCTION RETURNS
-
 % ----------- return computed variables  ----------------------------------
 ref_cast.pixsize = pixsize_ref;
 ref_cast.Smin_px = Smin_px_ref;
