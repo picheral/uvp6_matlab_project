@@ -215,59 +215,6 @@ set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
 
 
-%% MINIMISATION space
-results=[];
-AAs=[];
-expss=[];
-if (strcmp(project_folder_adj(4:7),'uvp5'))
-    mini_min = 0.0005;
-    mini_max = 0.010;
-    maxe = 1.5;
-else  
-    mini_min = 0.0002;
-    mini_max = 0.010;   
-    maxe = 1.7;
-end
-
-for i=mini_min:0.0005:mini_max
-    result=[];
-    aas=[];
-    exps=[];
-    for j=1:0.025:maxe
-        X2=[i j];
-        res=histofunction7_new(X2,datahistref, pixsize_adj, adj_histo_mm2_vol_mean, ref_esd_calib_log, fit_type);
-        if (isinf(res)|| res < 0); res = NaN; end
-        result=[result res];
-        aas=[aas i];
-        exps=[exps j];
-    end
-    results=[results;result];
-    AAs=[AAs;aas];
-    expss=[expss;exps];
-end
-%% Figure minimisation
-fig3 = figure('name','Minimisation','Position',[250 50 400 400]);
-figure(fig3);
-pcolor(AAs,expss,log(results))
-shading flat
-xlabel('Aa','fontsize',16);
-ylabel('exp','fontsize',16);
-colormap(jet(256))
-h=colorbar;
-h.Label.String = 'Log (Sum of least square)';
-figure(fig3);
-hold on
-plot(aa_adj,expo_adj,'mo');
-hold on
-plot(aa_adj,expo_adj,'m+');
-title(['Minimisation landscape'],'fontsize',14);
-orient tall
-% ---------------------- Save figure --------------------------------------
-titre = ['Minimisation_landscape_' char(ref_profilename)];
-set(gcf,'PaperPositionMode','auto')
-print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
-
-
 %% FUNCTION RETURNS
 % ----------- return computed variables  ----------------------------------
 ref_cast.esd_calib_log = ref_esd_calib_log;
