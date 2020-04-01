@@ -15,7 +15,6 @@ ref_area_mm2_calib = ref_cast.area_mm2_calib;
 ref_histo_mm2_vol_mean = ref_cast.histo_mm2_vol_mean;
 ref_histo_ab = ref_cast.histo_ab;
 ref_profilename = ref_cast.profilename;
-depth = ref_cast.depth;
 
 project_folder_adj = adj_cast.project_folder;
 uvp_adj = adj_cast.uvp;
@@ -28,6 +27,7 @@ adj_histo_ab = adj_cast.histo_ab;
 
 fit_type = process_params.fit_type;
 esd_vect_ecotaxa = process_params.esd_vect_ecotaxa;
+depth = process_params.depth;
 
 %% FIT
 ref_histo_mm2_vol_mean_log = log(ref_histo_mm2_vol_mean);
