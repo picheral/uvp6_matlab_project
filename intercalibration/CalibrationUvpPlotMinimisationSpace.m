@@ -2,7 +2,6 @@ function CalibrationUvpPlotMinimisationSpace(adj_cast, ref_cast, datahistref, aa
 %CalibrationUvpPlotMinimisationSpace plot the 2D minimisation space and the
 %optimal point
 %
-% used variables
 
 %% MINIMISATION space
 results=[];

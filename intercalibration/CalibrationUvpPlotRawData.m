@@ -35,10 +35,8 @@ fig1 = figure('name','RAW data','Position',[50 50 1500 600]);
 subplot(1,4,1)
 % ------------------- part 1 ----------------------------------------------
 loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro')
-% loglog(ref_esd_x,ref_histo_ab_mean_red,'ro');
 hold on
 loglog([1:numel(adj_histo_mm2_vol_mean)].*(pix_adj^2),adj_histo_mm2_vol_mean,'go');
-% loglog(adj_esd_x,adj_histo_ab_mean_red,'go');
 hold on
 xline(pi*(esd_min/2)^2, '--b');
 xline(pi*(esd_max/2)^2, '--b');
@@ -47,7 +45,6 @@ title(['RAW DATA (normalized/pxarea)'],'fontsize',14);
 xlabel('RAW AREA [mm²]','fontsize',12);
 ylabel('ABUNDANCE [#/mm²/L]','fontsize',12);
 axis([0.005 2 0.01 1000000]);
-% axis([0.05 2 0.001 1000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 

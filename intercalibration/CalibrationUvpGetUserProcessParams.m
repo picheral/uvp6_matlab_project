@@ -1,6 +1,6 @@
 function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
 
-% --------------- process params user inputs  -----------------------------
+% ------------------- params user inputs  ---------------------------------
 
 esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.1) ');
 if isempty(esd_min); esd_min = 0.1; end
@@ -25,7 +25,6 @@ if isempty(EC_factor);      EC_factor=0.5;  end
 % vecteur "ECOTAXA"
 esd_vect_ecotaxa = [0.00403 0.00508 0.064 0.0806 0.102 0.128 0.161 0.203 0.256 0.323 0.406 0.512 0.645 0.813 1.002 1.290 1.630 2.050 2.580];
 % esd_vect_ecotaxa = [0.064  0.102  0.161  0.256  0.406  0.645  1.002  1.630  2.580  4.100];
-% esd_vect_reg = [0:0.2:4];
 
 process_params.esd_min = esd_min;
 process_params.esd_max = esd_max;

@@ -9,17 +9,18 @@ ref_esd_calib = ref_cast.esd_calib;
 ref_esd_calib_log = ref_cast.esd_calib_log;
 ref_area_mm2_calib = ref_cast.area_mm2_calib;
 ref_histo_mm2_vol_mean = ref_cast.histo_mm2_vol_mean;
-ref_histo_ab = ref_cast.histo_ab;
 ref_profilename = ref_cast.profilename;
+ref_calib_vect_ecotaxa = ref_cast.calib_esd_vect_ecotaxa;
+ref_histo_ab_red_log = ref_cast.histo_ab_red_log;
 
 uvp_adj = adj_cast.uvp;
 adj_esd_calib = adj_cast.esd_calib;
 adj_esd_calib_log = adj_cast.esd_calib_log;
 adj_area_mm2_calib = adj_cast.area_mm2_calib;
 adj_histo_mm2_vol_mean = adj_cast.histo_mm2_vol_mean;
-adj_histo_ab = adj_cast.histo_ab;
+adj_calib_vect_ecotaxa = adj_cast.calib_esd_vect_ecotaxa;
+adj_histo_ab_red_log = adj_cast.histo_ab_red_log;
 
-esd_vect_ecotaxa = process_params.esd_vect_ecotaxa;
 depth = process_params.depth;
 
 
@@ -99,11 +100,6 @@ title(['FINAL ADJUSTMENTS'],'fontsize',14);
 % title(['CONTROL'],'fontsize',14);
 
 % ------------- Part c --------------------------------------------------
-% Vecteurs finaux par classe
-ref_histo_ab_mean = nanmean(ref_histo_ab);
-adj_histo_ab_mean = nanmean(adj_histo_ab);
-[ref_calib_vect_ecotaxa]= sum_ab_classe(ref_esd_calib,esd_vect_ecotaxa,ref_histo_ab_mean(1:numel(ref_esd_calib)));
-[adj_calib_vect_ecotaxa]= sum_ab_classe(adj_esd_calib,esd_vect_ecotaxa,adj_histo_ab_mean(1:numel(adj_esd_calib)));
 % particles class plot
 subplot(1,4,3)
 semilogy(ref_calib_vect_ecotaxa,'ro');
@@ -128,7 +124,6 @@ axis([0 15 0.01 50000]);
 % -------------- Part d ----------------------------------
 % compute local spectrum slope
 affine_fit = fittype({'x'});
-ref_histo_ab_red_log = log(ref_histo_ab(:,1:numel(ref_esd_calib)));
 ref_local_spectr_slope = zeros(size(ref_histo_ab_red_log,1),1);
 for i=1:length(ref_local_spectr_slope)
     % delete -inf values from log
@@ -140,7 +135,6 @@ for i=1:length(ref_local_spectr_slope)
     p = fit(x,y,affine_fit);
     ref_local_spectr_slope(i) = p.a;
 end
-adj_histo_ab_red_log = log(adj_histo_ab(:,1:numel(adj_esd_calib)));
 adj_local_spectr_slope = zeros(size(adj_histo_ab_red_log,1),1);
 for i=1:length(adj_local_spectr_slope)
     % delete -inf values from log

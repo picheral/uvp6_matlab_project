@@ -2,61 +2,52 @@
 % from Picheral Lombard 2017/11
 
 
-function [process_params, adj_cast, yresults_adj] = CalibrationUvpProcessCalibratedData(process_params, ref_cast, adj_cast, datahistref, aa_adj, expo_adj)
+function [uvp_cast] = CalibrationUvpProcessCalibratedData(esd_vect_ecotaxa, uvp_cast, aa, expo)
 
 
 % ----------------- used variables  ---------------------------------------
-pix_ref = ref_cast.pix;
-ref_esd_calib_log = ref_cast.esd_calib_log;
-
-pix_adj = adj_cast.pix;
-pixsize_adj = adj_cast.pixsize;
-adj_vol_ech = adj_cast.vol_ech;
-adj_histo_mm2 = adj_cast.histo_mm2;
-
-fit_type = process_params.fit_type;
+pixsize = uvp_cast.pixsize;
+vol_ech = uvp_cast.vol_ech;
+histo_mm2 = uvp_cast.histo_mm2;
+histo_ab = uvp_cast.histo_ab;
+histo_ab_mean_red = uvp_cast.histo_ab_mean_red;
 
 
 %% CALIBRATED DATA
-% ----------- calibrated vectors for adj ----------------------------------
-adj_esd_calib = 2*((aa_adj*(pixsize_adj.^expo_adj)./pi).^0.5);
-adj_area_mm2_calib = aa_adj*(pixsize_adj.^expo_adj);
-adj_esd_calib_log = log(adj_esd_calib);
+% ---------------- calibrated vectors -------------------------------------
+esd_calib = 2*((aa*(pixsize.^expo)./pi).^0.5);
+esd_calib_all = 2*((aa*([1:500].^expo)./pi).^0.5);
+esd_calib_log = log(esd_calib);
+area_mm2_calib = aa*(pixsize.^expo);
 
-adj_histo_mm2_vol_mean = nanmean(adj_histo_mm2./adj_vol_ech);
-adj_histo_mm2_vol_mean = adj_histo_mm2_vol_mean(1:numel(adj_esd_calib));
-adj_histo_mm2_vol_mean_log = log(adj_histo_mm2_vol_mean);
-
-% ---------- fit on calibrated data ---------------------------------------
-[fitresult] = create_two_fits(adj_esd_calib_log,adj_histo_mm2_vol_mean_log,fit_type,0,adj_esd_calib_log,adj_histo_mm2_vol_mean_log,fit_type);
-[yresults_adj] = poly_from_fit(adj_esd_calib_log,fitresult,fit_type);
-
-%% RATIO
-% -------------- Ratio ne fonctionne ici QUE si mêmes tailles pixels ------
-if pix_ref == pix_adj
-    ratio = yresults_adj./datahistref;
-    ratio_mean = nanmean(ratio);
-else
-    ratio_mean = 1;
-    ratio = 1;
+norm_vect_calib = [];
+for i=1:numel(esd_calib)-1
+    norm_vect_calib(i) = esd_calib(i+1) - esd_calib(i);  
 end
 
 
-%% SCORE
-% -------------- Pour calcul Score final -----------------------------
-[score_hist] = poly_from_fit(ref_esd_calib_log,fitresult,fit_type);
-Score = data_similarity_score(exp(score_hist), exp(datahistref));
+histo_ab_mean_red_norm_calib = histo_ab_mean_red(1:end-1)./norm_vect_calib;
+histo_ab_red_log = log(histo_ab(:,1:numel(esd_calib)));
+histo_mm2_vol_mean = nanmean(histo_mm2./vol_ech);
+histo_mm2_vol_mean = histo_mm2_vol_mean(1:numel(esd_calib));
+histo_mm2_vol_mean_log = log(histo_mm2_vol_mean);
+
+% ---------- Vecteurs finaux par classe -----------------------------------
+histo_ab_mean = nanmean(histo_ab);
+[calib_vect_ecotaxa]= sum_ab_classe(esd_calib,esd_vect_ecotaxa,histo_ab_mean(1:numel(esd_calib)));
+
 
 
 %% FUNCTION RETURNS
 % ----------- return computed variables  ----------------------------------
-adj_cast.histo_mm2_vol_mean = adj_histo_mm2_vol_mean;
-adj_cast.esd_calib = adj_esd_calib;
-adj_cast.esd_calib_log = adj_esd_calib_log;
-adj_cast.area_mm2_calib = adj_area_mm2_calib;
-adj_cast.histo_mm2_vol_mean = adj_histo_mm2_vol_mean;
-process_params.Score = Score;
-process_params.ratio_mean = ratio_mean;
+uvp_cast.esd_calib = esd_calib;
+uvp_cast.esd_calib_log = esd_calib_log;
+uvp_cast.area_mm2_calib = area_mm2_calib;
+uvp_cast.histo_mm2_vol_mean = histo_mm2_vol_mean;
+uvp_cast.histo_mm2_vol_mean_log = histo_mm2_vol_mean_log;
+uvp_cast.calib_esd_vect_ecotaxa = calib_vect_ecotaxa;
+uvp_cast.histo_ab_red_log = histo_ab_red_log;
+
 end
 
 
