@@ -1,8 +1,15 @@
 function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, datahistref, yresults_adj)
 %CalibrationUvpPlotCalibratedData plots calibrated data, fit and spectrum
 %
+%   inputs:
+%       process_params : struct of process parameters
+%       ref_cast : struct storing computed variables from ref uvp
+%       adj_cast : struct storing computed variables from adj uvp
+%       datahistref : fited ref abundance
+%       yresults_adj : fited adj calibrated abundance
+%
 
-% ----------------- used variables  ---------------------------------------
+%% ----------------- used variables  ---------------------------------------
 results_dir_ref = ref_cast.results_dir;
 uvp_ref = ref_cast.uvp;
 ref_esd_calib = ref_cast.esd_calib;
@@ -25,7 +32,7 @@ depth = process_params.depth;
 
 
 fig2 = figure('name','ADJUSTED data','Position',[700 50 1500 600]);
-%% ------------------- part a ----------------------------------------------
+%% ------------------- Abundance VS area ----------------------------------
 subplot(1,4,1)
 loglog((ref_area_mm2_calib),ref_histo_mm2_vol_mean,'ro');
 hold on
@@ -57,7 +64,8 @@ xlabel('CALIBRATED AREA [mm²]','fontsize',12);
 ylabel('ABUNDANCES [#/mm²/L]','fontsize',12);
 title(['CALIBRATED DATA'],'fontsize',14);
 
-%% ------------------- part b ----------------------------------------------
+
+%% ------------------- abundance VS esd -----------------------------------
 subplot(1,4,2)
 loglog(exp(ref_esd_calib_log),exp(datahistref),'r-');
 hold on
@@ -88,7 +96,8 @@ xlabel('CALIBRATED ESD [mm]','fontsize',12);
 ylabel('ABUNDANCES [#/L]','fontsize',12);
 title(['FINAL ADJUSTMENTS'],'fontsize',14);
 
-%% ------------- Part c --------------------------------------------------
+
+%% ------------------- Abundance VS esd class -----------------------------
 % subplot(1,4,3)
 % loglog((ref_area_mm2_calib),(Score));
 % legend('Score');
@@ -111,7 +120,8 @@ xlabel('CALIBRATED ESD CLASS [#]','fontsize',12);
 ylabel('ABUNDANCE [#/L]','fontsize',12);
 axis([0 15 0.01 50000]);
 
-%% -------------- Part d ----------------------------------
+
+%% -------------- spectrum slope aong the depth ---------------------------
 % subplot(1,4,4)
 % semilogx(ref_area_mm2_calib,ratio);
 % xlabel('CALIBRATED AREA [mm²]','fontsize',12);
@@ -155,6 +165,7 @@ title('local calibrated spectrum slope');
 xlabel('spectrum slope [#/L/mm]','fontsize',12);
 ylabel('depth [m]','fontsize',12);
 legend(uvp_ref,uvp_adj);
+
 
 %% ---------------------- Save figure --------------------------------------
 orient tall

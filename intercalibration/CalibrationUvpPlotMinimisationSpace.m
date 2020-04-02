@@ -1,6 +1,14 @@
-function CalibrationUvpPlotMinimisationSpace(adj_cast, ref_cast, datahistref, aa_adj, expo_adj, fit_type)
+function CalibrationUvpPlotMinimisationSpace(ref_cast, adj_cast, datahistref, aa_adj, expo_adj, fit_type)
 %CalibrationUvpPlotMinimisationSpace plot the 2D minimisation space and the
 %optimal point
+%
+%   inputs:
+%       ref_cast : struct storing computed variables from ref uvp
+%       adj_cast : struct storing computed variables from adj uvp
+%       datahistref : fited ref abundance
+%       aa_adj : aa parameters of size intercalibration of adj uvp
+%       expo_adj : expo parameters of size intercalibration of adj uvp
+%       fit_type : type of function (polinomial degree) used for fit
 %
 
 %% MINIMISATION space
@@ -33,6 +41,8 @@ for i=mini_min:0.0005:mini_max
     AAs=[AAs;aas];
     expss=[expss;exps];
 end
+
+
 %% Figure minimisation
 fig3 = figure('name','Minimisation','Position',[250 50 400 400]);
 figure(fig3);
@@ -50,9 +60,12 @@ hold on
 plot(aa_adj,expo_adj,'m+');
 title(['Minimisation landscape'],'fontsize',14);
 orient tall
-% ---------------------- Save figure --------------------------------------
+
+
+%% ---------------------- Save figure --------------------------------------
 titre = ['Minimisation_landscape_' char(ref_cast.profilename)];
 set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[ref_cast.results_dir,'\',datestr(now,30),'_',char(titre)]);
+
 end
 

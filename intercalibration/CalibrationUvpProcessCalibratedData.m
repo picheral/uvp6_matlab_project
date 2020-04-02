@@ -3,9 +3,19 @@
 
 
 function [uvp_cast] = CalibrationUvpProcessCalibratedData(esd_vect_ecotaxa, uvp_cast, aa, expo)
+% CalibrationUvpProcessCalibratedData process calibrated variables from aa
+% and exp
+%
+%   inputs :
+%       esd_vect_ecotaxa : ecotaxa size vector limits for classes
+%       uvp_cast : struct storing computed variables
+%       aa : aa parameters of size intercalibration
+%       expo : expo parameters of size intercalibration
+%
+%   outputs:
+%       uvp_cast : updated struct
 
-
-% ----------------- used variables  ---------------------------------------
+%% ----------------- used variables  ---------------------------------------
 pixsize = uvp_cast.pixsize;
 vol_ech = uvp_cast.vol_ech;
 histo_mm2 = uvp_cast.histo_mm2;

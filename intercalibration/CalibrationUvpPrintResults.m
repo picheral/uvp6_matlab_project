@@ -2,6 +2,15 @@
 % Picheral Lombard 2017/11
 
 function CalibrationUvpPrintResults(process_params, ref_cast, adj_cast, aa_adj, expo_adj)
+%CalibrationUvpPrintResults print ref and adj uvp parameters and results
+%
+%   inputs:
+%       process_params : process parameters
+%       ref_cast : struct storing computed variables from ref uvp
+%       adj_cast : struct storing computed variables from adj uvp
+%       aa_adj : aa parameters of size intercalibration of adj uvp
+%       expo_adj : expo parameters of size intercalibration of adj uvp
+%
 
 
 disp('-------------------------------------------------------------------------');
@@ -60,3 +69,6 @@ disp(['Pixel Area   [µm²]  : ',num2str(adj_cast.pix^2)]);
 disp(['Aa                  : ',num2str(aa_adj)]);
 disp(['Exp                 : ',num2str(expo_adj)]);  
 disp('-------------------------------------------------------------------------');
+end
+
+

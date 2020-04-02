@@ -3,8 +3,17 @@
 % Updated 2020/03/31
 
 function CalibrationUvpPlotRawData(process_params, ref_cast, adj_cast)
+% CalibrationUvpPlotRawData different plots to compare calibrated ref data
+% and raw data to adjust
+%
+%   inputs:
+%       process_params : struct of process parameters
+%       ref_cast : struct storing computed variables from ref uvp
+%       adj_cast : struct storing computed variables from adj uvp
+%
 
-% ----------------- used variables  ---------------------------------------
+
+%% ----------------- used variables  ---------------------------------------
 results_dir_ref = ref_cast.results_dir;
 uvp_ref = ref_cast.uvp;
 pix_ref = ref_cast.pix;
@@ -32,8 +41,10 @@ esd_vect_ecotaxa = process_params.esd_vect_ecotaxa;
 
 %% PLOTS
 fig1 = figure('name','RAW data','Position',[50 50 1500 600]);
+
+
+%% ------------------- Abundance VS area ----------------------------------
 subplot(1,4,1)
-% ------------------- part 1 ----------------------------------------------
 loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro')
 hold on
 loglog([1:numel(adj_histo_mm2_vol_mean)].*(pix_adj^2),adj_histo_mm2_vol_mean,'go');
@@ -48,8 +59,9 @@ axis([0.005 2 0.01 1000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 
+
+%% ------------------- abundance VS esd -----------------------------------
 subplot(1,4,2)
-% ------------------- part 2 ----------------------------------------------
 loglog(ref_esd_x,ref_histo_ab_mean_red_norm,'ro');
 hold on
 loglog(adj_esd_x,adj_histo_ab_mean_red_norm,'go');
@@ -64,8 +76,9 @@ axis([0.05 2 0.01 1000000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 
+
+%% ------------------- Abundance VS esd class -----------------------------
 subplot(1,4,3)
-% ------------------- part 3 ----------------------------------------------
 semilogy(ref_ab_vect_ecotaxa,'ro');
 hold on
 semilogy(adj_ab_vect_ecotaxa,'go');
@@ -90,9 +103,10 @@ ylabel('ABUNDANCE [#/L]','fontsize',12);
 axis([0 15 0.01 50000]);
 set(gca,'yscale','log');
 
-subplot(1,4,4)
-% ------------------- part 4 ----------------------------------------------
+
+%% ------------------- depth part count profiles ---------------------------
 % Profiles matching check
+subplot(1,4,4)
 semilogx((histopx_ref(:,6)+histopx_ref(:,7))./histopx_ref(:,4)/volumeimage_ref, -histopx_ref(:,1), 'r');
 hold on
 semilogx((histopx_adj(:,6)+histopx_adj(:,7))./histopx_adj(:,4)/volumeimage_adj, -histopx_adj(:,1), 'g');
@@ -101,7 +115,8 @@ title(['particles profiles for 2pix+3pix'],'fontsize',14);
 xlabel('particles number [part]','fontsize',12);
 ylabel('depth [m]','fontsize',12);
 
-% ---------------------- Save figure --------------------------------------
+
+%% ---------------------- Save figure -------------------------------------
 orient tall
 titre = ['RAW_data_' char(ref_cast.profilename)];
 set(gcf,'PaperPositionMode','auto')

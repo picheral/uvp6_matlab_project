@@ -1,10 +1,18 @@
 %% UVP5 calibration settings & analyses
-% Picheral Lombard 2017/11
-% Updated 2019/06/11
+% from Picheral Lombard 2017/11 (Updated 2019/06/11)
 
 function [uvp_cast] = CalibrationUvpProcessRawData(esd_vect_ecotaxa, uvp_cast)
+%CalibrationUvpProcessRawData process variables from raw data histopx
+%   those variables will be used for fit and plot on raw data
+%
+%   inputs:
+%       esd_vect_ecotaxa : ecotaxa size vector limits for classes
+%       uvp_cast : struct storing computed variables
+%
+%   outputs:
+%       uvp_cast : updated struct
 
-% ----------------- used variables  ---------------------------------------
+%% ---------------- used variables  ---------------------------------------
 pix = uvp_cast.pix;
 img_vol_data = uvp_cast.img_vol_data;
 histopx=uvp_cast.histopx;

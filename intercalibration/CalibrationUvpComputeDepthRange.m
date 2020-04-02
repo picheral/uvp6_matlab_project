@@ -1,6 +1,16 @@
 function [histopx_1,histopx_2, depth] = CalibrationUvpComputeDepthRange(histopx_1,histopx_2)
 %CalibrationUvpComputeDepthRange cut the two histopx in order to met the
 %same depth range
+%
+%   inputs:
+%       histopx_1 : first histopx
+%       histopx_2 : second histopx
+%
+%   outputs:
+%       histopx_1 : cuted first histopx
+%       histopx_2 : cuted second histopx
+%       depth : used depth vector
+%
 
 % ------------------- Depth min ------------------
 % find the deepest first depth between the two base, in order to compare
@@ -34,6 +44,7 @@ maxdepth_indice=min(i,k);
 histopx_1=histopx_1(1:maxdepth_indice,:);
 histopx_2=histopx_2(1:maxdepth_indice,:);
 
+%depth vector
 depth = histopx_1(:,1);
 end
 

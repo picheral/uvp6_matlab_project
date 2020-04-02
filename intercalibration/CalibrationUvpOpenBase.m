@@ -2,6 +2,14 @@
 % Picheral 2017/11,; 2019/03
 
 function[uvp_base, uvp_cast] = CalibrationUvpOpenBase(type)
+%CalibrationUvpOpenBase open the data base
+%
+%   inputs:
+%       type : "Reference" or "Adjusted"
+%
+%   outputs:
+%       uvp_base : data base (struct)
+%       uvp_cast : struct storing cast variables
 
 selectprojet = 0;
 while (selectprojet == 0)
@@ -66,6 +74,13 @@ uvp_cast.results_dir = results_dir;
 uvp_cast.record = record;
 uvp_cast.uvp = uvp;
 uvp_cast.profilename = base(record).profilename;
+if strcmp(type,"Reference")
+    uvp_cast.label = 'ref';
+elseif strcmp(type, "Adjusted")
+    uvp_cast.label = 'adj';
+else
+    disp("WARNING : Unkown uvp type, ref or adj ?")
+end
 
 uvp_base = base(record);
 

@@ -1,5 +1,7 @@
 %% poly_from_fit (formerly Process_data)
-% Polynomial computing of x, based on parameters from a fit
+
+function [y] = poly_from_fit(x,fitresult,fit_type)
+% poly_from_fit Polynomial computing of x, based on parameters from a fit
 %
 % inputd:
 %   x : number or array of numbers
@@ -9,8 +11,6 @@
 %
 % output:
 %   y : polynomial results of x
-
-function [y] = poly_from_fit(x,fitresult,fit_type)
 if strcmp(fit_type,'poly1')
         y = (fitresult.p1*x + fitresult.p2);
 elseif strcmp(fit_type,'poly2')
