@@ -30,10 +30,10 @@ aa = find(histopx_2(:,1) >= first_depth);
 histopx_2 = histopx_2(aa,:);
 
 % ------------------- Missing values -------------
-aaa = ~isnan(histopx_1(:,1));
+aaa = ~isnan(histopx_1(:,5));
 histopx_1 = histopx_1(aaa,:);
 histopx_2 = histopx_2(aaa,:);
-aaa = ~isnan(histopx_2(:,1));
+aaa = ~isnan(histopx_2(:,5));
 histopx_1 = histopx_1(aaa,:);
 histopx_2 = histopx_2(aaa,:);
 
