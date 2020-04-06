@@ -43,12 +43,14 @@ max_centre = 0;
 min_centre = 100;
 
 
-base_grey = dir([dir_img,'\save*.png']);
+% base_grey = dir([dir_img,'\save*.png']);
+
+base_grey = dir(dir_img);
 % ------- Boucle images ----------------
 for m = 1 : numel(base_grey)
     
     % ------------- On ouvre la dernière image enregistrée par la caméra ----
-    if ~isempty(strfind(base_grey(end-1).name,'.png')) || ~isempty(strfind(base_grey(end-1).name,'.tiff')) || ~isempty(strfind(base_grey(end-1).name,'.bmp'))
+    if ~isempty(strfind(base_grey(m).name,'.png')) || ~isempty(strfind(base_grey(m).name,'.tiff')) || ~isempty(strfind(base_grey(m).name,'.bmp'))
         %     if ~isempty(strfind(base_grey(end).name,'.png')) || ~isempty(strfind(base_grey(end).name,'.tiff'))
         index = index + 1;
         last_date = base_grey(m).datenum;
