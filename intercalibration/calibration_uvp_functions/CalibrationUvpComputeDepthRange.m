@@ -29,6 +29,13 @@ histopx_1 = histopx_1(aa,:);
 aa = find(histopx_2(:,1) >= first_depth);
 histopx_2 = histopx_2(aa,:);
 
+% ------------------- Depth max ------------------
+[i,j]=size(histopx_1);
+[k,l]=size(histopx_2);
+maxdepth_indice=min(i,k);
+histopx_1=histopx_1(1:maxdepth_indice,:);
+histopx_2=histopx_2(1:maxdepth_indice,:);
+
 % ------------------- Missing values -------------
 aaa = ~isnan(histopx_1(:,5));
 histopx_1 = histopx_1(aaa,:);
@@ -36,13 +43,6 @@ histopx_2 = histopx_2(aaa,:);
 aaa = ~isnan(histopx_2(:,5));
 histopx_1 = histopx_1(aaa,:);
 histopx_2 = histopx_2(aaa,:);
-
-% ------------------- Depth max ------------------
-[i,j]=size(histopx_1);
-[k,l]=size(histopx_2);
-maxdepth_indice=min(i,k);
-histopx_1=histopx_1(1:maxdepth_indice,:);
-histopx_2=histopx_2(1:maxdepth_indice,:);
 
 %depth vector
 depth = histopx_1(:,1);

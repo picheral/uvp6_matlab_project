@@ -231,9 +231,9 @@ while another_ref == 'y'
     % plot(x_ref,ones(numel(x_ref),1),[color(index_plot),'-']);
 
     % -------- Figure Ratio/shutter ----------------
-    subplot(2,2,4)
-    hold on
-    plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o']);
+%     subplot(2,2,4)
+%     hold on
+%     plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o']);
     
     % ask for another reference
     disp('It is possible to add another reference cast')
@@ -397,7 +397,8 @@ while other_cast == 1
     x = [esd_min:0.01:esd_max];
 
     % -------- Figure RAW data ----------------------------------
-    subplot(2,2,1)
+    %subplot(2,2,1)
+    subplot(1,2,1)
     hold on
     if type_plot == 'c'
         camsm_adj = 2*((aa_adj*(pixsize.^expo_adj)./pi).^0.5);
@@ -430,15 +431,17 @@ while other_cast == 1
     Score = data_similarity_score(exp(y_adj), exp(y_ref));
     
     % -------- Figure FIT ADJ -------------------------------------
-    subplot(2,2,2)
+    %subplot(2,2,2)
+    subplot(1,2,2)
     hold on
     loglog(x,exp(y),[color(index_plot+1),'-']);
 
     % -------- Figure RATIO --------------------------------------
-    subplot(2,2,3)
-    %         semilogx(x,(y_ref-y)./y_ref,[color(index_plot),'-']);
-    hold on
-    semilogx(x,y./y_ref,[color(index_plot+1),'-']);
+    %subplot(2,2,3)
+%     subplot(1,3,3)
+%     %         semilogx(x,(y_ref-y)./y_ref,[color(index_plot),'-']);
+%     hold on
+%     semilogx(x,y./y_ref,[color(index_plot+1),'-']);
     
     txt = [char(uvp_adj),' : ',char(base_adj(adj_record).profilename)];
     aa = txt == '_';
@@ -463,7 +466,8 @@ while other_cast == 1
 end
 
 %% ------------- Mise en forme finale RAW -----------------
-subplot(2,2,1)
+%subplot(2,2,1)
+subplot(1,2,1)
 % plot ref
 for i=1:length(camsm_ref_list_log)
     loglog(exp(camsm_ref_list_log(i)),exp(refsum_list_log(i)),[color(1),'o']);
@@ -497,7 +501,8 @@ else
     annotation('textbox',[.2 .6 .3 .3],'String',str,'FitBoxToText','on');
 end
 %% ------------- Mise en forme finale FIT -----------------
-subplot(2,2,2)
+%subplot(2,2,2)
+subplot(1,2,2)
 % plot ref
 loglog(x_ref,exp(y_ref),[color(1),'-'], 'LineWidth', 1);
 if type_plot == 'c'
@@ -506,7 +511,7 @@ else
     xlabel('RAW ESD [mm]','fontsize',12);
 end
 ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
-% legend(legende);
+legend(legende);
 % axis([0.01 5 0.0001 1000]);
 % axis([0.05 2 0.01 10000000]);
 axis([0.1 1 0.01 10000000]);
@@ -516,34 +521,35 @@ set(gca,'yscale','log');
 title(['FIT (',char(fit_type),') on selected data [',num2str(esd_min),' - ',num2str(esd_max),'mm]'],'fontsize',10);
 
 %% ------------- Mise en forme finale RATIO -----------------
-subplot(2,2,3)
-% plot ref
-plot(x_ref,ones(numel(x_ref),1),[color(1),'-']);
-if type_plot == 'c'
-    xlabel('ADJUSTED ESD [mm]','fontsize',12);
-else
-    xlabel('RAW ESD [mm]','fontsize',12);
-end
-ylabel('RATIO','fontsize',12);
-legend(legende,'Location','best');
-% axis([0.05 2 0.5 2]);
-axis([0.1 1 0.5 2]);
-set(gca,'xscale','log');
-% set(gca,'yscale','log');
-title('Ratio of fit / reference','fontsize',10);
+%subplot(2,2,3)
+% subplot(1,3,3)
+% % plot ref
+% plot(x_ref,ones(numel(x_ref),1),[color(1),'-']);
+% if type_plot == 'c'
+%     xlabel('ADJUSTED ESD [mm]','fontsize',12);
+% else
+%     xlabel('RAW ESD [mm]','fontsize',12);
+% end
+% ylabel('RATIO','fontsize',12);
+% legend(legende,'Location','best');
+% % axis([0.05 2 0.5 2]);
+% axis([0.1 1 0.5 2]);
+% set(gca,'xscale','log');
+% % set(gca,'yscale','log');
+% title('Ratio of fit / reference','fontsize',10);
 
 %% --------------- PLOT Ratio/shutter ----------------
 % data_list = {'profilename' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio'};
-subplot(2,2,4)
-for i = 2:size(data_table,1)
-    hold on
-    plot(data_table(i,8),data_table(i,11),[color(i),'o']);
-end
-ylabel('RATIO (mean)','fontsize',12);
-xlabel('SHUTTER','fontsize',12);
-% axis([0.05 2 -2 2]);
-% set(gca,'xscale','log');
-title('Mean ratio / shutter','fontsize',10);
+% subplot(2,2,4)
+% for i = 2:size(data_table,1)
+%     hold on
+%     plot(data_table(i,8),data_table(i,11),[color(i),'o']);
+% end
+% ylabel('RATIO (mean)','fontsize',12);
+% xlabel('SHUTTER','fontsize',12);
+% % axis([0.05 2 -2 2]);
+% % set(gca,'xscale','log');
+% title('Mean ratio / shutter','fontsize',10);
 
 % -------------- Enregistrement figure ---------------
 disp('------------------------------------------------------')
