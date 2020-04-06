@@ -8,6 +8,7 @@
 % de 28-46, 74-92, 94-112, 114-132, 134-152, 167-185
 
 %% OPEN BASE
+disp('---------------------------------------------------------------')
 selectprojet = 0;
 while (selectprojet == 0)
     disp(['>> Select UVP project directory']);
@@ -54,7 +55,7 @@ end
 ligne_ref = size(base,2);
 
 
-
+disp('---------------------------------------------------------------')
 if (strcmp(project_folder(4:7),'uvp5'))
     %% casts selection for uvp5
     disp('uvp5 base selected')
@@ -81,7 +82,7 @@ if (strcmp(project_folder(4:7),'uvp5'))
 
     end
     disp(['number of selected casts : ', num2str(cast_nb_max)])
-
+    disp('---------------------------------------------------------------')
     uvp = char(base(samples_nb(1)).pvmtype);
     ee = uvp == '_';
     uvp(ee) = '-';
@@ -141,7 +142,8 @@ else
 
     end
     disp(['number of selected casts : ', num2str(cast_nb_max)])
-
+    disp('---------------------------------------------------------------')
+    
     % check cast selection
     threshold_nb = samples_nb(1,2) - samples_nb(1,1) +1;
     different_thresholds = samples_nb(:,2) - samples_nb(:,1) + 1 - threshold_nb;
@@ -191,7 +193,11 @@ end
 
 
 %% SAVE IN BASE
-
+cd(results_folder);
+save([results_dir,base_list(base_selected).name] , 'base')
+disp('---------------------------------------------------------------')
+disp('------------- DATABASE saved : END of Process -----------------')
+disp('---------------------------------------------------------------')
 
 
 
