@@ -83,6 +83,11 @@ if (strcmp(project_folder(4:7),'uvp5'))
     end
     disp(['number of selected casts : ', num2str(cast_nb_max)])
     disp('---------------------------------------------------------------')
+    if cast_nb_max == 1
+        disp('--------  ERROR : only one cast has been selected -------')
+        disp('------- Process Aborted -------')
+        return
+    end
     uvp = char(base(samples_nb(1)).pvmtype);
     ee = uvp == '_';
     uvp(ee) = '-';
@@ -90,24 +95,26 @@ if (strcmp(project_folder(4:7),'uvp5'))
     %% HISTOPX MEAN for uvp5
     base_size = length(base);
     base(base_size+1) = base(samples_nb(1));
-    histfile = '';
-    profilename = 'mean';
-    histopx_sum = base(samples_nb(1)).histopx;
-    aaa = ~isnan(histopx_sum(:,5));
-    histopx_sum = histopx_sum(aaa,:);
-    histopx_sum(:,5:end) = 0;
-    for j = 1 : cast_nb_max
-        histfile = [histfile ,'_', base(samples_nb(j)).histfile{1}];
-        profilename = [profilename ,'_', base(samples_nb(j)).profilename{1}(17:end)];
+    bru0 = base(samples_nb(1)).bru0{1};
+    profilename = ['mean_',base(samples_nb(1)).profilename{1}];
+    histopx_mean = base(samples_nb(1)).histopx;
+    histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
+    histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
+    for j = 2 : cast_nb_max
+        profilename = [profilename ,'_', base(samples_nb(j)).profilename{1}];
+        bru0 = [bru0 ,'_', base(samples_nb(j)).bru0{1}];
         histopx_to_add = base(samples_nb(j)).histopx;
-        [histopx_sum, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_sum, histopx_to_add);
-        histopx_sum(:,5:end) = histopx_sum(:,5:end) + histopx_to_add(:,5:end);
+        [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
+        histopx_mean(:,5:end) = histopx_mean(:,5:end) + histopx_to_add(:,5:end)./histopx_to_add(:,4);
+        histopx_mean(:,2) = histopx_mean(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
+        histopx_mean(:,3:4) = histopx_mean(:,3:4) + histopx_to_add(:,3:4);
     end
-    base(base_size+1).histfile = {histfile};
-    base(base_size+1).bru0 = {histfile};
+    histopx_mean(:,2) = histopx_mean(:,2) ./ histopx_mean(:,4);
+    histopx_mean(:,3:4) = 1;
+    histopx_mean(:,5:end) = histopx_mean(:,5:end) ./ cast_nb_max;
+    base(base_size+1).histopx = histopx_mean;
+    base(base_size+1).bru0 = {bru0};
     base(base_size+1).profilename = {profilename};
-    base(base_size+1).histopx = histopx_sum;
-    base(base_size+1).histopx(:,5:end) = histopx_sum(:,5:end) / cast_nb_max;
     base(base_size+1).histnb = 0;
     base(base_size+1).histnbred = 0;
     base(base_size+1).histbv = 0;
@@ -143,6 +150,11 @@ else
     end
     disp(['number of selected casts : ', num2str(cast_nb_max)])
     disp('---------------------------------------------------------------')
+    if cast_nb_max == 1
+        disp('--------  ERROR : only one cast has been selected -------')
+        disp('------- Process Aborted -------')
+        return
+    end
     
     % check cast selection
     threshold_nb = samples_nb(1,2) - samples_nb(1,1) +1;
@@ -163,13 +175,12 @@ else
     for i = 1 : threshold_nb
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
-        raw_folder = '';
-        profilename = 'mean';
-        histopx_sum = base(samples_nb(1)+i-1).histopx;
-        aaa = ~isnan(histopx_sum(:,5));
-        histopx_sum = histopx_sum(aaa,:);
-        histopx_sum(:,5:end) = 0;
-        for j = 1 : cast_nb_max
+        raw_folder = base(samples_nb(1)+i-1).raw_folder;
+        profilename = ['mean_',base(samples_nb(1)+i-1).profilename];
+        histopx_mean = base(samples_nb(1)).histopx;
+        histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
+        histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
+        for j = 2 : cast_nb_max
             if base(samples_nb(j)+i-1).threshold ~= threshold
                 disp('--------  ERROR : different samples have different treshold -------')
                 disp('------- Process Aborted -------')
@@ -178,22 +189,24 @@ else
             raw_folder = [raw_folder ,'_', base(samples_nb(j)+i-1).raw_folder{1}];
             profilename = [profilename ,'_', base(samples_nb(j)+i-1).profilename{1}(17:end)];
             histopx_to_add = base(samples_nb(j)+i-1).histopx;
-            [histopx_sum, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_sum, histopx_to_add);
-            histopx_sum(:,5:end) = histopx_sum(:,5:end) + histopx_to_add(:,5:end);
+            [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
+            histopx_mean(:,5:end) = histopx_mean(:,5:end) + histopx_to_add(:,5:end)./histopx_to_add(:,4);
+            histopx_mean(:,2) = histopx_mean(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
+            histopx_mean(:,3:4) = histopx_mean(:,3:4) + histopx_to_add(:,3:4);
         end
+        histopx_mean(:,2) = histopx_mean(:,2) ./ histopx_mean(:,4);
+        histopx_mean(:,3:4) = 1;
+        histopx_mean(:,5:end) = histopx_mean(:,5:end) ./ cast_nb_max;
+        base(base_size+i).histopx = histopx_mean;
         base(base_size+i).raw_folder = {raw_folder};
         base(base_size+i).profilename = {profilename};
-        base(base_size+i).histopx = histopx_sum;
-        base(base_size+i).histopx(:,5:end) = histopx_sum(:,5:end) / cast_nb_max;
         base(base_size+i).raw_histopx = 0;
         base(base_size+i).raw_black = 0;
     end
 end
 
 
-
 %% SAVE IN BASE
-cd(results_folder);
 save([results_dir,base_list(base_selected).name] , 'base')
 disp('---------------------------------------------------------------')
 disp('------------- DATABASE saved : END of Process -----------------')
