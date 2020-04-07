@@ -1,4 +1,5 @@
 % mean des cast utiles d'un étalon, par threshold
+% Camille Catalano, LOV, 2020/04
 
 %pour uvp005lp
 % de 28-46, 61-79, 81-99, 114-132
@@ -8,7 +9,12 @@
 % de 28-46, 74-92, 94-112, 114-132, 134-152, 167-185
 
 %% OPEN BASE
-disp('---------------------------------------------------------------')
+clear all
+close all
+
+disp('------------------------------------------------------');
+disp('---------- ADD mean of casts into a database ---------')
+disp('------------------------------------------------------');
 selectprojet = 0;
 while (selectprojet == 0)
     disp(['>> Select UVP project directory']);
@@ -39,7 +45,7 @@ end
 % ------------------ Chargement de la base de référence -----------------
 disp('------------------------------------------------------');
 base_selected = 1;
-if size(base_list) > 1
+if size(base_list,1) > 1
     base_selected = input('Enter number corresponding to selected uvp database. (default = 2) ');
     if isempty(base_selected); base_selected = 2;   end
 end
@@ -62,24 +68,28 @@ if (strcmp(project_folder(4:7),'uvp5'))
     % ---------------- Sélection des casts ------------------------------------
     % --------- print casts -------------------------------------
     for i = 1 : ligne_ref
-        disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+        if ~isempty(base(i).histopx)
+            disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+        else
+            disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename),' is empty.']);
+        end
     end
     samples_nb = [];
     cast_nb_max = 0;
     other_cast = 'y';
     while other_cast == 'y'
         cast_nb_max = cast_nb_max + 1 ;
-
+        
         % --------- On lit tous les sample de la base un par un -----------
         sample = input('Enter the number of the cast (default = 1) ');
         if isempty(sample); sample = 1;end
-
+        
         samples_nb = [samples_nb; sample];
-
+        
         % ask for other casts
-        other_cast = input('Add other casts ? ([n]/y) ','s');
-        if isempty(other_cast);other_cast = 'n';end
-
+        other_cast = input('Add other casts ? ([y]/n) ','s');
+        if isempty(other_cast);other_cast = 'y';end
+        
     end
     disp(['number of selected casts : ', num2str(cast_nb_max)])
     disp('---------------------------------------------------------------')
@@ -115,12 +125,11 @@ if (strcmp(project_folder(4:7),'uvp5'))
     base(base_size+1).histopx = histopx_mean;
     base(base_size+1).bru0 = {bru0};
     base(base_size+1).profilename = {profilename};
-    base(base_size+1).histnb = 0;
-    base(base_size+1).histnbred = 0;
-    base(base_size+1).histbv = 0;
-    base(base_size+1).histbvred = 0;
-        
-        
+    base(base_size+i).histnb = [];
+    base(base_size+i).histnbred = [];
+    base(base_size+i).histbv =[];
+    base(base_size+i).histbvred = [];
+    
 else
     %% casts selection for uvp6
     disp('uvp6 base selected')
@@ -132,27 +141,32 @@ else
     samples_nb = [];
     cast_nb_max = 0;
     other_cast = 'y';
+    
+    disp('--------------------------------------------------------------------------------')
+    disp('Select a minimum of 2 sets of same thresholds ranges from 2 different profiles')
+    disp('--------------------------------------------------------------------------------')
     while other_cast == 'y'
         cast_nb_max = cast_nb_max + 1 ;
-
+        
         % --------- On lit tous les sample de la base un par un -----------
-        thres_first = input('Enter the number of the FIRST threshold of the cast (default = 1) ');
-        thres_last =  input('Enter the number of the LAST threshold of the cast (default = last) ');
+        thres_first = input('Enter the number of the FIRST threshold of a profile (default = 1) ');
+        thres_last =  input('Enter the number of the LAST threshold of the same profile (default = last) ');
         if isempty(thres_first); thres_first = 1;end
         if isempty(thres_last); thres_last = numel(base); end
-
+        
         samples_nb = [samples_nb; [thres_first, thres_last]];
-
+        
         % ask for other casts
         other_cast = input('Add other casts ? ([n]/y) ','s');
         if isempty(other_cast);other_cast = 'n';end
-
+        
     end
-    disp(['number of selected casts : ', num2str(cast_nb_max)])
     disp('---------------------------------------------------------------')
-    if cast_nb_max == 1
+    disp(['Number of selected profiles : ', num2str(numel(samples_nb))])
+    disp('---------------------------------------------------------------')
+    if numel(samples_nb) == 1
         disp('--------  ERROR : only one cast has been selected -------')
-        disp('------- Process Aborted -------')
+        disp('--------  Process Aborted -------------------------------')
         return
     end
     
@@ -161,14 +175,14 @@ else
     different_thresholds = samples_nb(:,2) - samples_nb(:,1) + 1 - threshold_nb;
     if any(different_thresholds)
         disp('--------  ERROR : different casts have different number of samples -------')
-        disp('------- Process Aborted -------')
+        disp('--------  Process Aborted ------------------------------------------------')
         return
     end
-
+    
     uvp = char(base(samples_nb(1)).pvmtype);
     ee = uvp == '_';
     uvp(ee) = '-';
-
+    
     %% HISTOPX MEAN for uvp6
     % for uvp6
     base_size = length(base);
@@ -200,20 +214,34 @@ else
         base(base_size+i).histopx = histopx_mean;
         base(base_size+i).raw_folder = {raw_folder};
         base(base_size+i).profilename = {profilename};
-        base(base_size+i).raw_histopx = 0;
-        base(base_size+i).raw_black = 0;
+        base(base_size+i).raw_histopx = [];
+        base(base_size+i).raw_black = [];
+        base(base_size+i).histnb = [];
+        base(base_size+i).histnbred = [];
+        base(base_size+i).histbv =[];
+        base(base_size+i).histbvred = [];
     end
 end
 
-
 %% SAVE IN BASE
-save([results_dir,base_list(base_selected).name] , 'base')
-disp('---------------------------------------------------------------')
-disp('------------- DATABASE saved : END of Process -----------------')
-disp('---------------------------------------------------------------')
+check = input('Are you OK to save the new database (y/n) ? ','s');
+if isempty(check); check = 'y';end
 
-
-
-
-
+if check == 'y'
+    % ---------- Type d'UVP ----------------
+    if strcmp(results_dir(7),'5')
+        basename = base_list(base_selected).name(1:end-4);
+        eval(['basename = base;']);
+        save([results_dir,base_list(base_selected).name] , 'basename')
+    else
+        save([results_dir,base_list(base_selected).name] , 'base')
+    end
+    disp('---------------------------------------------------------------')
+    disp('------------- DATABASE saved : END of Process -----------------')
+    disp('---------------------------------------------------------------')
+else
+    disp('---------------------------------------------------------------')
+    disp('------------- DATABASE NOT saved : END of Process -------------')
+    disp('---------------------------------------------------------------')
+end
 
