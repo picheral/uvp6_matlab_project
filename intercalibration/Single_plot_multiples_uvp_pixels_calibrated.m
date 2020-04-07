@@ -59,10 +59,19 @@ if i > 1
 end
 
 % ---------------- Chargement de la base choisie ------------------
-toto=['load ',results_dir_ref,base_list(base_selected).name,';'];
-eval(toto);
-toto=['base_ref = ',base_list(base_selected).name(1:end-4),';'];
-eval(toto);
+% toto=['load ',results_dir_ref,base_list(base_selected).name,';'];
+% eval(toto);
+% toto=['base_ref = ',base_list(base_selected).name(1:end-4),';'];
+% eval(toto);
+
+load([results_dir_ref,base_list(base_selected).name]);
+% try statement in order to deal with old and new base name syntaxe
+try
+    base_ref = eval(base_list(base_selected).name(1:end-4));
+catch
+    base_ref = base;
+end
+
 ligne_ref = size(base_ref,2);
 for i = 1 : ligne_ref
     disp(['Number : ',num2str(i),'   >  Profile : ',char(base_ref(i).profilename)]);
@@ -127,10 +136,17 @@ while other_cast == 1
     end
     
     % ---------------- Chargement de la base choisie ------------------
-    toto=['load ',results_dir_adj,base_list(base_selected).name,';'];
-    eval(toto);
-    toto=['base_adj = ',base_list(base_selected).name(1:end-4),';'];
-    eval(toto);
+    %     toto=['load ',results_dir_adj,base_list(base_selected).name,';'];
+    %     eval(toto);
+    %     toto=['base_adj = ',base_list(base_selected).name(1:end-4),';'];
+    %     eval(toto);
+    load([results_dir_adj,base_list(base_selected).name]);
+    % try statement in order to deal with old and new base name syntaxe
+    try
+        base_adj = eval(base_list(base_selected).name(1:end-4));
+    catch
+        base_adj = base;
+    end
     ligne_adj = size(base_adj,2);
     for i = 1 : ligne_adj
         disp(['Number : ',num2str(i),'   >  Profile : ',char(base_adj(i).profilename)]);
@@ -154,8 +170,8 @@ while other_cast == 1
         rec_adj = adj_record + i -1;
         rec_ref = ref_record + i -1;
         % --------------------- REFERENCE ----------------------
-        dd = find(base_ref(rec_ref).histopx(:,2) < depth_max);   
-        ee = find(base_ref(rec_ref).histopx(:,2) >= depth_min);      
+        dd = find(base_ref(rec_ref).histopx(:,2) < depth_max);
+        ee = find(base_ref(rec_ref).histopx(:,2) >= depth_min);
         
         refpix=base_ref(rec_ref).histopx(ee(1):dd(end),5:end);
         refpix = refpix./(pix_ref^2);
@@ -169,9 +185,9 @@ while other_cast == 1
         refs=refpix./volumeechref;
         tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
         newsize=tailleref;
-        % ---------------------- AJUSTE -------------------------        
+        % ---------------------- AJUSTE -------------------------
         dd = find(base_adj(rec_adj).histopx(:,2) < depth_max);
-        ee = find(base_adj(rec_adj).histopx(:,2) >= depth_min); 
+        ee = find(base_adj(rec_adj).histopx(:,2) >= depth_min);
         data=base_adj(rec_adj).histopx(ee(1):dd(end),5:end);
         data = data./(pix_adj^2);
         volumeimage=base_adj(rec_adj).volimg0;
@@ -203,7 +219,7 @@ while other_cast == 1
         
         % -------- Figure "Fabien" ----------------------------------
         hold on
-        if type_plot == 'c' 
+        if type_plot == 'c'
             if strcmp(input_aa_ex','y')
                 aa_adj_new = 	input(['ADJUSTED ',char(uvp_adj),' : Change Aa if necessary (',num2str(aa_adj,5),') ']);
                 expo_adj_new =  input(['ADJUSTED ',char(uvp_adj),' : Change Exp if necessary (',num2str(expo_adj,5),') ']);
@@ -263,7 +279,7 @@ orient tall
 % for i = 1:index_plot - 1
 %     titre = [char(titre), '_', char(legende(i))];
 % end
-% 
+%
 % titre = [titre '_cast_' char(base_ref(ref_record).profilename)];
 
 titre = [char(uvp_ref),'_',char(base_ref(ref_record).profilename)];

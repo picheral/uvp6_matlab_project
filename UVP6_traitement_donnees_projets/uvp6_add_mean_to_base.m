@@ -106,12 +106,12 @@ if (strcmp(project_folder(4:7),'uvp5'))
     base_size = length(base);
     base(base_size+1) = base(samples_nb(1));
     bru0 = base(samples_nb(1)).bru0{1};
-    profilename = ['mean_',base(samples_nb(1)).profilename{1}];
+    profilename = ['mean_',char(base(samples_nb(1)).profilename{1})];
     histopx_mean = base(samples_nb(1)).histopx;
     histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
     histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
     for j = 2 : cast_nb_max
-        profilename = [profilename ,'_', base(samples_nb(j)).profilename{1}];
+        profilename = [profilename ,'_', char(base(samples_nb(j)).profilename{1})];
         bru0 = [bru0 ,'_', base(samples_nb(j)).bru0{1}];
         histopx_to_add = base(samples_nb(j)).histopx;
         [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
@@ -190,7 +190,7 @@ else
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
         raw_folder = base(samples_nb(1)+i-1).raw_folder;
-        profilename = ['mean_',base(samples_nb(1)+i-1).profilename];
+        profilename = ['mean_',char(base(samples_nb(1)+i-1).profilename)];
         histopx_mean = base(samples_nb(1)).histopx;
         histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
         histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
@@ -201,7 +201,7 @@ else
                 return
             end
             raw_folder = [raw_folder ,'_', base(samples_nb(j)+i-1).raw_folder{1}];
-            profilename = [profilename ,'_', base(samples_nb(j)+i-1).profilename{1}(17:end)];
+            profilename = [profilename ,'_', char(base(samples_nb(j)+i-1).profilename{1}(17:end))];
             histopx_to_add = base(samples_nb(j)+i-1).histopx;
             [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
             histopx_mean(:,5:end) = histopx_mean(:,5:end) + histopx_to_add(:,5:end)./histopx_to_add(:,4);
