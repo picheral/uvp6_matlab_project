@@ -42,10 +42,10 @@ Fit_data = input(['Enter poly fit level for data [3-6] (default = 3) ']);
 if isempty(Fit_data);      Fit_data=3;  end
 fit_type = ['poly', num2str(Fit_data)];
 
-% sample selection option
+% profile selection option
 disp('SELECT OPTION')
 disp(' 1 : all flexible')
-disp(' 2 : a unique reference and all samples from same project ')
+disp(' 2 : a unique reference and all profiles from same project ')
 type_selection = input('Option (default = 2) ');
 if isempty(type_selection);type_selection = 2;end
 
@@ -238,7 +238,7 @@ while another_ref == 'y'
     % ask for another reference
     disp('It is possible to add another reference cast')
     disp('The calibration will be compared to the mean of the reference casts')
-    another_ref = input('Add another ref ? ([n]/y) ','s');
+    another_ref = input('Add another REFERENCE PROFILE ? ([n]/y) ','s');
     if isempty(another_ref);another_ref = 'n';end
 end
 % if there are multiple refs, we take the mean
@@ -259,7 +259,7 @@ while other_cast == 1
         %% ------------------ Choix du projet UVP à ajuster ----------------------
         disp('------------------------------------------------------');
         disp('UVP to adjust');
-        disp('>> Select the ''uvp'' root folder containing samples(s) of UVP to add');
+        disp('>> Select the ''uvp'' root folder containing profiles(s) of UVP to add');
         selectprojet = 0;
         while (selectprojet == 0)
             project_folder_adj = uigetdir('', 'Select UVP project directory');
@@ -307,19 +307,19 @@ while other_cast == 1
             base_adj = base;
         end
         ligne_adj = size(base_adj,2);
-        % ------------- List of samples ---------------
+        % ------------- List of profiles ---------------
         for k = 1 : ligne_adj
             disp(['Number : ',num2str(k),'   >  Profile : ',char(base_adj(k).profilename)]);
         end
         
         if type_selection == 1
-            % --------- Selection de chaque sample --------------
+            % --------- Selection de chaque profile --------------
             adj_record = input('Enter Number of the profile to be adjusted (default = 1) ');
             if isempty(adj_record); adj_record = 1; end
         else
-            % --------- On lit tous les sample de la base un par un -----------
-            adj_first = input('Enter the number of the FIRST sample to process (default = 1) ');
-            adj_last =  input('Enter the number of the LAST sample to process (default = last) ');
+            % --------- On lit tous les profile de la base un par un -----------
+            adj_first = input('Enter the number of the FIRST profile to process (default = 1) ');
+            adj_last =  input('Enter the number of the LAST profile to process (default = last) ');
             if isempty(adj_first); adj_first = 1;end
             if isempty(adj_last); adj_last = numel(base_adj); end
             adj_record = adj_first-1;
@@ -454,7 +454,7 @@ while other_cast == 1
     
     if type_selection == 1
         % -------------------------- CONTINUE ???? ----------
-        other_cast = input('Add other scan (1/0) ? ');
+        other_cast = input('Add another ADJUSTED PROFILE (1/0) ? ');
         if isempty(other_cast); other_cast = 1;end
     else
         % ----------- Fin automatique -----------------------
