@@ -166,8 +166,8 @@ while another_ref == 'y'
         nombreimages=base_ref(rec_ref).histopx(aa,4);
     elseif isfield(base_ref,'data_nb')
         aa = find(base_ref(rec_ref).data_nb(:,2) >= zmin & base_ref(rec_ref).data_nb(:,2) <= zmax);
-        refpix=base_ref(rec_ref).data_nb(:,5:end);
-        nombreimages=base_ref(rec_ref).data_nb(:,3);
+        refpix=base_ref(rec_ref).data_nb(aa,5:end);
+        nombreimages=base_ref(rec_ref).data_nb(aa,3);
     end
     refpix = refpix./(pix_ref^2);
     volumeimage=base_ref(rec_ref).volimg0;
@@ -374,12 +374,12 @@ while other_cast == 1
     % ---------------------- AJUST --------------------------
     if isfield(base_adj,'histopx')
         aa = find(base_adj(rec_adj).histopx(:,2) >= zmin & base_adj(rec_adj).histopx(:,2) <= zmax);
-        data=base_adj(rec_adj).histopx(:,5:end);
-        nombreimages=base_adj(rec_adj).histopx(:,4);
+        data=base_adj(rec_adj).histopx(aa,5:end);
+        nombreimages=base_adj(rec_adj).histopx(aa,4);
     elseif isfield(base_adj,'data_nb')
         aa = find(base_adj(rec_adj).data_nb(:,2) >= zmin & base_adj(rec_adj).data_nb(:,2) <= zmax);
-        data=base_adj(rec_adj).data_nb(:,5:end);
-        nombreimages=base_adj(rec_adj).data_nb(:,3);
+        data=base_adj(rec_adj).data_nb(aa,5:end);
+        nombreimages=base_adj(rec_adj).data_nb(aa,3);
     end
     data = data./(pix_adj^2);
     volumeimage=base_adj(rec_adj).volimg0;
