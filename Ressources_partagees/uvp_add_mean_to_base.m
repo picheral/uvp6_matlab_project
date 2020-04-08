@@ -157,8 +157,8 @@ else
         samples_nb = [samples_nb; [thres_first, thres_last]];
         
         % ask for other casts
-        other_cast = input('Add other casts ? ([n]/y) ','s');
-        if isempty(other_cast);other_cast = 'n';end
+        other_cast = input('Add other casts ? ([y]/n) ','s');
+        if isempty(other_cast);other_cast = 'y';end
         
     end
     disp('---------------------------------------------------------------')
@@ -190,7 +190,7 @@ else
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
         raw_folder = base(samples_nb(1)+i-1).raw_folder;
-        profilename = ['mean_',char(base(samples_nb(1)+i-1).profilename)];
+        profilename = ['mean_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
         histopx_mean = base(samples_nb(1)).histopx;
         histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
         histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
