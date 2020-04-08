@@ -53,7 +53,7 @@ disp('------------------------------------------------------');
 % ----------------------- Creation de la figure ---------------------------
 color = 'rgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbckyrgbykygbckygbcky';
 legende = {};
-fig5 = figure('numbertitle','off','name','UVP_spectres_pixels','Position',[10 50 1000 1000]);
+fig5 = figure('numbertitle','off','name','UVP_spectres_pixels','Position',[10 50 1000 700]);
 
 %% ------------- Selection du projet de REFERENCE -------------
 project_folder_ref_list = [];
@@ -485,7 +485,7 @@ end
 ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
 % legend(legende);
 % axis([0.01 5 0.0001 1000]);
-axis([0.05 2 0.01 10000000]);
+axis([0.05 4 0.001 1000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
@@ -498,7 +498,7 @@ if nb_of_ref == 1
 else
     title('Normalized SPECTRA','fontsize',10);
     str = string(project_folder_ref_list);
-    annotation('textbox',[.2 .6 .3 .3],'String',str,'FitBoxToText','on');
+    annotation('textbox',[.1 .6 .3 .3],'String',str,'FitBoxToText','on');
 end
 %% ------------- Mise en forme finale FIT -----------------
 %subplot(2,2,2)
@@ -511,10 +511,10 @@ else
     xlabel('RAW ESD [mm]','fontsize',12);
 end
 ylabel('ABUNDANCE [#/L/mm²]','fontsize',12);
-legend(legende);
+legend(legende,'Location','southwest')
 % axis([0.01 5 0.0001 1000]);
 % axis([0.05 2 0.01 10000000]);
-axis([0.1 1 0.01 10000000]);
+axis([0.05 4 0.001 1000000]);
 % axis([0.05 3 0.0000001 100]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');

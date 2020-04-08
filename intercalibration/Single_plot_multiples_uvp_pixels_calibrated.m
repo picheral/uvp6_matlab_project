@@ -234,8 +234,10 @@ while other_cast == 1
         loglog(exp(camsm_adj_log),exp(nbsum_adj_log),[color(index_plot),'+']);
         
     end
-    
-    legende(index_plot) = {[char(uvp_adj),' : ',char(base_adj(adj_record).profilename),' (',num2str(aa_adj),'/',num2str(expo_adj),')']};    %{char(uvp_adj)};
+    texte = char(base_adj(adj_record).profilename);
+    aa = find(texte == '_');
+    texte(aa) = '-';
+    legende(index_plot) = {[char(uvp_adj),' : ',texte,' (',num2str(aa_adj),'/',num2str(expo_adj),')']};    %{char(uvp_adj)};
     % -------------------------- CONTINUE ???? ----------
     other_cast = input('Add other scan (1/0) ? ');
     if isempty(other_cast); other_cast = 1;end
@@ -259,7 +261,10 @@ end
 
 camsm_ref_log = log(camsm_ref);
 loglog(exp(camsm_ref_log),exp(refsum_log),'ro');
-legende(index_plot) = {[char(uvp_ref),' : ',char(base_ref(ref_record).profilename),' (ref)',' (',num2str(aa_ref),'/',num2str(expo_ref),')']};
+texte = char(base_ref(ref_record).profilename);
+aa = find(texte == '_');
+texte(aa) = '-';
+legende(index_plot) = {[char(uvp_ref),' : ',texte,' (ref)',' (',num2str(aa_ref),'/',num2str(expo_ref),')']};
 
 %% ------------- Mise en forme finale -----------------
 if type_plot == 'c'
@@ -268,9 +273,10 @@ else
     xlabel('RAW ESD [mm]','fontsize',12);
 end
 ylabel('COUNTS','fontsize',12);
-legend(legende);
+
+legend(legende,'Location','southwest');
 % axis([0.01 5 0.0001 1000]);
-axis([0.05 2 0.01 100000]);
+axis([0.05 4 0.001 100000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 orient tall
@@ -282,7 +288,7 @@ orient tall
 %
 % titre = [titre '_cast_' char(base_ref(ref_record).profilename)];
 
-titre = [char(uvp_ref),'_',char(base_ref(ref_record).profilename)];
+titre = ['REF : ',char(uvp_ref),' (',char(base_ref(ref_record).profilename),')'];
 texte = titre;
 aa = find(texte == '_');
 texte(aa) = ' ';
