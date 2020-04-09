@@ -169,6 +169,7 @@ while another_ref == 'y'
         refpix=base_ref(rec_ref).data_nb(aa,5:end);
         nombreimages=base_ref(rec_ref).data_nb(aa,3);
     end
+    refpix_raw = refpix;
     refpix = refpix./(pix_ref^2);
     volumeimage=base_ref(rec_ref).volimg0;
     aa_ref=base_ref(rec_ref).a0;
@@ -177,6 +178,11 @@ while another_ref == 'y'
     volumeechref=volumeimage*nombreimages;
     volumeechref=volumeechref*ones(1,size(refpix,2));
     refs=refpix./volumeechref;
+    
+    % -------- max size where <30 object counts ---------------------------
+    aa = find( sum(refpix_raw,1) <= 30);
+    i_size_limit = aa(1);
+    
     pixsize= [1:size(refpix,2)];
     tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
     newsize=tailleref;
@@ -212,9 +218,9 @@ while another_ref == 'y'
     y_ref_list = [y_ref_list; y_ref];
 
     % -------------------------- Table données synthétiques ---------
-    data_table(index_plot,:) = [0 aa_data_ref expo_data_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1];
+    data_table(index_plot,:) = [0 aa_data_ref expo_data_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
     data_name(index_plot) = {txt_ref};
-    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio'};
+    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
 
     % % -------- Figure RAW -----------------------------
     % subplot(2,2,1)
@@ -381,6 +387,7 @@ while other_cast == 1
         data=base_adj(rec_adj).data_nb(aa,5:end);
         nombreimages=base_adj(rec_adj).data_nb(aa,3);
     end
+    data_raw = data;
     data = data./(pix_adj^2);
     volumeimage=base_adj(rec_adj).volimg0;
     %     hisnb=baseadj(profildata).hisnb;
@@ -396,6 +403,11 @@ while other_cast == 1
     nbsum_adj_log = log(nbsum);
     x = [esd_min:0.01:esd_max];
 
+    % -------- max size where <30 object counts ---------------------------
+    aa = find( sum(data_raw,1) <= 1);
+    i_size_limit = aa(1);
+    
+    
     % -------- Figure RAW data ----------------------------------
     %subplot(2,2,1)
     subplot(1,2,1)
@@ -449,7 +461,7 @@ while other_cast == 1
     legende(index_plot-nb_of_ref+1) = {txt};    %{char(uvp_adj)};
     
     % -------------------------- Table données synthétiques ---------
-    data_table(index_plot+1,:) = [Score aa_data_adj expo_data_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref)];
+    data_table(index_plot+1,:) = [Score aa_data_adj expo_data_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref), camsm_adj(i_size_limit)];
     data_name(index_plot+1) = {txt};
     
     if type_selection == 1

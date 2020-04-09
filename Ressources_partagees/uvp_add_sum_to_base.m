@@ -1,4 +1,4 @@
-% mean des cast utiles d'un étalon, par threshold
+% sum des cast utiles d'un étalon, par threshold
 % Camille Catalano, LOV, 2020/04
 
 %pour uvp005lp
@@ -13,7 +13,7 @@ clear all
 close all
 
 disp('------------------------------------------------------');
-disp('---------- ADD mean of casts into a database ---------')
+disp('---------- ADD sum of casts into a database ---------')
 disp('------------------------------------------------------');
 selectprojet = 0;
 while (selectprojet == 0)
@@ -102,27 +102,26 @@ if (strcmp(project_folder(4:7),'uvp5'))
     ee = uvp == '_';
     uvp(ee) = '-';
     
-    %% HISTOPX MEAN for uvp5
+    %% HISTOPX sum for uvp5
     base_size = length(base);
     base(base_size+1) = base(samples_nb(1));
     bru0 = base(samples_nb(1)).bru0{1};
-    profilename = ['mean_',char(base(samples_nb(1)).profilename{1})];
-    histopx_mean = base(samples_nb(1)).histopx;
-    histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
-    histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
+    profilename = ['sum_',char(base(samples_nb(1)).profilename{1})];
+    histopx_sum = base(samples_nb(1)).histopx;
+    histopx_sum(:,2) = histopx_sum(:,2).*histopx_sum(:,4);
+    histopx_sum(:,5:end) = histopx_sum(:,5:end);
     for j = 2 : cast_nb_max
         profilename = [profilename ,'_', char(base(samples_nb(j)).profilename{1})];
         bru0 = [bru0 ,'_', base(samples_nb(j)).bru0{1}];
         histopx_to_add = base(samples_nb(j)).histopx;
-        [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
-        histopx_mean(:,5:end) = histopx_mean(:,5:end) + histopx_to_add(:,5:end)./histopx_to_add(:,4);
-        histopx_mean(:,2) = histopx_mean(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
-        histopx_mean(:,3:4) = histopx_mean(:,3:4) + histopx_to_add(:,3:4);
+        [histopx_sum, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_sum, histopx_to_add);
+        histopx_sum(:,5:end) = histopx_sum(:,5:end) + histopx_to_add(:,5:end);
+        histopx_sum(:,2) = histopx_sum(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
+        histopx_sum(:,3:4) = histopx_sum(:,3:4) + histopx_to_add(:,3:4);
     end
-    histopx_mean(:,2) = histopx_mean(:,2) ./ histopx_mean(:,4);
-    histopx_mean(:,3:4) = 1;
-    histopx_mean(:,5:end) = histopx_mean(:,5:end) ./ cast_nb_max;
-    base(base_size+1).histopx = histopx_mean;
+    histopx_sum(:,2) = histopx_sum(:,2) ./ histopx_sum(:,4);
+    histopx_sum(:,5:end) = histopx_sum(:,5:end);
+    base(base_size+1).histopx = histopx_sum;
     base(base_size+1).bru0 = {bru0};
     base(base_size+1).profilename = {profilename};
     base(base_size+1).histnb = [];
@@ -183,17 +182,17 @@ else
     ee = uvp == '_';
     uvp(ee) = '-';
     
-    %% HISTOPX MEAN for uvp6
+    %% HISTOPX sum for uvp6
     % for uvp6
     base_size = length(base);
     for i = 1 : threshold_nb
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
         raw_folder = base(samples_nb(1)+i-1).raw_folder;
-        profilename = ['mean_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
-        histopx_mean = base(samples_nb(1)+i-1).histopx;
-        histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
-        histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
+        profilename = ['sum_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
+        histopx_sum = base(samples_nb(1)+i-1).histopx;
+        histopx_sum(:,2) = histopx_sum(:,2).*histopx_sum(:,4);
+        histopx_sum(:,5:end) = histopx_sum(:,5:end);
         for j = 2 : cast_nb_max
             if base(samples_nb(j)+i-1).threshold ~= threshold
                 disp('--------  ERROR : different samples have different treshold -------')
@@ -203,15 +202,14 @@ else
             raw_folder = [raw_folder ,'_', base(samples_nb(j)+i-1).raw_folder{1}];
             profilename = [profilename ,'_', char(base(samples_nb(j)+i-1).profilename{1}(17:end))];
             histopx_to_add = base(samples_nb(j)+i-1).histopx;
-            [histopx_mean, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_mean, histopx_to_add);
-            histopx_mean(:,5:end) = histopx_mean(:,5:end) + histopx_to_add(:,5:end)./histopx_to_add(:,4);
-            histopx_mean(:,2) = histopx_mean(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
-            histopx_mean(:,3:4) = histopx_mean(:,3:4) + histopx_to_add(:,3:4);
+            [histopx_sum, histopx_to_add, ~] = CalibrationUvpComputeDepthRange(histopx_sum, histopx_to_add);
+            histopx_sum(:,5:end) = histopx_sum(:,5:end) + histopx_to_add(:,5:end);
+            histopx_sum(:,2) = histopx_sum(:,2) + histopx_to_add(:,2).*histopx_to_add(:,4);
+            histopx_sum(:,3:4) = histopx_sum(:,3:4) + histopx_to_add(:,3:4);
         end
-        histopx_mean(:,2) = histopx_mean(:,2) ./ histopx_mean(:,4);
-        histopx_mean(:,3:4) = 1;
-        histopx_mean(:,5:end) = histopx_mean(:,5:end) ./ cast_nb_max;
-        base(base_size+i).histopx = histopx_mean;
+        histopx_sum(:,2) = histopx_sum(:,2) ./ histopx_sum(:,4);
+        histopx_sum(:,5:end) = histopx_sum(:,5:end);
+        base(base_size+i).histopx = histopx_sum;
         base(base_size+i).raw_folder = {raw_folder};
         base(base_size+i).profilename = {profilename};
         base(base_size+i).raw_histopx = [];
