@@ -93,16 +93,16 @@ while not(strcmp(filter_is_good, 'y'))
     
     %% ---------------------- plots ----------------
     fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 600 600]);
-    plot(part_util_filtered,-press_util_filtered,'.b');
+    semilogx(part_util_filtered,-press_util_filtered,'.b');
     hold on
-    plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
 %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
     
     %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
-    xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images (Descent ONLY)']);
+    xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     ylabel('Pressure');
     %     sgtitle(regexprep(dat_pathname, {'\\', '\_'}, {'\\\\', '\\\_'}));
     texte = char(profilename);
