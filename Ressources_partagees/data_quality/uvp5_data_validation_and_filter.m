@@ -1,6 +1,6 @@
 %% script to manually validate uvp5 sequence and filter bad data points
 % Catalano, 03/03/2020
-
+clear all
 disp('--------------------------------------------------------------------------------')
 disp('--------------------------------------------------------------------------------')
 disp('---- Welcome to the uvp5 sequence validation and data points filter program ----')
@@ -16,9 +16,6 @@ filelist = dir([folder, '\results\*_datfile.txt']);
 % data_validation_filtering is the matrix saving validation for each file
 % validation = y if OK, =n if NOK
 data_validation_filtering = cell(length(filelist),5);
-
-
-
 %% loop on files
 for i = 1:length(filelist)
     %% load data from files
@@ -31,33 +28,57 @@ for i = 1:length(filelist)
     catch
         warning(['unable to analyse file ', dat_pathname]);
         data_validation_filtering(i,:) = {dat_pathname, datestr(now), 'n', 0, 0};
-    end
-    %% take images under 10m depth, unless there is no depth
-    disp('depth filter : 10m')
-    T_deep = T(T{:,3}>100, :);
-    if isempty(T_deep)
-        T_util = T;
-    else
-        T_util = T_deep;
-    end
+    end   
+    %% creation listecor
+    Pressure = table2array(T(:,3));
+    Flag = ones(size(Pressure));
+    Imagelist  = table2array(T(:,1));
+    Part = table2array(T(:,15)); 
+    listecor = [ Imagelist Pressure/10 Flag Part ];
+    % path
+    aa = split(dat_pathname,'\');
+    results_dir = [char(aa(1)),'\',char(aa(2)),'\',char(aa(3)),'\'];
+    profilename = char(aa(end));
+    profilename = profilename(1:end-4);
+    %     %% take images under 10m depth, unless there is no depth
+    %     disp('depth filter : 10m')
+    %     T_deep = T(T{:,3}>100, :);
+    %     if isempty(T_deep)
+    %         T_util = T;
+    %     else
+    %         T_util = T_deep;
+    %     end
+    %
     %% data validation
     disp('------------------------------------------------')
     disp('Validation of the data...')
-    validation = DataValidation(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
+    %     validation = DataValidation(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
+    validation = DataValidation(listecor, results_dir, profilename);
     %% filtering of bad data points
     if validation == 'n'
         % filtering
         disp('------------------------------------------------')
-        disp('Filtering of bad data points...')
-        [im_filtered, part_filtered, movmean_window, threshold_percent] = DataFiltering(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);
-        disp(['movmean_window = ', num2str(movmean_window)])
-        disp(['threshold_percent = ', num2str(threshold_percent*100)])
-        disp([height(T) - length(part_filtered), ' points has been rejected'])
+        disp('Filtering of bad data points FROM THE ENTIRE DATFILE')
+        %         [im_filtered, part_filtered, movmean_window, threshold_percent] = DataFiltering(T{:,1}, T{:,15}, T_util{:,1}, T_util{:,15}, dat_pathname);    
+        [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor, results_dir, profilename,'m');
+        disp(['Movmean_window = ', num2str(movmean_window)])
+        disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+        disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+        dd = find(listecor(:,3) == 1);
+        disp(['Total of descent images = ',num2str(numel(dd))])
+        disp(['Total number of un-rejected images = ',num2str(numel(im_filtered))])
+        disp(['Number of rejected images = ',num2str(numel(part_util_filtered_rejected))])
+        disp(['Percentage of un-rejected images = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+        disp(['Percentage of rejected images = ',num2str(100*numel(part_util_filtered_rejected)/numel(listecor(:,1)),3)]);
+        % disp(['movmean_window = ', num2str(movmean_window)])
+        %         disp(['threshold_percent = ', num2str(threshold_percent*100)])
+        %         disp([height(T) - length(part_filtered), ' points has been rejected'])
         % save new dat file
-        
-        disp('filtered data file in')
+        %         disp('filtered data file in')
         % save params
         data_validation_filtering(i,:) = {dat_pathname, datestr(now), validation, movmean_window, threshold_percent};
+        %% -------------- Ecriture d'un DATFILE filtre des images retirées ------------------
+        write_filtered_datfile(dat_pathname,[results_dir, profilename,'_filtered.txt'],im_filtered,image);     
     else
         disp('------------------------------------------------')
         disp('Data are good. NO data filter has been applied')
@@ -69,7 +90,7 @@ close;
 
 %% save/update sumary file
 disp('--------------------------------------------------------------------------------')
-data_validation_filtering_file = 'U:\data_validation.csv';
+data_validation_filtering_file = [results_dir,'data_validation.csv'];
 if isfile(data_validation_filtering_file)
     %% update summary file
     updated_data_validation_filtering = table2cell(readtable(data_validation_filtering_file));
@@ -88,6 +109,7 @@ else
     % create new summary matrix
     updated_data_validation_filtering = data_validation_filtering;
 end
+
 %% save quality check matrix
 disp(['Summary of the program saved in ', data_validation_filtering_file])
 writecell(updated_data_validation_filtering, data_validation_filtering_file);
@@ -96,5 +118,6 @@ disp('--------------------------------------------------------------------------
 disp('End of the sequence validation and data points filter program')
 disp('--------------------------------------------------------------------------------')
 disp('--------------------------------------------------------------------------------')
+
 
 
