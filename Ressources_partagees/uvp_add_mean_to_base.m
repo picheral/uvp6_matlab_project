@@ -3,7 +3,7 @@
 
 %pour uvp005lp
 % de 28-46, 61-79, 81-99, 114-132
-%pour uvp008lp
+%pour uvp008lp34
 % de 28-46, 74-92, 94-112, 114-132, 134-152, 174-192
 %pour uvp010lp
 % de 28-46, 74-92, 94-112, 114-132, 134-152, 167-185
@@ -191,7 +191,7 @@ else
         threshold = base(samples_nb(1)+i-1).threshold;
         raw_folder = base(samples_nb(1)+i-1).raw_folder;
         profilename = ['mean_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
-        histopx_mean = base(samples_nb(1)).histopx;
+        histopx_mean = base(samples_nb(1)+i-1).histopx;
         histopx_mean(:,2) = histopx_mean(:,2).*histopx_mean(:,4);
         histopx_mean(:,5:end) = histopx_mean(:,5:end)./histopx_mean(:,4);
         for j = 2 : cast_nb_max
