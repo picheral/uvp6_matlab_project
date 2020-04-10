@@ -36,6 +36,7 @@ else
     disp(['Reference profile   : ',char(ref_cast.profilename)]);
 end
 disp(['Reference profile # : ',num2str(ref_cast.record)]);
+disp(['Observed volume [L] : ', num2str(sum(ref_cast.vol_ech(:,1), 'all'))]);
 disp(['Shutter             : ',num2str(ref_cast.ShutterSpeed)]);
 disp(['Gain                : ',num2str(ref_cast.gain)]);
 disp(['Threshold           : ',num2str(ref_cast.Thres)]);
@@ -58,6 +59,7 @@ else
     disp(['Adjusted profile   : ',char(adj_cast.profilename)]); 
 end
 disp(['Adjusted profile #  : ',num2str(adj_cast.record)]);
+disp(['Observed volume [L] : ', num2str(sum(adj_cast.vol_ech(:,1), 'all'))]);
 disp(['Shutter             : ',num2str(adj_cast.ShutterSpeed)]);
 disp(['Gain                : ',num2str(adj_cast.gain)]);
 disp(['Threshold           : ',num2str(adj_cast.Thres)]);

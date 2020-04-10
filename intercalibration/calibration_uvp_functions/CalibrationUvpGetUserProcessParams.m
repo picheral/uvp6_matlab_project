@@ -15,8 +15,8 @@ esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.4) ');
 if isempty(esd_min); esd_min = 0.4; end
 
 % max of size range
-tt = 0.7;
-%if contains(uvp_adj,'uvp6'); tt = 1;end 
+tt = 1.5;
+if contains(uvp_adj,'uvp6'); tt = 1;end 
 esd_max = input(['Enter ESD maximum for minimisation [mm] (default = ',num2str(tt),') ']);
 if isempty(esd_max); esd_max = tt; end
 
