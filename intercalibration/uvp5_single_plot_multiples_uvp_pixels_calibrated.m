@@ -280,13 +280,6 @@ axis([0.05 4 0.001 100000]);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 orient tall
-% ----- Filename / Titre ---------
-% titre = ['counts'];
-% for i = 1:index_plot - 1
-%     titre = [char(titre), '_', char(legende(i))];
-% end
-%
-% titre = [titre '_cast_' char(base_ref(ref_record).profilename)];
 
 titre = ['REF : ',char(uvp_ref),' (',char(base_ref(ref_record).profilename),')'];
 texte = titre;
@@ -294,6 +287,16 @@ aa = find(texte == '_');
 texte(aa) = ' ';
 title(texte);
 
+% ----- Filename / Titre ---------
+% titre = ['counts'];
+% for i = 1:index_plot - 1
+%     titre = [char(titre), '_', char(legende(i))];
+% end
+% 
+% titre = [titre '_cast_' char(base_ref(ref_record).profilename)];
+titre = [char(uvp_ref)],
+titre = input(['input filename (',titre,')'],'s');
+if isempty(titre); titre = char(uvp_ref);end
 set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[results_dir_ref,'\',char(titre)]);
 
