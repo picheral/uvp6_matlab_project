@@ -1,7 +1,7 @@
 % mean de casts de différents instruments uvp6
 % Camille Catalano, LOV, 2020/04
 
-function [uvp_base_mean] = Uvp6MeanInstruBases(uvp_bases)
+function [uvp_base_mean] = Uvp6MeanInstruRawBases(uvp_bases)
 % Uvp6MeanInstruBases compute the mean of different uvp_bases through the sum of
 % histopx
 %

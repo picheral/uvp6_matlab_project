@@ -133,7 +133,7 @@ end
 
 %% ref base histopx and configuration
 if nb_of_ref > 1
-    base_ref = Uvp6MeanInstruBases(base_ref_list);
+    base_ref = Uvp6MeanInstruRawBases(base_ref_list);
     aa_data_ref = base_ref.a0/1000000;
     expo_data_ref = base_ref.exp0;
     img_vol_data_ref = base_ref.volimg0;
