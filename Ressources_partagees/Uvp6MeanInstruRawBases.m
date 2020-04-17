@@ -26,6 +26,7 @@ profilename = ['sum_',char(uvp_bases(1).profilename{1}(17:end))];
 pvmtype = char(uvp_bases(1).pvmtype);
 light = char(uvp_bases(1).light);
 histopx_sum = uvp_bases(1).histopx;
+[histopx_sum, ~, ~] = CalibrationUvpComputeDepthRange(histopx_sum, uvp_bases(2).histopx);
 histopx_sum(:,2) = histopx_sum(:,2).*histopx_sum(:,4).*uvp_bases(1).volimg0;
 histopx_sum(:,3:4) = histopx_sum(:,3:4).*uvp_bases(1).volimg0;
 images_tot = histopx_sum(:,4);
