@@ -1,4 +1,4 @@
-function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, datahistref, yresults_adj)
+function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, datahistref, yresults_adj, ref_esd_calib_log)
 %CalibrationUvpPlotCalibratedData plots calibrated data, fit and spectrum
 %
 %   inputs:
@@ -7,13 +7,14 @@ function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, da
 %       adj_cast : struct storing computed variables from adj uvp
 %       datahistref : fited ref abundance
 %       yresults_adj : fited adj calibrated abundance
+%       ref_esd_calib_log : log de l'esd calibré de ref ou mean ref
 %
 
 %% ----------------- used variables  ---------------------------------------
 results_dir_ref = ref_cast.results_dir;
 uvp_ref = ref_cast.uvp;
 ref_esd_calib = ref_cast.esd_calib;
-ref_esd_calib_log = ref_cast.esd_calib_log;
+%ref_esd_calib_log = ref_cast.esd_calib_log;
 ref_area_mm2_calib = ref_cast.area_mm2_calib;
 ref_histo_mm2_vol_mean = ref_cast.histo_mm2_vol_mean;
 ref_profilename = ref_cast.profilename;

@@ -149,9 +149,9 @@ else
         
         % --------- On lit tous les sample de la base un par un -----------
         thres_first = input('Enter the number of the FIRST threshold of a profile (default = 1) ');
-        thres_last =  input('Enter the number of the LAST threshold of the same profile (default = last) ');
+        thres_last =  input('Enter the number of the LAST threshold of the same profile (default = FIRST) ');
         if isempty(thres_first); thres_first = 1;end
-        if isempty(thres_last); thres_last = numel(base); end
+        if isempty(thres_last); thres_last = thres_first; end
         
         samples_nb = [samples_nb; [thres_first, thres_last]];
         
@@ -160,9 +160,7 @@ else
         if isempty(other_cast);other_cast = 'y';end
         
     end
-    disp('---------------------------------------------------------------')
-    disp(['Number of selected profiles : ', num2str(numel(samples_nb))])
-    disp('---------------------------------------------------------------')
+
     if numel(samples_nb) == 1
         disp('--------  ERROR : only one cast has been selected -------')
         disp('--------  Process Aborted -------------------------------')
@@ -178,6 +176,11 @@ else
         return
     end
     
+    disp('---------------------------------------------------------------')
+    disp(['Number of selected thresholds : ', num2str(threshold_nb)])
+    disp(['Number of selected casts : ', num2str(cast_nb_max)])
+    disp('---------------------------------------------------------------')
+    
     uvp = char(base(samples_nb(1)).pvmtype);
     ee = uvp == '_';
     uvp(ee) = '-';
@@ -188,7 +191,7 @@ else
     for i = 1 : threshold_nb
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
-        raw_folder = base(samples_nb(1)+i-1).raw_folder;
+        raw_folder = base(samples_nb(1)+i-1).raw_folder{1};
         profilename = ['sum_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
         histopx_sum = base(samples_nb(1)+i-1).histopx;
         histopx_sum(:,2) = histopx_sum(:,2).*histopx_sum(:,4);
