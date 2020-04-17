@@ -160,9 +160,7 @@ else
         if isempty(other_cast);other_cast = 'y';end
         
     end
-    disp('---------------------------------------------------------------')
-    disp(['Number of selected profiles : ', num2str(numel(samples_nb))])
-    disp('---------------------------------------------------------------')
+
     if numel(samples_nb) == 1
         disp('--------  ERROR : only one cast has been selected -------')
         disp('--------  Process Aborted -------------------------------')
@@ -177,6 +175,11 @@ else
         disp('--------  Process Aborted ------------------------------------------------')
         return
     end
+    
+    disp('---------------------------------------------------------------')
+    disp(['Number of selected thresholds : ', num2str(threshold_nb)])
+    disp(['Number of selected casts : ', num2str(cast_nb_max)])
+    disp('---------------------------------------------------------------')
     
     uvp = char(base(samples_nb(1)).pvmtype);
     ee = uvp == '_';
