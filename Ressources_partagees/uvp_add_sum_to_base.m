@@ -149,9 +149,9 @@ else
         
         % --------- On lit tous les sample de la base un par un -----------
         thres_first = input('Enter the number of the FIRST threshold of a profile (default = 1) ');
-        thres_last =  input('Enter the number of the LAST threshold of the same profile (default = last) ');
+        thres_last =  input('Enter the number of the LAST threshold of the same profile (default = FIRST) ');
         if isempty(thres_first); thres_first = 1;end
-        if isempty(thres_last); thres_last = numel(base); end
+        if isempty(thres_last); thres_last = thres_first; end
         
         samples_nb = [samples_nb; [thres_first, thres_last]];
         
