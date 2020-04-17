@@ -188,7 +188,7 @@ else
     for i = 1 : threshold_nb
         base(base_size+i) = base(samples_nb(1)+i-1);
         threshold = base(samples_nb(1)+i-1).threshold;
-        raw_folder = base(samples_nb(1)+i-1).raw_folder;
+        raw_folder = base(samples_nb(1)+i-1).raw_folder{1};
         profilename = ['sum_',char(base(samples_nb(1)+i-1).profilename{1}(17:end))];
         histopx_sum = base(samples_nb(1)+i-1).histopx;
         histopx_sum(:,2) = histopx_sum(:,2).*histopx_sum(:,4);

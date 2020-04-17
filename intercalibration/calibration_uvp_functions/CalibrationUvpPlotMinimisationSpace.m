@@ -1,4 +1,4 @@
-function CalibrationUvpPlotMinimisationSpace(ref_cast, adj_cast, datahistref, aa_adj, expo_adj, fit_type)
+function CalibrationUvpPlotMinimisationSpace(ref_cast, adj_cast, datahistref, aa_adj, expo_adj, fit_type, ref_esd_calib_log)
 %CalibrationUvpPlotMinimisationSpace plot the 2D minimisation space and the
 %optimal point
 %
@@ -9,6 +9,7 @@ function CalibrationUvpPlotMinimisationSpace(ref_cast, adj_cast, datahistref, aa
 %       aa_adj : aa parameters of size intercalibration of adj uvp
 %       expo_adj : expo parameters of size intercalibration of adj uvp
 %       fit_type : type of function (polinomial degree) used for fit
+%       ref_esd_calib_log : log de l'esd calibré de ref ou mean ref
 %
 
 %% MINIMISATION space
@@ -31,7 +32,7 @@ for i=mini_min:0.0005:mini_max
     exps=[];
     for j=1:0.025:maxe
         X2=[i j];
-        res=histofunction7_new(X2,datahistref, adj_cast.pixsize, adj_cast.histo_mm2_vol_mean, ref_cast.esd_calib_log, fit_type);
+        res=histofunction7_new(X2,datahistref, adj_cast.pixsize, adj_cast.histo_mm2_vol_mean, ref_esd_calib_log, fit_type);
         if (isinf(res)|| res < 0); res = NaN; end
         result=[result res];
         aas=[aas i];
