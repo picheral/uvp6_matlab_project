@@ -94,6 +94,10 @@ while j < N_seq+1
     % open data.txt file
     % path is the path for the text file stored in each sequence folder
     path = [raw_folder, seq(j).name, '\', txt.name];
+    
+    %% ----------- A REMPLACER PAR FONCTION ------------------------
+    % [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,xp] = uvp6_read_metadata_from_datafile(folder,path);
+    
     fid = fopen(path);
     
     % ----------------- Ligne HW -----------------
