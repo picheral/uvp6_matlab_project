@@ -11,8 +11,8 @@ function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
 % ------------------- params user inputs  ---------------------------------
 
 % min of size range
-esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.4) ');
-if isempty(esd_min); esd_min = 0.4; end
+esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.13) ');
+if isempty(esd_min); esd_min = 0.13; end
 
 % max of size range
 tt = 1.5;
