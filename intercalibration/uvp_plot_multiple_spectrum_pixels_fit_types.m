@@ -241,7 +241,7 @@ x_ref = [esd_min:0.01:esd_max];
 % -------------------------- Table données synthétiques ---------
 data_table(index_plot,:) = [0 aa_data_ref expo_data_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
 data_name(index_plot) = {txt_ref};
-data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
+data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat_size_limit'};
 
 % % -------- Figure RAW -----------------------------
 % subplot(2,2,1)

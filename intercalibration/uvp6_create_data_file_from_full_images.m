@@ -57,7 +57,7 @@ threstxt = char(threstxt);
 %% Boucle sur les sequences sources de RAW
 % ------ Liste des répertoires séquence --------
 cd(raw_folder);
-seq = dir([cd '\2020*']);
+seq = dir([cd '\20*']);
 N_seq = size(seq,1);
 
 for i = 1 : N_seq
