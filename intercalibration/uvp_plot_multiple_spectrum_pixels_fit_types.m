@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 %% PLOT spectres PIXELS de multiples UVP6-5
 % Lombard -Picheral, 2016/02, 2019/08
 % Compatible UVP5 et UVP6
@@ -593,8 +592,8 @@ T.profilename = data_name';
 writetable(T,[results_dir_ref,'\',char(titre_file),'.txt']);
 T
 
-disp('--------------- Table saved -------------------------- ');
-=======
+disp('--------------- Table saved -------------------------- ')
+
 %% PLOT spectres PIXELS de multiples UVP6-5
 % Lombard -Picheral, 2016/02, 2019/08
 % Compatible UVP5 et UVP6
@@ -1190,5 +1189,4 @@ writetable(T,[results_dir_ref,'\',char(titre_file),'.txt']);
 T
 
 disp('--------------- Table saved -------------------------- ');
->>>>>>> 9e7e43f8fbc13161fe1a7a4604d3c21e00205f5c
 disp('------------------ END ------------------------------- ');
