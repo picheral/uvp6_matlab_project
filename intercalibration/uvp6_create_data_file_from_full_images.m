@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 %% Analyse full images from UVP6 profile and create DATA.txt files
 % to detect best threshold to fit with "gold" UVP
 % Creates DATA files for different thresholds
@@ -246,9 +245,6 @@ cd(folder);
 
 disp('------------------------ END of PROCESS ----------------------')
 
-
-
-=======
 %% Analyse full images from UVP6 profile and create DATA.txt files
 % to detect best threshold to fit with "gold" UVP
 % Creates DATA files for different thresholds
@@ -495,7 +491,3 @@ end
 cd(folder);
 
 disp('------------------------ END of PROCESS ----------------------')
-
-
-
->>>>>>> 9e7e43f8fbc13161fe1a7a4604d3c21e00205f5c
