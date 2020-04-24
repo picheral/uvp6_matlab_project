@@ -38,13 +38,13 @@ if (strcmp(uvp_cast.project_folder(4:7),'uvp5'))
         uvp_cast.img_vol_data = uvp_base.volimg0;
         uvp_cast.aa_data = uvp_base.a0;
         uvp_cast.expo_data = uvp_base.exp0;
-    elseif strcmp(type, 'Adjusted') && (adj_base.volimg0 ~= adj_cast.img_vol_data)
+    elseif strcmp(type, 'Adjusted') && (uvp_base.volimg0 ~= uvp_cast.img_vol_data)
         disp('The image volume of the adjusted UVP is not the same in the data base and in the configuration file. Check the file !!! ');
         disp('Configuration_data');
-        disp(['Image volume [L]    : ',num2str(adj_cast.img_vol_data)]);
+        disp(['Image volume [L]    : ',num2str(uvp_cast.img_vol_data)]);
         disp('BASE');
-        disp(['Image volume [L]    : ',num2str(adj_base.volimg0)]);
-        adj_cast.img_vol_data = adj_base.volimg0;
+        disp(['Image volume [L]    : ',num2str(uvp_base.volimg0)]);
+        uvp_cast.img_vol_data = uvp_base.volimg0;
     else
         disp('All metadata of the reference profile are OK.')
     end
