@@ -106,7 +106,7 @@ if option == 'c'
             
             % ------------- Liste des images -------------------
             %             im_list = dir('save*.png');
-            im_list = dir('2020*.png');
+            im_list = dir('20*.png');
             
             if ~isempty(im_list)
                 % --------- Si au moins une image --------------
