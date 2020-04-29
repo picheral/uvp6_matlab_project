@@ -375,6 +375,7 @@ while j < N_seq+1
             firstimg = firstimg(1);
             lastimg = max(data_nb(:,1));
             lastimg = find(data_nb(:,1) == lastimg);
+            lastimg = lastimg(1);
         end
         
         % ------------- time of first image -----------------
