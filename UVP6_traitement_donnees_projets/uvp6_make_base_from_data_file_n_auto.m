@@ -413,7 +413,7 @@ while j < N_seq+1
         for h=1:size(depth,2)-1
             aa = find(data_nb(:,1)<depth(h+1) & data_nb(:,1)>=depth(h));
             if ~isempty(aa)
-                if data_nb(firstimg) < data_nb(lastimg)-10 
+                if data_nb(1,1) < data_nb(end,1)-10 
                     % ------ Profil descente -------
                     dd = find(aa <= x1);
                 else
