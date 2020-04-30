@@ -421,7 +421,8 @@ while j < N_seq+1
                     dd = find(aa >= x1);
                 end
                 % passe de 5:902 à 3:900 le 12/02/2020
-                nb_d(h,5:902) = nansum(data_nb(aa(dd),3:900),1);
+                % passe de 5:902 à 5:904 et 3:900 à 3:902 le 30/04/2020
+                nb_d(h,5:904) = nansum(data_nb(aa(dd),3:902),1);
                 nb_d(h,4) = size(dd,1);
                 nb_d(h,3) = size(aa,1);
                 nb_d(h,2) = nanmean(data_nb(aa(dd),1));
