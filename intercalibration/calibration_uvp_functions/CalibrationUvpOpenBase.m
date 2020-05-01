@@ -56,7 +56,7 @@ catch
 end
 ligne_ref = size(base,2);
 for i = 1 : ligne_ref
-    disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+%     disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
 end
 record = input('Enter Number of the profile for the UVP (default = 1) ');
 if isempty(record); record = 1; end
