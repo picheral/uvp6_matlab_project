@@ -47,13 +47,13 @@ fig1 = figure('name','RAW data','Position',[50 50 1500 600]);
 subplot(1,4,1)
 loglog([1:numel(ref_histo_mm2_vol_mean)].*(pix_ref^2),ref_histo_mm2_vol_mean,'ro')
 hold on
-loglog([1:numel(adj_histo_mm2_vol_mean)].*(pix_adj^2),adj_histo_mm2_vol_mean,'go');
+loglog([1:numel(adj_histo_mm2_vol_mean)].*(pix_adj^2),adj_histo_mm2_vol_mean,'g+');
 hold on
 xline(pi*(esd_min/2)^2, '--b');
 xline(pi*(esd_max/2)^2, '--b');
 legend(uvp_ref,uvp_adj);
 title(['RAW DATA (normalized/pxarea)'],'fontsize',14);
-xlabel('RAW AREA [mm²]','fontsize',12);
+xlabel('AREA [mm²]','fontsize',12);
 ylabel('ABUNDANCE [#/mm²/L]','fontsize',12);
 axis([0.005 2 0.01 1000000]);
 set(gca,'xscale','log');
@@ -64,13 +64,13 @@ set(gca,'yscale','log');
 subplot(1,4,2)
 loglog(ref_esd_x,ref_histo_ab_mean_red_norm,'ro');
 hold on
-loglog(adj_esd_x,adj_histo_ab_mean_red_norm,'go');
+loglog(adj_esd_x,adj_histo_ab_mean_red_norm,'g+');
 hold on
 xline(esd_min, '--b');
 xline(esd_max, '--b');
 legend(uvp_ref,uvp_adj);
 title(['RAW DATA (normalized/esd)'],'fontsize',14);
-xlabel('RAW ESD [mm]','fontsize',12);
+xlabel('ESD [mm]','fontsize',12);
 ylabel('NORMALIZED ABUNDANCE [rel]','fontsize',12);
 axis([0.05 2 0.01 1000000]);
 set(gca,'xscale','log');
@@ -81,7 +81,7 @@ set(gca,'yscale','log');
 subplot(1,4,3)
 semilogy(ref_ab_vect_ecotaxa,'ro');
 hold on
-semilogy(adj_ab_vect_ecotaxa,'go');
+semilogy(adj_ab_vect_ecotaxa,'g+');
 hold on
 % find first and last class in the esd range
 class_max = 1;
@@ -111,9 +111,9 @@ semilogx((histopx_ref(:,6)+histopx_ref(:,7))./histopx_ref(:,4)/volumeimage_ref, 
 hold on
 semilogx((histopx_adj(:,6)+histopx_adj(:,7))./histopx_adj(:,4)/volumeimage_adj, -histopx_adj(:,1), 'g');
 legend(uvp_ref,uvp_adj);
-title(['particles profiles for 2pix+3pix'],'fontsize',14);
-xlabel('particles number [part]','fontsize',12);
-ylabel('depth [m]','fontsize',12);
+title(['COUNTS'],'fontsize',14);
+xlabel('COUNTS [sum of 2 & 3 px]','fontsize',12);
+ylabel('DEPTH [db]','fontsize',12);
 
 
 %% ---------------------- Save figure -------------------------------------

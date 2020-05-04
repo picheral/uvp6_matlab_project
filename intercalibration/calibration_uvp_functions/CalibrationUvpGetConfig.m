@@ -59,7 +59,7 @@ else
     uvp_cast.Exposure = uvp_base.shutter;
     uvp_cast.ShutterSpeed = uvp_base.shutter;
     uvp_cast.SMBase    = 1;
-    uvp_cast.light1 = '';
+    uvp_cast.light1 = uvp_base.light;
     uvp_cast.light2 = '';
     uvp_cast.profilename = uvp_base.profilename;
 end

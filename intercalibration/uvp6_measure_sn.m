@@ -66,7 +66,7 @@ ligne_ref = size(base_ref,2);
 entete = ['Profilename;sn_1;sn_2;sn_3;nb_img_black;black_mean_1;black_mean_2;black_mean_3;black_stddev_1;black_stddev_2;black_stddev_3;nb_img_signal;signal_mean_1;signal_mean_2;signal_mean_3;signal_stddev_1;signal_stddev_2;signal_stddev_3'];
 
 % ---------------- Creation fichier ----------------
-path = [results_dir,char(base_list(base_selected).name),'_noise_data.txt'];
+path = [results_dir,char(base_list(base_selected).name),'_noise_data_0',num2str(threshold),'.txt'];
 fid = fopen(path,'w');
 fprintf(fid,'%s\r',char(entete));
 

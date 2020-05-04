@@ -37,7 +37,7 @@ fig2 = figure('name','ADJUSTED data','Position',[700 50 1500 600]);
 subplot(1,4,1)
 loglog((ref_area_mm2_calib),ref_histo_mm2_vol_mean,'ro');
 hold on
-loglog(adj_area_mm2_calib,(adj_histo_mm2_vol_mean),'go');
+loglog(adj_area_mm2_calib,(adj_histo_mm2_vol_mean),'g+');
 hold on
 if strcmp(uvp_ref,'uvp5-sn203')
     % -------------- AJout limites sur graphes si ref = sn203 -----------------
@@ -61,7 +61,7 @@ else
     legend(uvp_ref,uvp_adj);
 end
 axis([0.001 2 0.01 1000000]);
-xlabel('CALIBRATED AREA [mm²]','fontsize',12);
+xlabel('AREA [mm²]','fontsize',12);
 ylabel('ABUNDANCES [#/mm²/L]','fontsize',12);
 title(['CALIBRATED DATA'],'fontsize',14);
 
@@ -93,9 +93,9 @@ else
 end
 legend(uvp_ref,uvp_adj);
 axis([0.05 2 0.01 1000000]);
-xlabel('CALIBRATED ESD [mm]','fontsize',12);
+xlabel('ESD [mm]','fontsize',12);
 ylabel('ABUNDANCES [#/L]','fontsize',12);
-title(['FINAL ADJUSTMENTS'],'fontsize',14);
+title(['CALIBRATED FIT'],'fontsize',14);
 
 
 %% ------------------- Abundance VS esd class -----------------------------
@@ -114,10 +114,10 @@ title(['FINAL ADJUSTMENTS'],'fontsize',14);
 subplot(1,4,3)
 semilogy(ref_calib_vect_ecotaxa,'ro');
 hold on
-semilogy(adj_calib_vect_ecotaxa,'go');
+semilogy(adj_calib_vect_ecotaxa,'g+');
 legend(uvp_ref,uvp_adj);
 title(['CALIBRATED DATA'],'fontsize',14);
-xlabel('CALIBRATED ESD CLASS [#]','fontsize',12);
+xlabel('ESD CLASS [#]','fontsize',12);
 ylabel('ABUNDANCE [#/L]','fontsize',12);
 axis([0 15 0.01 50000]);
 
@@ -162,9 +162,9 @@ subplot(1,4,4)
 plot(ref_local_spectr_slope,-depth,'r');
 hold on
 plot(adj_local_spectr_slope,-depth,'g');
-title('local calibrated spectrum slope');
-xlabel('spectrum slope [#/L/mm]','fontsize',12);
-ylabel('depth [m]','fontsize',12);
+title('SPECTRUM SLOPE','fontsize',14);
+xlabel('SLOPE [#/L/mm]','fontsize',12);
+ylabel('DEPTH [db]','fontsize',12);
 legend(uvp_ref,uvp_adj);
 
 

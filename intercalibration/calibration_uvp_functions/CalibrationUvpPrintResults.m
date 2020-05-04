@@ -1,7 +1,7 @@
 %% UVP5 Results
 % Picheral Lombard 2017/11
 
-function CalibrationUvpPrintResults(process_params, ref_cast_list, adj_cast, aa_adj, expo_adj)
+function CalibrationUvpPrintResults(process_params, ref_cast_list, adj_cast, aa_adj, expo_adj, people)
 %CalibrationUvpPrintResults print ref and adj uvp parameters and results
 %
 %   inputs:
@@ -15,6 +15,7 @@ function CalibrationUvpPrintResults(process_params, ref_cast_list, adj_cast, aa_
 % process params
 disp('-------------------------------------------------------------------------');
 disp(['Processing date     : ',datestr(now,31)])
+disp(['Processing operator : ',char(people)]);
 disp('-------------------------------------------------------------------------');
 disp(['Nb of reference uvps: ',num2str(length(ref_cast_list))]);
 disp(['Min ESD       [mm]  : ',num2str(process_params.esd_min)]);
@@ -61,12 +62,12 @@ disp(['Light 1             : ',char(adj_cast.light1)]);
 disp(['Light 2             : ',char(adj_cast.light2)]);
 disp(['Adjusted folder     : ',char(adj_cast.project_folder(4:end))]);
 if (strcmp(adj_cast.project_folder(4:7),'uvp5'))
-    disp(['Adjusted profile   : ',char(adj_cast.histfile)]);
+disp(['Adjusted profile    : ',char(adj_cast.histfile)]);
 else
-    disp(['Adjusted profile   : ',char(adj_cast.profilename)]); 
+disp(['Adjusted profile    : ',char(adj_cast.profilename)]);
 end
 disp(['Adjusted profile #  : ',num2str(adj_cast.record)]);
-disp(['Observed volume [L] : ', num2str(sum(adj_cast.vol_ech(:,1), 'all'))]);
+disp(['Observed volume [L] : ', num2str(sum(adj_cast.vol_ech(:,1), 'all'),1)]);
 disp(['Shutter             : ',num2str(adj_cast.ShutterSpeed)]);
 disp(['Gain                : ',num2str(adj_cast.gain)]);
 disp(['Threshold           : ',num2str(adj_cast.Thres)]);

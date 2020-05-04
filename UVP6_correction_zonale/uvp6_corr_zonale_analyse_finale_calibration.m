@@ -66,11 +66,11 @@ disp('The analysis will be done only in the square zones, excluding the top, bot
 nb_zones_v = input('Input number of vertical analyzed zones in the image, must be even (CR = 10) ');
 if isempty(nb_zones_v);nb_zones_v = 10; end
 
-esd_min = input('Minimum ESD [mm] for analysis (CR for 0.2) ');
-if isempty(esd_min); esd_min = 0.2;end
+esd_min = input('Minimum ESD [mm] for analysis (CR for 0.13) ');
+if isempty(esd_min); esd_min = 0.13;end
 
-esd_max = input('Maximum ESD [mm] for analysis (CR for 0.8) ');
-if isempty(esd_max); esd_max = 0.8;end
+esd_max = input('Maximum ESD [mm] for analysis (CR for 0.6) ');
+if isempty(esd_max); esd_max = 0.6;end
 
 Fit_data = input('Polynomial level for fit (CR for 3) ');
 if isempty(Fit_data);Fit_data = 3;end
