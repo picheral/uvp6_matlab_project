@@ -383,11 +383,13 @@ if option == 'a'
             % ------------------ Resultats ---------------------------------
             somme_ecarts_spectres_fit_a =     nansum(abs(ecarts(2:end,1)),1);
             somme_ecarts_spectres_fit_b =     nansum(abs(ecarts(2:end,2)),1);
+            mean_ecarts_spectres_fit_b =     nanmean(abs(ecarts(2:end,2)),1);
             mediane_ecarts_spectres_fit_b =     nanmedian(abs(ecarts(2:end,2)),1);
             somme_ecarts_area =             nansum(abs(ecarts(2:end,3)),1);
             somme_ecarts_grey =             nansum(abs(ecarts(3:end,4)),1);
             
             %         disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_a)])
+            disp(['Mean of spectra differences : ',num2str(mean_ecarts_spectres_fit_b)])
             disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_b)])
             disp(['Mediane of spectra differences : ',num2str(mediane_ecarts_spectres_fit_b)])
             disp(['Sum of area differences    : ',num2str(somme_ecarts_area)])
@@ -452,7 +454,7 @@ if option == 'a'
             imagesc(image_ecarts_spectres_b,[0 max_b]);
             colormap(fig1,gray);
             
-            title(['Spectral differences S: ',num2str(somme_ecarts_spectres_fit_b,5)],'fontsize',7);
+            title(['Spectral differences M: ',num2str(mean_ecarts_spectres_fit_b,5)],'fontsize',7);
             colorbar
             
             
