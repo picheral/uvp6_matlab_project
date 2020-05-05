@@ -81,7 +81,8 @@ fit_type = ['poly', num2str(Fit_data)];
 scale_option = 't';
 
 if strcmp(scale_option,'t')
-    max_a = 10; max_b = 30; max_area = 3; max_grey = 2;
+    %max_a = 10; max_b = 30; max_area = 3; max_grey = 2;
+    max_a = 10; max_b = 0.1; max_area = 3; max_grey = 2;
 else
     max_a = 200; max_b = 200; max_area = 3; max_grey = 3;
 end
@@ -351,7 +352,8 @@ if option == 'a'
                         %                     ecart_spectre = nansum(abs((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
                         %                     ecart_spectre_a = nansum(((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
                         ecart_spectre_a = (nansum((abs(exp(y_sel_zone) - exp(y_sel)))./exp(y_sel)))/(numel(y_sel_zone));
-                        ecart_spectre_b =  ((nansum((exp(y_sel_zone) - exp(y_sel)).^2)) / (end_x - deb_x + 1))^0.5;
+                        %ecart_spectre_b =  ((nansum((exp(y_sel_zone) - exp(y_sel)).^2)) / (end_x - deb_x + 1))^0.5;
+                        ecart_spectre_b = data_similarity_score(exp(y_sel_zone), exp(y_sel));
                         
                         % ------- Calcul ecarts Area et Grey -------------------------
                         area = nansum(data_zone(:,4),1)/nb_img;
