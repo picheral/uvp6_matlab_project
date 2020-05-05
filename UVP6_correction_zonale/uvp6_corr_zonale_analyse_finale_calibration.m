@@ -252,6 +252,8 @@ if option == 'a'
             
             %% ---------- Figure ---------------------------------
             fig1 = figure('numbertitle','off','name','UVP6_cor_zonale','Position',[10 50 900 1200]);
+            titre =  list_mat(i).name;
+            sgtitle({'Zonal Correction Analysis';titre}, 'Interpreter', 'none');
             % -------- Spectre entier et réduit ----------------------------
             subplot(4,3,1)
             loglog(pixsize,spectre_tot,'r.');
@@ -264,10 +266,7 @@ if option == 'a'
             xlim([1 5*end_x]);
             ylim([0.001 1000000]);
             legend([num2str(ratio,3),'% of data'], ['size [',num2str(esd_min),' - ',num2str(esd_max),' mm]'], 'Location', 'NorthEast','fontsize',6 );
-            titre =  list_mat(i).name;
-            aa = titre == '_';
-            titre(aa) = ' ';
-            title(['RAW ',titre],'fontsize',7);
+            title(['RAW data'],'fontsize',7);
             
             % ------- Plot ajustements --------------------------
             subplot(4,3,2)
