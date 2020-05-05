@@ -147,7 +147,7 @@ if option == 'c'
         
     end
     disp('------------- SAVING data -----------------------------------')
-    eval(['save ',results_folder,'data_corr_zonale_',filename(6:15),'_s',num2str(threshold-1),'.mat data_final'])
+    eval(['save ',results_folder,'data_corr_zonale_',filename(6:15),'_s',num2str(threshold-1),'.mat data_final list_seq pvmtype cruise threshold'])
 end
 option = 'a';
 
@@ -383,6 +383,9 @@ if option == 'a'
             somme_ecarts_spectres_fit_a =     nansum(abs(ecarts(2:end,1)),1);
             somme_ecarts_spectres_fit_b =     nansum(abs(ecarts(2:end,2)),1);
             mean_ecarts_spectres_fit_b =     nanmean(abs(ecarts(2:end,2)),1);
+            min_ecarts_spectres_fit_b =     nanmin(abs(ecarts(2:end,2)));
+            max_ecarts_spectres_fit_b =     nanmax(abs(ecarts(2:end,2)));
+            std_ecarts_spectres_fit_b =     nanstd(abs(ecarts(2:end,2)),1);
             mediane_ecarts_spectres_fit_b =     nanmedian(abs(ecarts(2:end,2)),1);
             somme_ecarts_area =             nansum(abs(ecarts(2:end,3)),1);
             somme_ecarts_grey =             nansum(abs(ecarts(3:end,4)),1);
@@ -476,6 +479,27 @@ if option == 'a'
             imagesc(image_ecarts_grey,[-max_grey max_grey]);
             title(['Grey x Area differences S : ',num2str(somme_ecarts_grey,5)],'fontsize',7);
             colorbar
+            
+            % ------------------ Affichage meta data ----------------------
+            ha = subplot(4,3,6);
+            pos = get(ha,'Position');
+            un = get(ha,'Units');
+            pos(1) = pos(1) - 0.05;
+            delete(ha)
+            try
+                uvp = pvmtype;
+                thres = threshold;
+            catch
+                warning('No metadata in the zonal corr data');
+                uvp = 'unkown';
+                thres = 'unkown';
+            end
+            d = {['uvp : ', uvp], ['project : ', folder(4:end)], ['threshold : ', thres],...
+                ['zones nb : ', num2str(nb_zones)], ['esd min (mm) : ', num2str(esd_min)], ['esd max (mm) : ', num2str(esd_max)],...
+                ['mean score : ', num2str(mean_ecarts_spectres_fit_b)],['min score : ', num2str(min_ecarts_spectres_fit_b)],...
+                ['max score : ', num2str(max_ecarts_spectres_fit_b)], ['std score : ', num2str(std_ecarts_spectres_fit_b)]};
+            t = annotation('textbox', pos, 'Units', un, 'String', d, 'Interpreter', 'none', 'EdgeColor', 'none');
+            t.FontSize = 9;
             
             % ------------------ Sauvegarde image --------------------------
             orient tall
