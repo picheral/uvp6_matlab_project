@@ -134,8 +134,8 @@ end
 %% ref base histopx and configuration
 if nb_of_ref > 1
     base_ref = Uvp6MeanInstruRawBases(base_ref_list);
-    aa_data_ref = base_ref.a0/1000000;
-    expo_data_ref = base_ref.exp0;
+    aa_ref_from_base = base_ref.a0/1000000;
+    expo_ref_from_base = base_ref.exp0;
     img_vol_data_ref = base_ref.volimg0;
     pix_ref = base_ref.pixel_size;
     gain_ref = base_ref.gain;
@@ -148,10 +148,10 @@ else
     % Reading uvp5_configuration_data.txt REF
     if (strcmp(project_folder_ref(4:7),'uvp5'))
         filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
-        [ aa_data_ref, expo_data_ref, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
+        [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
     else
-        aa_data_ref = base_ref.a0/1000000;
-        expo_data_ref = base_ref.exp0;
+        aa_ref_from_base = base_ref.a0/1000000;
+        expo_ref_from_base = base_ref.exp0;
         img_vol_data_ref = base_ref.volimg0;
         pix_ref = base_ref.pixel_size;
     end
@@ -196,12 +196,21 @@ end
 refpix_raw = refpix;
 refpix = refpix./(pix_ref^2);
 volumeimage=base_ref.volimg0;
-aa_ref=base_ref.a0;
-expo_ref=base_ref.exp0;
 % depth=baseref(profilref).hisnb(:,1);
 volumeechref=volumeimage*nombreimages;
 volumeechref=volumeechref*ones(1,size(refpix,2));
 refs=refpix./volumeechref;
+
+% custom ref calibration parameters
+if type_plot == 'c'
+    aa_ref = input(['REF aa (default = from base = ', num2str(aa_ref_from_base*1000000), ') ']) / 1000000;
+    if isempty(aa_ref); aa_ref = aa_ref_from_base; end
+    expo_ref = input(['REF expo (default = from base = ', num2str(expo_ref_from_base), ') ']);
+    if isempty(expo_ref); expo_ref = expo_ref_from_base; end
+else
+    aa_ref = aa_ref_from_base;
+    expo_ref = expo_ref_from_base;
+end
 
 % -------- max size where <30 object counts ---------------------------
 aa = find( sum(refpix_raw,1) <= 30);
@@ -239,7 +248,7 @@ x_ref = [esd_min:0.01:esd_max];
 [y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
 
 % -------------------------- Table données synthétiques ---------
-data_table(index_plot,:) = [0 aa_data_ref expo_data_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
+data_table(index_plot,:) = [0 aa_ref*1000000 expo_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
 data_name(index_plot) = {txt_ref};
 data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
 
@@ -357,10 +366,10 @@ while other_cast == 1
     if (strcmp(project_folder_adj(4:7),'uvp5'))
         % Reading uvp5_configuration_data.txt ADJ
         filename=[project_folder_adj,'\config\uvp5_settings\uvp5_configuration_data.txt'];
-        [ aa_data_adj, expo_data_adj, img_vol_data_adj, pix_adj, light1_adj, light2_adj] = read_uvp5_configuration_data( filename , 'data');
+        [ aa_adj_from_base, expo_adj_from_base, img_vol_data_adj, pix_adj, light1_adj, light2_adj] = read_uvp5_configuration_data( filename , 'data');
     else
-        aa_data_adj = base_adj(adj_record).a0/1000000;
-        expo_data_adj = base_adj(adj_record).exp0;
+        aa_adj_from_base = base_adj(adj_record).a0/1000000;
+        expo_adj_from_base = base_adj(adj_record).exp0;
         img_vol_data_adj = base_adj(adj_record).volimg0;
         pix_adj = base_adj(adj_record).pixel_size;
     end
@@ -405,8 +414,6 @@ while other_cast == 1
     volumeech=volumeimage*nombreimages;
     volumeech2=volumeech*ones(1,27);
     volumeech=volumeech*ones(1,size(refpix,2));
-    aa_adj=base_adj(rec_adj).a0;
-    expo_adj=base_adj(rec_adj).exp0;
     nbre=data./volumeech;
     [n,m]=size(nbre);
     %refsum=sum(refs);
@@ -418,6 +425,16 @@ while other_cast == 1
     aa = find( sum(data_raw,1) <= 1);
     i_size_limit = aa(1);
     
+    % custom ref calibration parameters
+    if type_plot == 'c'
+        aa_adj = input(['ADJ aa (default = from base = ', num2str(aa_adj_from_base*1000000), ') ']) / 1000000;
+        if isempty(aa_adj); aa_adj = aa_adj_from_base; end
+        expo_adj = input(['ADJ expo (default = from base = ', num2str(expo_adj_from_base), ') ']);
+        if isempty(expo_adj); expo_adj = expo_adj_from_base; end
+    else
+        aa_adj = aa_adj_from_base;
+        expo_adj = expo_adj_from_base;
+    end
     
     % -------- Figure RAW data ----------------------------------
     %subplot(2,2,1)
@@ -440,7 +457,7 @@ while other_cast == 1
         deb_x = aa(end);
     end
     if isempty(bb)
-        end_x = size(camsm_adj);
+        end_x = size(camsm_adj,2);
     else
         end_x = bb(end);
     end
@@ -472,7 +489,7 @@ while other_cast == 1
     legende(index_plot) = {txt};    %{char(uvp_adj)};
     
     % -------------------------- Table données synthétiques ---------
-    data_table(index_plot+1,:) = [Score aa_data_adj expo_data_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref), camsm_adj(i_size_limit)];
+    data_table(index_plot+1,:) = [Score aa_adj*1000000 expo_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref), camsm_adj(i_size_limit)];
     data_name(index_plot+1) = {txt};
     
     if type_selection == 1
@@ -517,12 +534,19 @@ orient tall
 texte = project_folder_ref(4:end);
 aa = find(texte == '_');
 texte(aa) = ' ';
+
+% textbox with the refs projects
 if nb_of_ref == 1
     title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
 else
     title('Normalized SPECTRA','fontsize',10);
     str = string(project_folder_ref_list);
     annotation('textbox',[.1 .6 .3 .3],'String',str,'FitBoxToText','on');
+end
+% textbox with aa and exp
+if type_plot == 'c'
+   str =  {['aa ref : ' num2str(aa_ref*1000000)],['expo ref : ' num2str(expo_ref)],['aa adj : ' num2str(aa_adj*1000000)],['expo adj : ' num2str(expo_adj)]};
+   annotation('textbox',[.6 .6 .3 .3],'String',str,'FitBoxToText','on');
 end
 %% ------------- Mise en forme finale FIT -----------------
 %subplot(2,2,2)
