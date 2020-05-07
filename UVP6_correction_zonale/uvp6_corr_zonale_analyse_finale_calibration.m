@@ -82,7 +82,7 @@ scale_option = 't';
 
 if strcmp(scale_option,'t')
     %max_a = 10; max_b = 30; max_area = 3; max_grey = 2;
-    max_a = 10; max_b = 0.1; max_area = 3; max_grey = 2;
+    max_a = 10; max_b = 0.5; max_area = 3; max_grey = 2;
 else
     max_a = 200; max_b = 200; max_area = 3; max_grey = 3;
 end
@@ -488,7 +488,7 @@ if option == 'a'
             delete(ha)
             try
                 uvp = pvmtype;
-                thres = threshold;
+                thres = num2str(threshold);
             catch
                 warning('No metadata in the zonal corr data');
                 uvp = 'unkown';
