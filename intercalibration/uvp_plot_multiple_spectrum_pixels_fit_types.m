@@ -126,151 +126,249 @@ while another_ref == 'y'
     % ask for another reference
     disp('It is possible to add another reference cast')
     disp('The adjusted cast will be compared to the mean of the reference casts')
-    disp('ATTENTION ! : seulement pour raw uvp6')
+    disp('ATTENTION ! : seulement pour uvp6')
     another_ref = input('Add another REFERENCE PROFILE ? ([n]/y) ','s');
     if isempty(another_ref);another_ref = 'n';end
 end
 
-%% ref base histopx and configuration
-if nb_of_ref > 1
-    base_ref = Uvp6MeanInstruRawBases(base_ref_list);
-    aa_ref_from_base = base_ref.a0/1000000;
-    expo_ref_from_base = base_ref.exp0;
-    img_vol_data_ref = base_ref.volimg0;
-    pix_ref = base_ref.pixel_size;
-    gain_ref = base_ref.gain;
-    Thres_ref = base_ref.threshold;
-    Exposure_ref = base_ref.shutter;
-    ShutterSpeed_ref = base_ref.shutter;
-    SMBase_ref    = 1;
+% patch for taking into account multiple calib ref (TO BE REFACTORED)
+if nb_of_ref >1 && type_plot == 'c'
+    camsm_ref_list = [];
+    camsm_ref_sum = [];
+    refsum_log_list = [];
+    refsum_log_sum = [];
+    aa_ref_list = [];
+    expo_ref_list = [];
+    for ref_nb = 1:length(base_ref_list)
+    %% ref base histopx and configuration
+        base_ref = base_ref_list(ref_nb);
+        project_folder_ref = project_folder_ref_list(ref_nb,:);
+        % Reading uvp5_configuration_data.txt REF
+        if (strcmp(project_folder_ref(4:7),'uvp5'))
+            filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
+            [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
+        else
+            aa_ref_from_base = base_ref.a0/1000000;
+            expo_ref_from_base = base_ref.exp0;
+            img_vol_data_ref = base_ref.volimg0;
+            pix_ref = base_ref.pixel_size;
+        end
+        % Reading *.hdr REF
+        if (strcmp(project_folder_ref(4:7),'uvp5'))
+            filename=[project_folder_ref,'\raw\HDR',char(base_ref.histfile),'\HDR',...
+                char(base_ref.histfile),'.hdr'];
+            [ a, b, c, d, l1, l2, gain_ref, Thres_ref, Exposure_ref, ShutterSpeed_ref, SMBase_ref] = ...
+                read_uvp5_configuration_data( filename , 'hdr');
+        else
+            gain_ref = base_ref.gain;
+            Thres_ref = base_ref.threshold;
+            Exposure_ref = base_ref.shutter;
+            ShutterSpeed_ref = base_ref.shutter;
+            SMBase_ref    = 1;
+        end
+
+
+        %% ref data preparation
+        uvp_ref = char(base_ref.pvmtype);
+        ee = find(uvp_ref == '_');
+        uvp_ref(ee) = '-';
+        uvp_ref_title = [uvp_ref_title, uvp_ref];
+
+        txt_ref = [char(uvp_ref),' : ',char(base_ref.profilename),' (ref)'];
+        aa = txt_ref == '_';
+        txt_ref(aa) = ' ';
+
+        % --------------------- REFERENCE ----------------------
+        if isfield(base_ref,'histopx')
+            aa = find(base_ref.histopx(:,2) >= zmin & base_ref.histopx(:,2) <= zmax);
+            refpix=base_ref.histopx(aa,5:end);
+            nombreimages=base_ref.histopx(aa,4);
+        elseif isfield(base_ref,'data_nb')
+            aa = find(base_ref.data_nb(:,2) >= zmin & base_ref.data_nb(:,2) <= zmax);
+            refpix=base_ref.data_nb(aa,5:end);
+            nombreimages=base_ref.data_nb(aa,3);
+        end
+        refpix_raw = refpix;
+        refpix = refpix./(pix_ref^2);
+        volumeimage=base_ref.volimg0;
+        % depth=baseref(profilref).hisnb(:,1);
+        volumeechref=volumeimage*nombreimages;
+        volumeechref=volumeechref*ones(1,size(refpix,2));
+        refs=refpix./volumeechref;
+
+        % custom ref calibration parameters
+        disp(['Calibration parameters for ', project_folder_ref])
+        aa_ref = input(['REF aa (default = from base = ', num2str(aa_ref_from_base*1000000), ') ']) / 1000000;
+        if isempty(aa_ref); aa_ref = aa_ref_from_base; end
+        expo_ref = input(['REF expo (default = from base = ', num2str(expo_ref_from_base), ') ']);
+        if isempty(expo_ref); expo_ref = expo_ref_from_base; end
+
+        % -------- max size where <30 object counts ---------------------------
+        aa = find( sum(refpix_raw,1) <= 30);
+        i_size_limit = aa(1);
+
+        pixsize= [1:size(refpix,2)];
+        tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
+        newsize=tailleref;
+        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
+
+        % --------- Selection gamme de taille REF -----------------------
+        aa = find(camsm_ref <= esd_min);
+        bb = find(camsm_ref <= esd_max);
+        if isempty(aa)
+            deb_x = 1;
+        else
+            deb_x = aa(end);
+        end
+        if isempty(bb)
+            end_x = size(camsm_ref,2);
+        else
+            end_x = bb(end);
+        end
+
+        refsum=nanmean(refs);
+        refsum_log = log(refsum);
+        
+        camsm_ref_list = [camsm_ref_list; camsm_ref];
+        camsm_ref_sum = [camsm_ref_sum, camsm_ref(deb_x:end_x)];
+        refsum_log_list = [refsum_log_list; refsum_log];
+        refsum_log_sum = [refsum_log_sum, refsum_log(deb_x:end_x)]; 
+        aa_ref_list = [aa_ref_list, aa_ref];
+        expo_ref_list = [expo_ref_list, expo_ref];
+    end
+    
+    % -------- FIT sur données REF ------------------------------
+    [fitresult] = create_two_fits(camsm_ref_sum, refsum_log_sum, fit_type, 0, camsm_ref_sum, refsum_log_sum, fit_type);
+    x_ref = [esd_min:0.01:esd_max];
+    [y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
+
+    % -------------------------- Table données synthétiques ---------
+    data_table(index_plot,:) = [0 0 0 img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
+    data_name(index_plot) = {'mean_ref'};
+    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
+
 else
-    base_ref = base_ref(rec_ref);
-    % Reading uvp5_configuration_data.txt REF
-    if (strcmp(project_folder_ref(4:7),'uvp5'))
-        filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
-        [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
-    else
+    %% ref base histopx and configuration
+    if nb_of_ref > 1
+        base_ref = Uvp6MeanInstruRawBases(base_ref_list);
         aa_ref_from_base = base_ref.a0/1000000;
         expo_ref_from_base = base_ref.exp0;
         img_vol_data_ref = base_ref.volimg0;
         pix_ref = base_ref.pixel_size;
-    end
-    % Reading *.hdr REF
-    if (strcmp(project_folder_ref(4:7),'uvp5'))
-        filename=[project_folder_ref,'\raw\HDR',char(base_ref.histfile),'\HDR',...
-            char(base_ref.histfile),'.hdr'];
-        [ a, b, c, d, l1, l2, gain_ref, Thres_ref, Exposure_ref, ShutterSpeed_ref, SMBase_ref] = ...
-            read_uvp5_configuration_data( filename , 'hdr');
-    else
         gain_ref = base_ref.gain;
         Thres_ref = base_ref.threshold;
         Exposure_ref = base_ref.shutter;
         ShutterSpeed_ref = base_ref.shutter;
         SMBase_ref    = 1;
+    else
+        base_ref = base_ref(rec_ref);
+        % Reading uvp5_configuration_data.txt REF
+        if (strcmp(project_folder_ref(4:7),'uvp5'))
+            filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
+            [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
+        else
+            aa_ref_from_base = base_ref.a0/1000000;
+            expo_ref_from_base = base_ref.exp0;
+            img_vol_data_ref = base_ref.volimg0;
+            pix_ref = base_ref.pixel_size;
+        end
+        % Reading *.hdr REF
+        if (strcmp(project_folder_ref(4:7),'uvp5'))
+            filename=[project_folder_ref,'\raw\HDR',char(base_ref.histfile),'\HDR',...
+                char(base_ref.histfile),'.hdr'];
+            [ a, b, c, d, l1, l2, gain_ref, Thres_ref, Exposure_ref, ShutterSpeed_ref, SMBase_ref] = ...
+                read_uvp5_configuration_data( filename , 'hdr');
+        else
+            gain_ref = base_ref.gain;
+            Thres_ref = base_ref.threshold;
+            Exposure_ref = base_ref.shutter;
+            ShutterSpeed_ref = base_ref.shutter;
+            SMBase_ref    = 1;
+        end
     end
+
+
+
+
+    %% ref data preparation
+    uvp_ref = char(base_ref.pvmtype);
+    ee = find(uvp_ref == '_');
+    uvp_ref(ee) = '-';
+    uvp_ref_title = [uvp_ref_title, uvp_ref];
+
+    txt_ref = [char(uvp_ref),' : ',char(base_ref.profilename),' (ref)'];
+    aa = txt_ref == '_';
+    txt_ref(aa) = ' ';
+
+    % --------------------- REFERENCE ----------------------
+    if isfield(base_ref,'histopx')
+        aa = find(base_ref.histopx(:,2) >= zmin & base_ref.histopx(:,2) <= zmax);
+        refpix=base_ref.histopx(aa,5:end);
+        nombreimages=base_ref.histopx(aa,4);
+    elseif isfield(base_ref,'data_nb')
+        aa = find(base_ref.data_nb(:,2) >= zmin & base_ref.data_nb(:,2) <= zmax);
+        refpix=base_ref.data_nb(aa,5:end);
+        nombreimages=base_ref.data_nb(aa,3);
+    end
+    refpix_raw = refpix;
+    refpix = refpix./(pix_ref^2);
+    volumeimage=base_ref.volimg0;
+    % depth=baseref(profilref).hisnb(:,1);
+    volumeechref=volumeimage*nombreimages;
+    volumeechref=volumeechref*ones(1,size(refpix,2));
+    refs=refpix./volumeechref;
+
+    % custom ref calibration parameters
+    if type_plot == 'c'
+        aa_ref = input(['REF aa (default = from base = ', num2str(aa_ref_from_base*1000000), ') ']) / 1000000;
+        if isempty(aa_ref); aa_ref = aa_ref_from_base; end
+        expo_ref = input(['REF expo (default = from base = ', num2str(expo_ref_from_base), ') ']);
+        if isempty(expo_ref); expo_ref = expo_ref_from_base; end
+    else
+        aa_ref = aa_ref_from_base;
+        expo_ref = expo_ref_from_base;
+    end
+
+    % -------- max size where <30 object counts ---------------------------
+    aa = find( sum(refpix_raw,1) <= 30);
+    i_size_limit = aa(1);
+
+    pixsize= [1:size(refpix,2)];
+    tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
+    newsize=tailleref;
+    if type_plot == 'c'
+        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
+    else
+        camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
+    end
+
+    % --------- Selection gamme de taille REF -----------------------
+    aa = find(camsm_ref <= esd_min);
+    bb = find(camsm_ref <= esd_max);
+    if isempty(aa)
+        deb_x = 1;
+    else
+        deb_x = aa(end);
+    end
+    if isempty(bb)
+        end_x = size(camsm_ref,2);
+    else
+        end_x = bb(end);
+    end
+
+    refsum=nanmean(refs);
+    refsum_log = log(refsum);
+
+    % -------- FIT sur données REF ------------------------------
+    [fitresult] = create_two_fits(camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type,0,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
+    x_ref = [esd_min:0.01:esd_max];
+    [y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
+
+    % -------------------------- Table données synthétiques ---------
+    data_table(index_plot,:) = [0 aa_ref*1000000 expo_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
+    data_name(index_plot) = {txt_ref};
+    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
 end
-
-
-
-
-%% ref data preparation
-uvp_ref = char(base_ref.pvmtype);
-ee = find(uvp_ref == '_');
-uvp_ref(ee) = '-';
-uvp_ref_title = [uvp_ref_title, uvp_ref];
-
-txt_ref = [char(uvp_ref),' : ',char(base_ref.profilename),' (ref)'];
-aa = txt_ref == '_';
-txt_ref(aa) = ' ';
-
-% --------------------- REFERENCE ----------------------
-if isfield(base_ref,'histopx')
-    aa = find(base_ref.histopx(:,2) >= zmin & base_ref.histopx(:,2) <= zmax);
-    refpix=base_ref.histopx(aa,5:end);
-    nombreimages=base_ref.histopx(aa,4);
-elseif isfield(base_ref,'data_nb')
-    aa = find(base_ref.data_nb(:,2) >= zmin & base_ref.data_nb(:,2) <= zmax);
-    refpix=base_ref.data_nb(aa,5:end);
-    nombreimages=base_ref.data_nb(aa,3);
-end
-refpix_raw = refpix;
-refpix = refpix./(pix_ref^2);
-volumeimage=base_ref.volimg0;
-% depth=baseref(profilref).hisnb(:,1);
-volumeechref=volumeimage*nombreimages;
-volumeechref=volumeechref*ones(1,size(refpix,2));
-refs=refpix./volumeechref;
-
-% custom ref calibration parameters
-if type_plot == 'c'
-    aa_ref = input(['REF aa (default = from base = ', num2str(aa_ref_from_base*1000000), ') ']) / 1000000;
-    if isempty(aa_ref); aa_ref = aa_ref_from_base; end
-    expo_ref = input(['REF expo (default = from base = ', num2str(expo_ref_from_base), ') ']);
-    if isempty(expo_ref); expo_ref = expo_ref_from_base; end
-else
-    aa_ref = aa_ref_from_base;
-    expo_ref = expo_ref_from_base;
-end
-
-% -------- max size where <30 object counts ---------------------------
-aa = find( sum(refpix_raw,1) <= 30);
-i_size_limit = aa(1);
-
-pixsize= [1:size(refpix,2)];
-tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-newsize=tailleref;
-if type_plot == 'c'
-    camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-else
-    camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
-end
-
-% --------- Selection gamme de taille REF -----------------------
-aa = find(camsm_ref <= esd_min);
-bb = find(camsm_ref <= esd_max);
-if isempty(aa)
-    deb_x = 1;
-else
-    deb_x = aa(end);
-end
-if isempty(bb)
-    end_x = size(camsm_ref,2);
-else
-    end_x = bb(end);
-end
-
-refsum=nanmean(refs);
-refsum_log = log(refsum);
-
-% -------- FIT sur données REF ------------------------------
-[fitresult] = create_two_fits((camsm_ref(deb_x:end_x)),(refsum_log(deb_x:end_x)),fit_type,0,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
-x_ref = [esd_min:0.01:esd_max];
-[y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
-
-% -------------------------- Table données synthétiques ---------
-data_table(index_plot,:) = [0 aa_ref*1000000 expo_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
-data_name(index_plot) = {txt_ref};
-data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
-
-% % -------- Figure RAW -----------------------------
-% subplot(2,2,1)
-% loglog(exp(camsm_ref_log),exp(refsum_log),[color(index_plot),'o']);
-% legende(1) = {txt_ref};
-% 
-% % -------- Figure FIT ---------------------------------------
-% subplot(2,2,2)
-% hold on
-% loglog(x_ref,exp(y_ref),[color(index_plot),'-']);
-
-% ---------Figure ratio -----------------
-% subplot(2,2,3)
-% plot(x_ref,ones(numel(x_ref),1),[color(index_plot),'-']);
-
-% -------- Figure Ratio/shutter ----------------
-%     subplot(2,2,4)
-%     hold on
-%     plot(data_table(index_plot,8),data_table(index_plot,11),[color(index_plot),'o']);
-
 
 
 %% -------------------------- Boucle sur les projets à ajouter ------------
@@ -313,7 +411,7 @@ while other_cast == 1
                 continue
             end
         else
-            disp(['Process cannot continue : no reference base in ',results_dir_adj]);
+            disp(['Process cannot continue : no base in ',results_dir_adj]);
             continue
         end
         % ------------------ Chargement de la base à ajuster -----------------
@@ -463,7 +561,7 @@ while other_cast == 1
     end
 
     % -------- FIT sur données RAW ------------------------------
-    [fitresult] = create_two_fits((camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),fit_type,0,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
+    [fitresult] = create_two_fits(camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type,0,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
     [y] = poly_from_fit(x,fitresult,fit_type);
 
     % -------------- Pour calcul Score final -----------------------------
@@ -512,7 +610,12 @@ subplot(1,2,1)
 %for i=1:length(camsm_ref_list_log)
 %    loglog(exp(camsm_ref_list_log(i)),exp(refsum_list_log(i)),[color(1),'o']);
 %end
-loglog(camsm_ref, refsum, [color(1), 'o']);
+if nb_of_ref >1 && type_plot == 'c'
+    ref_plot = loglog(camsm_ref_list, exp(refsum_log_list), [color(1), 'o']);
+    uistack(ref_plot, 'bottom');
+else
+    loglog(camsm_ref, refsum, [color(1), 'o']);
+end
 if nb_of_ref == 1
     legende(index_plot) = {txt_ref};
 else
@@ -535,19 +638,28 @@ texte = project_folder_ref(4:end);
 aa = find(texte == '_');
 texte(aa) = ' ';
 
-% textbox with the refs projects
+% textbox with the refs projects and aa and exp
 if nb_of_ref == 1
+    if type_plot == 'c'
+        str =  {['aa ref : ' num2str(aa_ref*1000000)],['expo ref : ' num2str(expo_ref)],['aa adj : ' num2str(aa_adj*1000000)],['expo adj : ' num2str(expo_adj)]};
+        annotation('textbox',[.6 .6 .3 .3],'String',str,'FitBoxToText','on');
+    end
     title(['Normalized SPECTRA (ref : ',texte,')'],'fontsize',10);
 else
+    if type_plot == 'c'
+        %str = {};
+        %for ref_nb = 1:length(base_ref_list)
+        %    str =  {str, ['aa ref : ' num2str(aa_ref_list(ref_nb)*1000000)],['expo ref : ' num2str(expo_ref_list(ref_nb))]};
+        %end
+        %str = {str, ['aa adj : ' num2str(aa_adj*1000000)],['expo adj : ' num2str(expo_adj)]};
+        str =  {['aa ref : ' num2str(aa_ref_list*1000000)],['expo ref : ' num2str(expo_ref_list)],['aa adj : ' num2str(aa_adj*1000000)],['expo adj : ' num2str(expo_adj)]};
+        annotation('textbox',[.6 .6 .3 .3],'String',str,'FitBoxToText','on');
+    end
     title('Normalized SPECTRA','fontsize',10);
     str = string(project_folder_ref_list);
     annotation('textbox',[.1 .6 .3 .3],'String',str,'FitBoxToText','on');
 end
-% textbox with aa and exp
-if type_plot == 'c'
-   str =  {['aa ref : ' num2str(aa_ref*1000000)],['expo ref : ' num2str(expo_ref)],['aa adj : ' num2str(aa_adj*1000000)],['expo adj : ' num2str(expo_adj)]};
-   annotation('textbox',[.6 .6 .3 .3],'String',str,'FitBoxToText','on');
-end
+
 %% ------------- Mise en forme finale FIT -----------------
 %subplot(2,2,2)
 subplot(1,2,2)
