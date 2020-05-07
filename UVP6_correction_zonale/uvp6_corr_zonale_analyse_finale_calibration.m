@@ -488,7 +488,7 @@ if option == 'a'
             delete(ha)
             try
                 uvp = pvmtype;
-                thres = threshold;
+                thres = num2str(threshold);
             catch
                 warning('No metadata in the zonal corr data');
                 uvp = 'unkown';
