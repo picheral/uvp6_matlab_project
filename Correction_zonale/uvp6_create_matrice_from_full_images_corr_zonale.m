@@ -36,6 +36,7 @@ list_seq = dir(raw_folder);
 
 % ------------------- Valeurs de gain ----------------------
 gain_values = [8:30];
+gain_values = [6:2:18];
 
 if strcmp(option,'s')
     %------------- Boucle sur répertoires ---------------
@@ -46,8 +47,8 @@ if strcmp(option,'s')
             disp('---------------------------------------------------------------')
             disp(['Sequence ',list_seq(k).name])
             % ------------- Liste des images -------------------
-%             im_list = dir('save*.png');
-            im_list = dir('2020*.png');
+            im_list = dir('save*.png');
+            %im_list = dir('2020*.png');
              
             
             
