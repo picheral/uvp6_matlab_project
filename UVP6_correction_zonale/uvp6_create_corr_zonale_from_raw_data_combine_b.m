@@ -442,6 +442,14 @@ end
 % On remplace les valeurs NaN n'ayant pu être calculées par le minimum ou
 % le maximum selon la zone
 
+% LP - VE
+color_scale = [8 30];
+color_scale_gauss = [1 6];
+% LP - HO
+color_scale = [6 18];
+color_scale_gauss = [1 4];
+
+
 for mm = 1 : 2
     
     [X,Y] = meshgrid([1:x_zones],[1:y_zones]);
@@ -476,7 +484,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor area [',num2str(min(min(image_cor_area))),'  -  ',num2str(max(max(image_cor_area))),']']);
     title(titre);
     colorbar
@@ -509,7 +517,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor grey [',num2str(min(min(image_cor_grey))),'  -  ',num2str(max(max(image_cor_grey))),']']);
     title(['No fit sym AFTER ref : ',char(gain_ref)]);
     colorbar
@@ -542,7 +550,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor ecarts area [',num2str(min(min(image_cor_ecarts_area))),'  -  ',num2str(max(max(image_cor_ecarts_area))),']']);
     colorbar
     
@@ -574,7 +582,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor ecarts grey [',num2str(min(min(image_cor_ecarts_grey))),'  -  ',num2str(max(max(image_cor_ecarts_grey))),']']);
     colorbar
     
@@ -606,7 +614,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor fit a [',num2str(min(min(image_cor_fit_a))),'  -  ',num2str(max(max(image_cor_fit_a))),']']);
     colorbar
     
@@ -638,7 +646,7 @@ for mm = 1 : 2
             ff(nn,hh) = nanmax(nanmax(ff));
         end
     end
-    imagesc(ff,[8 30]);
+    imagesc(ff,color_scale);
     xlabel(['cor fit b [',num2str(min(min(image_cor_fit_b))),'  -  ',num2str(max(max(image_cor_fit_b))),']']);
     colorbar
     
@@ -675,7 +683,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor area gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     title(titre);
     colorbar
@@ -700,7 +708,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor grey gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     title([fit_type,'  sym AFTER ref : ',char(gain_ref)]);
     colorbar
@@ -725,7 +733,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor ecarts area  gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     colorbar
     if isempty(find(isnan(ff), 1))
@@ -749,7 +757,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor ecarts grey  gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     colorbar
     if isempty(find(isnan(ff), 1))
@@ -773,7 +781,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor fit a  gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     colorbar
     if isempty(find(isnan(ff), 1))
@@ -797,7 +805,7 @@ for gg = 1: numel(gauss_table)
     mini = min(min(ff));
     ff = ff/mini;
     maxi = max(max(ff));
-    imagesc(ff,[1 6]);
+    imagesc(ff,color_scale_gauss);
     xlabel(['cor fit b  gauss ',num2str(gauss),' [x',num2str(maxi,2),']']);
     colorbar
     if isempty(find(isnan(ff), 1))
