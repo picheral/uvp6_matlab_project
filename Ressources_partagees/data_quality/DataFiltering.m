@@ -126,7 +126,7 @@ while not(strcmp(filter_is_good, 'y'))
         saveas(fig,[results_dir,'/',char(profilename), '_filtering.png']);
         savefig(fig,[results_dir,'/',char(profilename), '_filtering.fig']);
     end
-    clf(fig)
+    close(fig)
 end
 
 
