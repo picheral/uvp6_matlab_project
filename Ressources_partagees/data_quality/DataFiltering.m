@@ -65,7 +65,7 @@ while not(strcmp(filter_is_good, 'y'))
     
     % ------- moyenne mobile ----------------------------------
     mov_mean_util = movmean(part_util, movmean_window);
-    
+    disp('WAIT for processing data !')
     if strcmp(method,'c')
         %% ------ moving stats and filter data (Camille/Fabien) --------
         part_util_filtered = part_util(part_util>threshold_percent*mov_mean_util);
@@ -93,28 +93,32 @@ while not(strcmp(filter_is_good, 'y'))
     
     %% ---------------------- plots ----------------
     fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 600 600]);
+    texte = [char(results_dir),char(profilename)];
+    aa = find(texte == '_');
+    if ~isempty(aa);    texte(aa) = "-";end
     semilogx(part_util_filtered,-press_util_filtered,'.b');
     hold on
     semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
-%     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
+    %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
     
     %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
-    xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
+    %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
+    dd = find(listecor(:,3) == 1);
+    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(movmean_window),'-',num2str(threshold_percent),']']);
     ylabel('Pressure');
-    %     sgtitle(regexprep(dat_pathname, {'\\', '\_'}, {'\\\\', '\\\_'}));
-    texte = char(profilename);
-    aa = find(texte == '_');
-    if ~isempty(aa);    texte(aa) = " ";end
-    title(texte);
+        sgtitle(regexprep(texte, {'\\', '\_'}, {'\\\\', '\\\_'}));
+    
+    
+%     title(char(texte),'fontsize',9);
     %     set(gcf, 'Units', 'Normalized');%   , 'OuterPosition', [0.1, 0.1, 0.9, 0.9]);
     
     %% user filter validation
     if manual_filter == 'm'
         % default is no
-        filter_is_good = input('Are data OK now ? ([n]/y) ', 's');
+        filter_is_good = input('Are data OK now ? ([n]/y) ','s');
         disp('------------------------------------------------')
         
     else
