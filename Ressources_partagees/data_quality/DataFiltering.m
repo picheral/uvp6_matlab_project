@@ -51,7 +51,7 @@ filter_is_good = 'n';
 % disp('bad data points are under the moving average minus an offset')
 while not(strcmp(filter_is_good, 'y'))
     % ---------- Cas ajustage manuel ----------------------
-    if manual_filter == 'm'
+    if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
         %% params entry
         movmean_window_entry = input(['Enter moving mean window [', num2str(movmean_window), '] ']);
         if ~isempty(movmean_window_entry)
@@ -116,7 +116,7 @@ while not(strcmp(filter_is_good, 'y'))
     %     set(gcf, 'Units', 'Normalized');%   , 'OuterPosition', [0.1, 0.1, 0.9, 0.9]);
     
     %% user filter validation
-    if manual_filter == 'm'
+    if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
         % default is no
         filter_is_good = input('Are data OK now ? ([n]/y) ','s');
         disp('------------------------------------------------')
