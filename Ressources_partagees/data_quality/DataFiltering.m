@@ -1,4 +1,4 @@
-function [im_util_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor, results_dir, profilename,manual_filter)
+function [im_util_filtered, part_util_filtered_rejected, movmean_window, threshold_percent, mult] = DataFiltering(listecor, results_dir, profilename,manual_filter,mult,movmean_window,threshold_percent,method)
 % function [im_filtered, part_filtered, movmean_window, threshold_percent] = DataFiltering(image_numbers, part, image_numbers_util, part_util, dat_pathname)
 % DATA_FILTERING tool to manually delete bad data points
 % plots data and depth filtered data with the filter limits and bad
@@ -16,7 +16,7 @@ function [im_util_filtered, part_util_filtered_rejected, movmean_window, thresho
 %outputs:
 %   data_filtered: new data table without bad data points
 %   movmean_window: window of moving average used by filter
-%   threshold_offset: offset substract to movmean to get filtering
+%   threshold_percent: offset substract to movmean to get filtering
 %   threshold
 %
 
@@ -36,30 +36,42 @@ press_util = listecor(aa,2);
 % part_util = listecor(:,4);
 % press_util = listecor(:,2);
 
-% -------------------- Selection méthode ----------------
-method = 'jo';
-
-if strcmp(method,'c')
-    movmean_window = 25;
-    threshold_percent = 0.8;
-elseif strcmp(method,'jo')
-    mult = 0.6; % multiplier of the quantile under which points are considered outliers
-    movmean_window = 16;
-    threshold_percent = 0.75;
-end
 filter_is_good = 'n';
 % disp('bad data points are under the moving average minus an offset')
-while not(strcmp(filter_is_good, 'y'))
+while not(strcmp(filter_is_good, 'y')) 
+    %% ---------------------- plots ----------------
+    fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 1200 600]);
+        texte = [char(results_dir),char(profilename)];
+    aa = find(texte == '_');
+    if ~isempty(aa);    texte(aa) = "-";end
+    
+    subplot(1,2,1)
+    semilogx(part_util,-press_util,'.b');
+    hold on
+    dd = find(listecor(:,3) == 1);
+    ylabel('Pressure');
+    sgtitle(regexprep(texte, {'\\', '\_'}, {'\\\\', '\\\_'}));
+    
+    subplot(1,2,2)
+    plot(part_util,-press_util,'.b');
+    hold on
+    dd = find(listecor(:,3) == 1);
+    ylabel('Pressure');
+
     % ---------- Cas ajustage manuel ----------------------
     if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
         %% params entry
+        mult_entry = input(['Enter multiplier [', num2str(mult), '] ']);
+        if ~isempty(mult_entry)
+            mult = mult_entry;
+        end
         movmean_window_entry = input(['Enter moving mean window [', num2str(movmean_window), '] ']);
         if ~isempty(movmean_window_entry)
             movmean_window = movmean_window_entry;
         end
-        threshold_offset_entry = input(['Enter percent of moving mean for threshold [', num2str(threshold_percent*100), '] ']);
-        if ~isempty(threshold_offset_entry)
-            threshold_percent = threshold_offset_entry/100;
+        threshold_percent_entry = input(['Enter percent of moving mean for threshold [', num2str(threshold_percent*100), '] ']);
+        if ~isempty(threshold_percent_entry)
+            threshold_percent = threshold_percent_entry/100;
         end
     end
     
@@ -91,29 +103,36 @@ while not(strcmp(filter_is_good, 'y'))
         press_util_filtered_rejected = press_util(part_util < mult * q);
     end
     
-    %% ---------------------- plots ----------------
-    fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 600 600]);
-    texte = [char(results_dir),char(profilename)];
-    aa = find(texte == '_');
-    if ~isempty(aa);    texte(aa) = "-";end
-    semilogx(part_util_filtered,-press_util_filtered,'.b');
+
+    % add results on plot
+    subplot(1,2,1)
+    semilogx(part_util_filtered,-press_util_filtered,'.g');
     hold on
     semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
     %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
     
-    %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_offset: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
+    %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_percent: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
     %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     dd = find(listecor(:,3) == 1);
-    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(movmean_window),'-',num2str(threshold_percent),']']);
-    ylabel('Pressure');
-        sgtitle(regexprep(texte, {'\\', '\_'}, {'\\\\', '\\\_'}));
+    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
+
+    subplot(1,2,2)
+    plot(part_util_filtered,-press_util_filtered,'.g');
+    hold on
+    plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    hold on
+    %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
+    %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
     
-    
-%     title(char(texte),'fontsize',9);
-    %     set(gcf, 'Units', 'Normalized');%   , 'OuterPosition', [0.1, 0.1, 0.9, 0.9]);
+    %     str = {['movmean_window: ', num2str(movmean_window)], ['threshold_percent: ', num2str(threshold_percent*100)], ['bad data points: ', num2str(length(part_util_filtered_rejected))]};
+    %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
+    %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
+    dd = find(listecor(:,3) == 1);
+    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
+
     
     %% user filter validation
     if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'

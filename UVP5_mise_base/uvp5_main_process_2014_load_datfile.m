@@ -25,7 +25,7 @@ end
 %% ------------- Chargement du fichier --------------------------------
 
 if chargement == 1
-    disp(['Loading   ', char(base(fichier).profilename), '_datfile.txt'])
+%     disp(['Loading   ', char(base(fichier).profilename), '_datfile.txt'])
     fid=fopen(datfile);
     compteur = 1;
     Pressure = [];
