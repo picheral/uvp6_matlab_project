@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 %% Routine de filtrage des fichiers d'un projet UVP5
 % permet de créer les fichiers nécessaires à l'importation des données
 % filtrées pour les problèmes d'éclairage
