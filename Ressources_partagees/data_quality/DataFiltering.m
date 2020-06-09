@@ -77,7 +77,7 @@ while not(strcmp(filter_is_good, 'y'))
     
     % ------- moyenne mobile ----------------------------------
     mov_mean_util = movmean(part_util, movmean_window);
-    disp('WAIT for processing data !')
+    disp('WAIT for data processing !')
     if strcmp(method,'c')
         %% ------ moving stats and filter data (Camille/Fabien) --------
         part_util_filtered = part_util(part_util>threshold_percent*mov_mean_util);
@@ -103,7 +103,6 @@ while not(strcmp(filter_is_good, 'y'))
         press_util_filtered_rejected = press_util(part_util < mult * q);
     end
     
-
     % add results on plot
     subplot(1,2,1)
     semilogx(part_util_filtered,-press_util_filtered,'.g');
