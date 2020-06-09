@@ -36,7 +36,7 @@ list_seq = dir(raw_folder);
 
 % ------------------- Valeurs de gain ----------------------
 gain_values = [8:30];
-gain_values = [6:2:18];
+gain_values = [4:2:22];
 
 if strcmp(option,'s')
     %------------- Boucle sur répertoires ---------------
