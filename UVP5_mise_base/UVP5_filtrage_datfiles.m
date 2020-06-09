@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 %% Routine de filtrage des fichiers d'un projet UVP5
 % permet de créer les fichiers nécessaires à l'importation des données
 % filtrées pour les problèmes d'éclairage
@@ -174,9 +175,9 @@ while process == 1
             disp(['Number of images from 1st and zmax              = ',num2str(size(listecor,1))])
             dd = find(listecor(:,3) == 1);
             disp(['Number of descent images                        = ',num2str(numel(dd))])
+            disp(['Number of rejected images (from descent only)   = ',num2str(numel(part_util_filtered_rejected))])
             disp(['Number of good images (from descent only)       = ',num2str(numel(im_filtered))])
             disp(['Percentage of good images (from descent only)   = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
-            disp(['Number of rejected images (from descent only)   = ',num2str(numel(part_util_filtered_rejected))])
             base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
             base(fichier).tot_utilized_img = numel(im_filtered);
             base(fichier).filter_movmean = movmean_window;
@@ -204,5 +205,4 @@ toto=['save ',base_new,'.mat ',base_new,];
 eval(toto);
 
 disp('------------------ END -------------------------------------------------');
-
 

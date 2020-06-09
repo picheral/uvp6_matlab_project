@@ -38,10 +38,10 @@ press_util = listecor(aa,2);
 
 filter_is_good = 'n';
 % disp('bad data points are under the moving average minus an offset')
-while not(strcmp(filter_is_good, 'y')) 
+while not(strcmp(filter_is_good, 'y'))
     %% ---------------------- plots ----------------
     fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 1200 600]);
-        texte = [char(results_dir),char(profilename)];
+    texte = [char(results_dir),char(profilename)];
     aa = find(texte == '_');
     if ~isempty(aa);    texte(aa) = "-";end
     
@@ -57,7 +57,7 @@ while not(strcmp(filter_is_good, 'y'))
     hold on
     dd = find(listecor(:,3) == 1);
     ylabel('Pressure');
-
+    
     % ---------- Cas ajustage manuel ----------------------
     if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
         %% params entry
@@ -117,7 +117,7 @@ while not(strcmp(filter_is_good, 'y'))
     %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     dd = find(listecor(:,3) == 1);
     xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
-
+    
     subplot(1,2,2)
     plot(part_util_filtered,-press_util_filtered,'.g');
     hold on
@@ -131,7 +131,7 @@ while not(strcmp(filter_is_good, 'y'))
     %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     dd = find(listecor(:,3) == 1);
     xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
-
+    
     
     %% user filter validation
     if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
@@ -150,8 +150,4 @@ while not(strcmp(filter_is_good, 'y'))
     end
     close(fig)
 end
-
-
 end
-
-
