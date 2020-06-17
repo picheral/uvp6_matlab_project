@@ -3,10 +3,10 @@
 % filtrées pour les problèmes d'éclairage
 % picheral, 2020/06/04
 
-% -------------------------------------------------------
+% ----------------------------------------------------------------------------
 % lors de l'import dans EcoPart, l'app. lit en premier le sample_datfile.txt dans results_dir
 % on modifie donc ce fichier à partir du fichier du work qui ne sera jamais modifié
-% -------------------------------------------------------
+% ----------------------------------------------------------------------------
 
 
 clear all
@@ -44,7 +44,7 @@ end
 process_calib = input('Aquarium experiment ([n]/y) ? ','s');
 if isempty(process_calib);  process_calib = 'n'; end
 
-% -------------------- Selection m�thode et param�tres par d�faut ----------------
+% -------------------- Selection m�thode et param�tres par d�faut ----------------
 method = input('Select filtration method ([jo]/f) ? ','s');
 if isempty(method);method = 'jo';end
 
@@ -53,9 +53,9 @@ if strcmp(method,'c')
     movmean_window = 25;
     threshold_percent = 0.8;
 elseif strcmp(method,'jo')
-    mult = 0.6; % multiplier of the quantile under which points are considered outliers
+    mult = 0.5; % multiplier of the quantile under which points are considered outliers
     movmean_window = 16;
-    threshold_percent = 0.25;
+    threshold_percent = 0.50;
 end
 
 if manual_filter ~= 's'
@@ -155,7 +155,7 @@ while process == 1
         for fichier=fichier_deb:fichier_fin
             sample_dir = [work_dir,base(fichier).profilename,'\'];
             disp('------------------------------------------------------------------------');
-            disp(['LOADING ',sample_dir,char(base(fichier).profilename), '_datfile.txt'])
+            disp([num2str(fichier),'/',num2str(fichier_fin),' : loading ',sample_dir,char(base(fichier).profilename), '_datfile.txt'])
             % on charge toujours le fichier à partir du répertoire du sample dans
             % work car ce fichier n'est jamais modifié (fichier original à chaque
             % utilisation de l'outil)
@@ -169,14 +169,14 @@ while process == 1
             % ---------------- Filtrage ----------------------
             % utilise les données chargées ci-dessus
             [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent, mult] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method);
-            disp(['Movmean_window = ', num2str(movmean_window)])
-            disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-            disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
+%             disp(['Movmean_window = ', num2str(movmean_window)])
+%             disp(['Threshold_percent = ', num2str(threshold_percent*100)])
+            disp(['Number of images from 1st and zmax              = ',num2str(size(listecor,1))])
             dd = find(listecor(:,3) == 1);
-            disp(['Total of descent images = ',num2str(numel(dd))])
-            disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
-            disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-            disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+            disp(['Number of descent images                        = ',num2str(numel(dd))])
+            disp(['Number of rejected images (from descent only)   = ',num2str(numel(part_util_filtered_rejected))])
+            disp(['Number of good images (from descent only)       = ',num2str(numel(im_filtered))])
+            disp(['Percentage of good images (from descent only)   = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
             base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
             base(fichier).tot_utilized_img = numel(im_filtered);
             base(fichier).filter_movmean = movmean_window;
@@ -189,8 +189,7 @@ while process == 1
             disp('Saving filtered datfile !')
             file_s = [sample_dir,char(base(fichier).profilename), '_datfile.txt'];
             file_f = [results_dir,char(base(fichier).profilename), '_datfile.txt'];
-            write_filtered_datfile(file_s,file_f,im_filtered,0);
-            
+            write_filtered_datfile(file_s,file_f,im_filtered,0);           
         end
     end
 end
@@ -205,5 +204,4 @@ toto=['save ',base_new,'.mat ',base_new,];
 eval(toto);
 
 disp('------------------ END -------------------------------------------------');
-
 
