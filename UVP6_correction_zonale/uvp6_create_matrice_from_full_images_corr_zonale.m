@@ -47,8 +47,8 @@ if strcmp(option,'s')
             disp('---------------------------------------------------------------')
             disp(['Sequence ',list_seq(k).name])
             % ------------- Liste des images -------------------
-            im_list = dir('save*.png');
-            %im_list = dir('2020*.png');
+            %im_list = dir('save*.png');
+            im_list = dir('2020*.png');
              
             
             
