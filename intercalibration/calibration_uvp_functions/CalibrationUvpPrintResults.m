@@ -48,8 +48,8 @@ for i = 1:length(ref_cast_list)
     disp(['Exposure            : ',num2str(ref_cast_list(i).Exposure)]);
     disp(['SMBase              : ',num2str(ref_cast_list(i).SMBase)]);
     disp(['Image volume [L]    : ',num2str(ref_cast_list(i).img_vol_data)]);
-    disp(['Pixel        [µm]   : ',num2str(ref_cast_list(i).pix)]);
-    disp(['Pixel Area   [µm²]  : ',num2str(ref_cast_list(i).pix^2)]);
+    disp(['Pixel         [m]   : ',num2str(ref_cast_list(i).pix)]);
+    disp(['Pixel Area    [m²]  : ',num2str(ref_cast_list(i).pix^2)]);
     disp(['Aa                  : ',num2str(aa_data_ref)]);
     disp(['Exp                 : ',num2str(ref_cast_list(i).expo_data)]);
     disp('-------------------------------------------------------------------------');
