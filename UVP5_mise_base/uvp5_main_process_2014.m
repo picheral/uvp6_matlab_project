@@ -636,25 +636,7 @@ for bbb = 2 : numel(TXT_base);
         base(fichier).datfile.pressure = Pressure/10;
         base(fichier).datfile.temp_interne = Temp_interne;
         base(fichier).datfile.peltier = Peltier;
-        base(fichier).datfile.temp_cam = Temp_cam;
-        % ---------------- Filtrage ----------------------
-        [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent, mult] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method);
-        %             disp(['Movmean_window = ', num2str(movmean_window)])
-        %             disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-        disp(['Number of images from 1st and zmax              = ',num2str(size(listecor,1))])
-        dd = find(listecor(:,3) == 1);
-        disp(['Number of descent images                        = ',num2str(numel(dd))])
-        disp(['Number of rejected images (from descent only)   = ',num2str(numel(part_util_filtered_rejected))])
-        disp(['Number of good images (from descent only)       = ',num2str(numel(im_filtered))])
-        disp(['Percentage of good images (from descent only)   = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
-        base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
-        base(fichier).tot_utilized_img = numel(im_filtered);
-        base(fichier).filter_movmean = movmean_window;
-        base(fichier).filter_threshold_percent = threshold_percent*100;
-        base(fichier).mult = mult;
-        base(fichier).rejected_img = part_util_filtered_rejected;
-        base(fichier).filtered_img = im_filtered;
-        
+        base(fichier).datfile.temp_cam = Temp_cam;       
     end
     
     %% ------------ Bruit UVP5hd --------------------------------------
