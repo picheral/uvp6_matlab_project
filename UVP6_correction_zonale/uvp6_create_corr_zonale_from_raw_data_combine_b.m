@@ -446,8 +446,8 @@ end
 color_scale = [8 30];
 color_scale_gauss = [1 6];
 % LP - HO
-color_scale = [6 18];
-color_scale_gauss = [1 4];
+color_scale = [4 22];
+color_scale_gauss = [1 5];
 
 
 for mm = 1 : 2
