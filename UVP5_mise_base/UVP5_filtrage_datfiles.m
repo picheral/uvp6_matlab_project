@@ -44,7 +44,7 @@ end
 process_calib = input('Aquarium experiment ([n]/y) ? ','s');
 if isempty(process_calib);  process_calib = 'n'; end
 
-% -------------------- Selection m�thode et param�tres par d�faut ----------------
+% -------------------- Selection methode et parametres par defaut ----------------
 method = input('Select filtration method ([jo]/f) ? ','s');
 if isempty(method);method = 'jo';end
 

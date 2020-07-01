@@ -53,7 +53,7 @@ if isempty(scale_option); scale_option = 't'; end
 if strcmp(scale_option,'t')
     max_a = 10; max_b = 30; max_area = 3; max_grey = 2; 
 else
-    max_a = 200; max_b = 100; max_area = 3; max_grey = 3; 
+    max_a = 200; max_b = 125; max_area = 3; max_grey = 3; 
 end
 
 % ---- Set up fittype and options ----

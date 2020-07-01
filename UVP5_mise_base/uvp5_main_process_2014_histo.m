@@ -2,7 +2,7 @@
 % Picheral 2014/08
 
 
-function [base ] = uvp5_main_process_2014_histo(base,skip_histo,fichier,recpx,uvp5_cor_mat,pasvert,results_dir,save_histo,ligne,depth_offset,groupe,calibration,process_calib,manual_filter )
+function [base ] = uvp5_main_process_2014_histo(base,skip_histo,fichier,recpx,uvp5_cor_mat,pasvert,results_dir,sample_dir,save_histo,ligne,depth_offset,groupe,calibration,process_calib,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method)
 
 
 %% ++++++++++++++++++ Vecteur de classes de taille en Biovolume (mm3/L) ++++++++++++++++++++++
@@ -158,7 +158,7 @@ elseif process_histo == 1
         %         listecor = liste(1:gg(1),:);
         %        
         % -------------- Fonction de chargement et filtrage du DAT entre firstimage et zmax ainsi que descente --------    
-        [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,results_dir,depth_offset,process_calib);
+        [Image Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,sample_dir,depth_offset,process_calib);
         zimgprem = listecor(1,2);
         disp(['Profondeur DEB = ',num2str(zimgprem),'   First Img = ',num2str(imgprem),'   Last Img = ',num2str(imglast)]);
         [listesize c]=size(listecor);
@@ -180,23 +180,31 @@ elseif process_histo == 1
         if strcmp(validation, 'n') || strcmp(manual_filter , 'a')
             % filtering
             disp('------------------------------------------------')
-            disp('Filtering of bad data points...')
-            [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
+           % ---------------- Filtrage ----------------------
+            % utilise les données chargées ci-dessus
+            [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent, mult] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method);
 %             disp(['Movmean_window = ', num2str(movmean_window)])
 %             disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-%             disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
-%             dd = find(listecor(:,3) == 1);
-%             disp(['Total of descent images = ',num2str(numel(dd))])
-%             disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
-%             disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-%             disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+            disp(['Number of images from 1st and zmax              = ',num2str(size(listecor,1))])
+            dd = find(listecor(:,3) == 1);
+            disp(['Number of descent images                        = ',num2str(numel(dd))])
+            disp(['Number of rejected images (from descent only)   = ',num2str(numel(part_util_filtered_rejected))])
+            disp(['Number of good images (from descent only)       = ',num2str(numel(im_filtered))])
+            disp(['Percentage of good images (from descent only)   = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
+            base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
+            base(fichier).tot_utilized_img = numel(im_filtered);
+            base(fichier).filter_movmean = movmean_window;
+            base(fichier).filter_threshold_percent = threshold_percent*100;
+            base(fichier).mult = mult;
+            base(fichier).rejected_img = part_util_filtered_rejected;
+            base(fichier).filtered_img = im_filtered;
             
-            % flag bad data points (keeping pressure flag)
-            Flag = listecor(:,3).* ismember(listecor(:,1),im_filtered);
-            listecor(:,3) = Flag;
-            
-            base(fichier).reject_img_percent = 100*numel(part_util_filtered_rejected)/numel(listecor(:,1));
-%             base(fichier).part_util_filtered_rejected = part_util_filtered_rejected;
+            % enregistrement dans results_dir du fichier datfile.txt corrigé
+            disp('Saving filtered datfile !')
+            file_s = [sample_dir,char(base(fichier).profilename), '_datfile.txt'];
+            file_f = [results_dir,char(base(fichier).profilename), '_datfile.txt'];
+            write_filtered_datfile(file_s,file_f,im_filtered,0);           
+
         else
             disp('------------------------------------------------')
             disp('NO data filter has been applied')

@@ -160,9 +160,44 @@ manual_filter = 'n';
 process_map = 'n';
 
 if strcmp(option_sel,'n')
-    manual_filter = input('Filter each sequence for light failure detection (No, Auto, Manual : n/a/m ) ? ','s');
+    % -------------- Options de filtrage ----------------------
+    manual_filter = input('Filter all samples using default settings ([n]/y) ? ','s');
+    if isempty(manual_filter); manual_filter = 'n';end
+    
+    if manual_filter == 'y'
+        manual_filter = input('Batch process of all samples using default settings or Manual checking of all ([b]/m) ? ','s');
+        if isempty(manual_filter); manual_filter = 'b';end
+        
+        if manual_filter == 'm';   manual_filter = 'a';end
+    
+        % -------------------- Selection methode et parametres par defaut ----------------
+        method = input('Select filtration method ([jo]/f) ? ','s');
+        if isempty(method);method = 'jo';end
+        
+        if strcmp(method,'c')
+            mult =1;
+            movmean_window = 25;
+            threshold_percent = 0.8;
+        elseif strcmp(method,'jo')
+            mult = 0.5; % multiplier of the quantile under which points are considered outliers
+            movmean_window = 16;
+            threshold_percent = 0.50;
+        end
+        
+        mult_entry = input(['Enter multiplier of the quantile under which points are considered outliers [', num2str(mult), '] ']);
+        if isempty(mult_entry);    mult_entry = mult;end
+        
+        movmean_window_entry = input(['Enter moving mean window [', num2str(movmean_window), '] ']);
+        if isempty(movmean_window_entry); movmean_window_entry = movmean_window;end
+        
+        threshold_percent_entry = input(['Enter percent of moving mean for threshold [', num2str(threshold_percent*100), '] ']);
+        if isempty(threshold_percent_entry); threshold_percent_entry = threshold_percent;end
+        threshold_percent_entry = threshold_percent_entry/100;
+        
+    end
+    
     process_calib = input('Process data from aquarium inter-calibration ? (n/y) ','s');
-    recpx=input('Process pixel histogramms ? (n/y) ','s');
+    recpx=input('Process pixel histogramms ? (y/n) ','s');
     if strcmp(process_calib,'y')
         recpx = 'y';
     else
@@ -191,7 +226,7 @@ if isempty(manual_filter); manual_filter = 'n'; end
 if isempty(load_meta); load_meta = 'y'; end
 if isempty(skip_histo); skip_histo = 'y'; end
 if isempty(save_histo); save_histo = 'n'; end
-if isempty(recpx);   recpx = 'n';end
+if isempty(recpx);   recpx = 'y';end
 if isempty(pasvert); pasvert = 5;end
 if isempty(depth_offset); depth_offset = 1.2;end
 if isempty(save_figures); save_figures = 'n'; end
@@ -303,6 +338,7 @@ disp('-------------------------------------------------------------');
 %% =======================================================================
 for bbb = 2 : numel(TXT_base);
     project_folder = char(TXT_base(bbb));
+    work_dir = [project_folder,'\work\'];
     project_name = project_folder(9:end);
     disp(['Project ',project_name,' accepted.']);
     cd(project_folder);
@@ -495,8 +531,8 @@ for bbb = 2 : numel(TXT_base);
         waitbar(fichier / ligne);
         %--------------- Calcul des histogrammes ----------------------
         disp('-------------------------------------------------------');
-        
-        [base ] = uvp5_main_process_2014_histo(base,skip_histo,fichier,recpx,uvp5_cor_mat,pasvert,results_dir,save_histo,ligne,depth_offset,groupe,calibration,process_calib,manual_filter );
+        sample_dir = [work_dir,char(base(fichier).profilename),'\'];
+        [base ] = uvp5_main_process_2014_histo(base,skip_histo,fichier,recpx,uvp5_cor_mat,pasvert,results_dir,sample_dir,save_histo,ligne,depth_offset,groupe,calibration,process_calib,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method);
         disp('-------------------------------------------------------');
         
         %   ------------------- Theo Depth ----------------
@@ -600,22 +636,7 @@ for bbb = 2 : numel(TXT_base);
         base(fichier).datfile.pressure = Pressure/10;
         base(fichier).datfile.temp_interne = Temp_interne;
         base(fichier).datfile.peltier = Peltier;
-        base(fichier).datfile.temp_cam = Temp_cam;
-        % ---------------- Filtrage ----------------------
-        
-        [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter);
-        disp(['Movmean_window = ', num2str(movmean_window)])
-        disp(['Threshold_percent = ', num2str(threshold_percent*100)])
-        disp(['Total of images from 1st and zmax = ',num2str(size(listecor,1))])
-        dd = find(listecor(:,3) == 1);
-        disp(['Total of descent images = ',num2str(numel(dd))])
-        disp(['Total number of un-rejected images (from descent only) = ',num2str(numel(im_filtered))])
-        disp(['Number of rejected images (from descent only) = ',num2str(numel(part_util_filtered_rejected))])
-        disp(['Percentage of un-rejected images (from descent only) = ',num2str((100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),3)])
-        base(fichier).tot_rejected_img = numel(part_util_filtered_rejected);
-        base(fichier).tot_utilized_img = numel(im_filtered);
-        base(fichier).filter_movmean = movmean_window;
-        base(fichier).filter_threshold_percent = threshold_percent*100;
+        base(fichier).datfile.temp_cam = Temp_cam;       
     end
     
     %% ------------ Bruit UVP5hd --------------------------------------
