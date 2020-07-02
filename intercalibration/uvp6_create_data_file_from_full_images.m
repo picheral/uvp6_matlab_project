@@ -115,6 +115,8 @@ for i = 1 : N_seq
         % h est le "numéro" de ligne de data, donc d'images, dans le
         % fichier original
         % index est le numero de ligne dans le nouveau fichier
+        last_time = 0;
+        same_time_ = 1;
         index = 0;
         for h=hstart:hend
             index = index + 1;
@@ -130,7 +132,17 @@ for i = 1 : N_seq
             Flag = C{4};
             
             % creation du nom d'image (fichier image à ouvrir et analyser)
+            % pour LP files
             img_name = [time,'.png'];
+            % pour HF files
+            img_name = [time, '_01.png'];
+            if last_time == time
+                same_time_ = same_time_ + 1;
+                img_name = [time, '_', num2str(same_time_, '%02i'), '.png'];
+            else
+                same_time_ = 1;
+            end
+            last_time = time;
             % Test if file exist (and look in subdirectories as well)
             filelist = dir(fullfile([raw_folder,seq(i).name],'\**\',img_name));
             if ~isempty(filelist)
@@ -184,7 +196,6 @@ for i = 1 : N_seq
                                     grey_area = mean(mean_px(aa));
                                     std_area = std(mean_px(aa));
                                     data_line = [data_line,num2str(a),',',num2str(nb_area),',',num2str(grey_area),',',num2str(std_area),';'];
-                                    
                                 end
                             end
                         else
