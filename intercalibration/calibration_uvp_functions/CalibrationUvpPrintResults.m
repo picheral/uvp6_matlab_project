@@ -22,9 +22,18 @@ disp(['Min ESD       [mm]  : ',num2str(process_params.esd_min)]);
 disp(['Max ESD       [mm]  : ',num2str(process_params.esd_max)]);
 disp(['Mnimisation start   : [',num2str(process_params.X0(1)),' ',num2str(process_params.X0(2)),']']);
 disp(['Fit                 : ',char(process_params.fit_type)]);
-disp(['EC factor           : ',(num2str(process_params.EC_factor))]);
-disp(['EC                  : ',(num2str(process_params.Score))]);
 disp(['Ratio (after adjust): ',(num2str(process_params.ratio_mean))]);
+%disp(['EC factor           : ',(num2str(process_params.EC_factor))]);
+if contains(adj_cast.uvp,'uvp6'); aa_adj = round(aa_adj * 1000000);end 
+disp(['EC (score)          : ',(num2str(process_params.Score))]);
+disp(['Aa adjusted         : ',num2str(aa_adj)]);
+disp(['Exp adjusted        : ',num2str(expo_adj)]); 
+if strcmp(process_params.set_aa_exp, 'y')
+    if contains(adj_cast.uvp,'uvp6'); process_params.users_aa = round(process_params.users_aa * 1000000);end    
+    disp(['Set EC (score)      : ',(num2str(process_params.Score_set))]);
+    disp(['Set Aa              : ',num2str(process_params.users_aa)]);
+    disp(['Set Exp             : ',num2str(process_params.users_exp)]); 
+end
 disp('-------------------------------------------------------------------------');
 
 % ref uvp
@@ -55,8 +64,7 @@ for i = 1:length(ref_cast_list)
     disp('-------------------------------------------------------------------------');
 end
 
-% adj uvp
-if contains(adj_cast.uvp,'uvp6'); aa_adj = round(aa_adj * 1000000);end    
+% adj uvp   
 disp(['Adjusted UVP        : ',char(adj_cast.uvp)]);
 disp(['Light 1             : ',char(adj_cast.light1)]);
 disp(['Light 2             : ',char(adj_cast.light2)]);

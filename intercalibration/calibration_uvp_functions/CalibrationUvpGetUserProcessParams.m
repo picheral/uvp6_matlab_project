@@ -10,6 +10,19 @@ function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
 
 % ------------------- params user inputs  ---------------------------------
 
+% user's aa and exp
+set_aa_exp = input('Set the aa and exp ? ([n]/y) ', 's');
+if isempty(set_aa_exp); set_aa_exp = 'n'; end
+users_aa = 2243;
+users_exp = 1.1359;
+if strcmp(set_aa_exp,'y')
+    users_aa = input('Enter the aa value (default = 2243) : ');
+    if isempty(users_aa); users_aa = 2243; end
+    users_aa = users_aa / 1000000;
+    users_exp = input('Enter the exp value (default = 1.1359) : ');
+    if isempty(users_exp); users_exp = 1.1359; end
+end
+
 % min of size range
 esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.13) ');
 if isempty(esd_min); esd_min = 0.13; end
@@ -31,8 +44,8 @@ Fit_range = input(['Enter fit level for adj [3-6] default = fit for data ']);
 if isempty(Fit_range);      Fit_range=Fit_data;  end
 fit_type = ['poly', num2str(Fit_data)];
 Fit_range = ['poly',num2str(Fit_range)];
-EC_factor = input(['Enter EC factor (default = 0.5) ']);
-if isempty(EC_factor);      EC_factor=0.5;  end
+%EC_factor = input(['Enter EC factor (default = 0.5) ']);
+%if isempty(EC_factor);      EC_factor=0.5;  end
 
 % vecteur "ECOTAXA"
 % size of particles in the class
@@ -40,12 +53,15 @@ esd_vect_ecotaxa = [0.00403 0.00508 0.064 0.0806 0.102 0.128 0.161 0.203 0.256 0
 % esd_vect_ecotaxa = [0.064  0.102  0.161  0.256  0.406  0.645  1.002  1.630  2.580  4.100];
 
 % function returns
+process_params.set_aa_exp = set_aa_exp;
+process_params.users_aa = users_aa;
+process_params.users_exp = users_exp;
 process_params.esd_min = esd_min;
 process_params.esd_max = esd_max;
 process_params.X0 = X0;
 process_params.fit_type = fit_type;
 process_params.Fit_range = Fit_range;
-process_params.EC_factor = EC_factor;
+%process_params.EC_factor = EC_factor;
 process_params.esd_vect_ecotaxa = esd_vect_ecotaxa;
 
 end
