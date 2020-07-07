@@ -615,7 +615,7 @@ if cc == 2
 
     
     plot(max_int,'x')
-    title('Max intensity taken from the intensity profile (shutter = ' + shutter + ')')
+    title(['Max intensity taken from the intensity profile (shutter = '  shutter  ')'])
     xlabel('Image number')
     ylabel('max intensity')
     fig.Units = 'normalized';
