@@ -158,6 +158,10 @@ calibration = [];
 process_calib = 'n';
 manual_filter = 'n';
 process_map = 'n';
+mult_entry = 0.5;
+movmean_window_entry = 16;
+threshold_percent_entry = .5;
+method = 'jo';
 
 if strcmp(option_sel,'n')
     % -------------- Options de filtrage ----------------------
