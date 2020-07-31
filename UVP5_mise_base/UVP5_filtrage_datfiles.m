@@ -45,8 +45,9 @@ process_calib = input('Aquarium experiment ([n]/y) ? ','s');
 if isempty(process_calib);  process_calib = 'n'; end
 
 % -------------------- Selection methode et parametres par defaut ----------------
-method = input('Select filtration method ([jo]/f) ? ','s');
-if isempty(method);method = 'jo';end
+method = 'jo';
+% method = input('Select filtration method ([jo]/f) ? ','s');
+% if isempty(method);method = 'jo';end
 
 if strcmp(method,'c')
     mult =1;
@@ -59,6 +60,8 @@ elseif strcmp(method,'jo')
 end
 
 if manual_filter ~= 's'
+    disp('------------------------------------------------------------------------')
+    disp('Default filtering parameters : ')
     mult_entry = input(['Enter multiplier of the quantile under which points are considered outliers [', num2str(mult), '] ']);
     if isempty(mult_entry);    mult_entry = mult;end
     
@@ -73,6 +76,7 @@ else
     movmean_window_entry = movmean_window;
     threshold_percent_entry = threshold_percent;
 end
+recover_settings = 'n';
 
 %% repertoires
 results_dir = [project_folder_ref,'\results\'];
@@ -96,11 +100,14 @@ else
 end
 
 %% test if filtered database exists
-if isfile([results_dir,'baseuvp5_',project_name,'_filtered'])
+if isfile([results_dir,'baseuvp5_',project_name,'_filtered.mat'])
     % if base filtered exists, it is loaded
     toto=['load ',results_dir,base_new,'.mat;'];
     eval(toto);
-    base = base_new;
+    eval(['base = ',base_new,';']);
+    disp(['Previous database ','baseuvp5_',project_name,'_filtered',' loaded'])
+    recover_settings = input('Recover settings from previous process if exist ([y]/n) ? ','s');
+    if isempty(recover_settings); recover_settings = 'y';end
 else
     % lecture des metadata et creation base
     meta_file = ['uvp5_header_',project_name,'.txt'];
@@ -167,6 +174,12 @@ while process == 1
             base(fichier).datfile.temp_cam = Temp_cam;
             
             % ---------------- Filtrage ----------------------
+            if recover_settings == 'y' && isfield(base(fichier),'mult')
+                mult_entry = base(fichier).mult;
+                movmean_window_entry = base(fichier).filter_movmean;
+                threshold_percent_entry = base(fichier).filter_threshold_percent/100;
+            end
+                
             % utilise les données chargées ci-dessus
             [im_filtered, part_util_filtered_rejected, movmean_window, threshold_percent, mult] = DataFiltering(listecor,results_dir,base(fichier).profilename,manual_filter,mult_entry,movmean_window_entry,threshold_percent_entry,method);
 %             disp(['Movmean_window = ', num2str(movmean_window)])
