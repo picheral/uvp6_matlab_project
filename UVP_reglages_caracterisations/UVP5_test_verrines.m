@@ -10,18 +10,25 @@ disp("Selection of the data file to analyse...")
 disp('')
 disp(['Analysed file : ' data_filename])
 
+% read the data
+% the table has 3 columns (= 3 channels)
+% channel 0 is for the trigger
+% channel 1 and 2 for the verrines
 filename = [data_folder, data_filename];
 t = readtable(filename);
 t.Var4 = [];
 
+% auto detection and counting of the rising edges of each signal
 [ch0_rises, ch0_rises_LT, ch0_rises_UT, ch0_rises_ll, ch0_rises_ul] = risetime(t.Channel0, 'StateLevels', [1,3.5]);
 [ch1_rises, ch1_rises_LT, ch1_rises_UT]  = risetime(t.Channel1);
 [ch2_rises, ch2_rises_LT, ch2_rises_UT]  = risetime(t.Channel2);
 ch1_miss_rate = (length(ch0_rises) - length(ch1_rises)) / length(ch0_rises);
 ch2_miss_rate = (length(ch0_rises) - length(ch2_rises)) / length(ch0_rises);
 
-%% Trigger
 
+%% Trigger
+% statelevels give automatically the levels
+% and the histogram of the measurement data points for Channel0
 [levels, histogram, binlevels] = statelevels(t.Channel0);
 semilogy(binlevels, histogram)
 xlabel('voltage')
@@ -30,11 +37,15 @@ title('Measurement distribution for the trigger')
 saveas(gcf, [filename(1:end-4), '_trig.png'])
 close
 
-%% Verrine 1 missing flashes
 
+%% Verrine 1 missing flashes
 disp(['Missing flash for verrine 1 : ' num2str(ch1_miss_rate*100) '% (' num2str(length(ch1_rises)) '/' num2str(length(ch0_rises)) ')'])
+
+% find cases with a >3.5V trigger and no signal in the verrine (<1)
 aa = intersect(find(t.Channel0 >3.5), find(t.Channel1 < 1));
 
+% In order to check if there are cases with some voltage in the trigger and
+% nothing in the verrine
 plot(t.Channel0, t.Channel1, '+')
 title('Verrine 1 compared to the trigger')
 saveas(gcf, [filename(1:end-4), '_Ver1Trig.png'])
@@ -77,12 +88,15 @@ if ~isempty(aa)
     close
 end
 
+
 %% Verrine 2 missing flashes
-
-
 disp(['Missing flash for verrine 2 : ' num2str(ch2_miss_rate*100) '% (' num2str(length(ch2_rises)) '/' num2str(length(ch0_rises)) ')'])
+
+% find cases with a >3.5V trigger and no signal in the verrine (<1)
 aa = intersect(find(t.Channel0 >3.5), find(t.Channel2 < 1));
 
+% In order to check if there are cases with some voltage in the trigger and
+% nothing in the verrine
 plot(t.Channel0, t.Channel2, '+')
 title('Verrine 2 compared to the trigger')
 saveas(gcf, [filename(1:end-4), '_Ver2Trig.png'])
