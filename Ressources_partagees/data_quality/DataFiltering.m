@@ -40,23 +40,25 @@ filter_is_good = 'n';
 % disp('bad data points are under the moving average minus an offset')
 while not(strcmp(filter_is_good, 'y'))
     %% ---------------------- plots ----------------
-    fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 1200 600]);
+    fig = figure('numbertitle','off','name','Correction figure','Position',[10 200 1200 1200]);
     texte = [char(results_dir),char(profilename)];
     aa = find(texte == '_');
     if ~isempty(aa);    texte(aa) = "-";end
     
-    subplot(1,2,1)
+    subplot(2,2,1)
     semilogx(part_util,-press_util,'.b');
     hold on
     dd = find(listecor(:,3) == 1);
     ylabel('Pressure');
+    xlabel('Abundance of LPM (Raw data from descent)');
     sgtitle(regexprep(texte, {'\\', '\_'}, {'\\\\', '\\\_'}));
     
-    subplot(1,2,2)
+    subplot(2,2,2)
     plot(part_util,-press_util,'.b');
     hold on
     dd = find(listecor(:,3) == 1);
-    ylabel('Pressure');
+    ylabel('Pressure');    
+    xlabel('Abundance of LPM (Raw data from descent)');
     
     % ---------- Cas ajustage manuel ----------------------
     if manual_filter == 'm' || manual_filter == 'a' || manual_filter == 's'
@@ -104,7 +106,7 @@ while not(strcmp(filter_is_good, 'y'))
     end
     
     % add results on plot
-    subplot(1,2,1)
+    subplot(2,2,3)
     semilogx(part_util_filtered,-press_util_filtered,'.g');
     hold on
     semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
@@ -116,9 +118,9 @@ while not(strcmp(filter_is_good, 'y'))
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
     %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     dd = find(listecor(:,3) == 1);
-    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
+    xlabel(['TOTAL abundance [RED = rejected images, GREEN = good images]']);
     
-    subplot(1,2,2)
+    subplot(2,2,4)
     plot(part_util_filtered,-press_util_filtered,'.g');
     hold on
     plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
@@ -130,7 +132,7 @@ while not(strcmp(filter_is_good, 'y'))
     %     annotation('textbox', [.5 .23 .3 .3], 'String', regexprep(str, {'\_'}, {'\\\_'}), 'FitBoxToText', 'on');
     %     xlabel(['TOTAL number of particles from ',num2str(numel(aa)),' images']);
     dd = find(listecor(:,3) == 1);
-    xlabel(['Rejected images : ',num2str(numel(part_util_filtered_rejected)),'  (',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' %) [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
+    xlabel(['STATS : rejected : ',num2str(numel(part_util_filtered_rejected)),' / ',num2str(100-(100*(numel(dd)-numel(part_util_filtered_rejected))/numel(listecor(:,1))),2),' % [',num2str(mult),'-',num2str(movmean_window),'-',num2str(threshold_percent),']']);
     
     
     %% user filter validation

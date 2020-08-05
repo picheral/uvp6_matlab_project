@@ -131,7 +131,7 @@ while j < N_seq+1
     Aa = str2double(hw_line{20});
     Exp = str2double(hw_line{21});
     
-    % ------------ LIgne ACQ ----------------------------------
+    % ------------ Ligne ACQ ----------------------------------
     tline = fgetl(fid);
     tline = fgetl(fid);
     acq_line = strsplit(tline,{','});
