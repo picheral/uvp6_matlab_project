@@ -67,19 +67,19 @@ close
 if ~isempty(aa) && ch1_miss_rate ~= 0
     figure
     subplot(3,1,1)
-    stem(aa, ones(length(aa)), '+')
+    stem(aa, ones(length(aa),1), '+')
     xlim([0 length(t.Channel0)])
     xlabel('time indice')
     title(['Missing flashes : '  num2str(ch1_miss_rate*100) '% (' num2str(ch1_nb_pulses) '/' num2str(ch0_nb_pulses) ')'])
     
     subplot(3,1,2)
     yyaxis left
-    plot(t.Channel0(aa(1)-50:aa(1)+50), 'g')
+    plot(t.Channel0(aa(2)-50:aa(2)+50), 'g')
     ylim([0, 4.5])
     hold on
     yyaxis right
-    plot(t.Channel1(aa(1)-50:aa(1)+50), 'r-')
-    plot(t.Channel2(aa(1)-50:aa(1)+50), 'b-')
+    plot(t.Channel1(aa(2)-50:aa(2)+50), 'r-')
+    plot(t.Channel2(aa(2)-50:aa(2)+50), 'b-')
     ylim([-2, 12])
     legend('trigger', 'verrine 1', 'verrine2')
     title('Example of a missing flash')
@@ -118,19 +118,19 @@ close
 if ~isempty(aa) && ch2_miss_rate ~= 0
     figure
     subplot(3,1,1)
-    stem(aa, ones(length(aa)), '+')
+    stem(aa, ones(length(aa),1), '+')
     xlim([0 length(t.Channel0)])
     xlabel('time indice')
     title(['Missing flashes : '  num2str(ch2_miss_rate*100) '% (' num2str(ch2_nb_pulses) '/' num2str(ch0_nb_pulses) ')'])
     
     subplot(3,1,2)
     yyaxis left
-    plot(t.Channel0(aa(1)-50:aa(1)+50), 'g')
+    plot(t.Channel0(aa(2)-50:aa(2)+50), 'g')
     ylim([0, 4.5])
     hold on
     yyaxis right
-    plot(t.Channel1(aa(1)-50:aa(1)+50), 'r-')
-    plot(t.Channel2(aa(1)-50:aa(1)+50), 'b-')
+    plot(t.Channel1(aa(2)-50:aa(2)+50), 'r-')
+    plot(t.Channel2(aa(2)-50:aa(2)+50), 'b-')
     ylim([-2, 12])
     legend('trigger', 'verrine 1', 'verrine2')
     title('Example of a missing flash')
