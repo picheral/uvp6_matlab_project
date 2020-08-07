@@ -24,13 +24,13 @@ if strcmp(set_aa_exp,'y')
 end
 
 % min of size range
-esd_min = input('Enter ESD minimum for minimisation [mm] (default = 0.13) ');
+esd_min = input('Enter raw ESD minimum for optimisation [mm] (default = 0.13) ');
 if isempty(esd_min); esd_min = 0.13; end
 
 % max of size range
 tt = 1.5;
 if contains(uvp_adj,'uvp6'); tt = 1;end 
-esd_max = input(['Enter ESD maximum for minimisation [mm] (default = ',num2str(tt),') ']);
+esd_max = input(['Enter raw ESD maximum for optimisation [mm] (default = ',num2str(tt),') ']);
 if isempty(esd_max); esd_max = tt; end
 
 % startng value for aa and exp

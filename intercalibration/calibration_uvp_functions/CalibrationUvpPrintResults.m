@@ -18,8 +18,8 @@ disp(['Processing date     : ',datestr(now,31)])
 disp(['Processing operator : ',char(people)]);
 disp('-------------------------------------------------------------------------');
 disp(['Nb of reference uvps: ',num2str(length(ref_cast_list))]);
-disp(['Min ESD       [mm]  : ',num2str(process_params.esd_min)]);
-disp(['Max ESD       [mm]  : ',num2str(process_params.esd_max)]);
+disp(['Min raw ESD   [mm]  : ',num2str(process_params.esd_min)]);
+disp(['Max raw ESD   [mm]  : ',num2str(process_params.esd_max)]);
 disp(['Mnimisation start   : [',num2str(process_params.X0(1)),' ',num2str(process_params.X0(2)),']']);
 disp(['Fit                 : ',char(process_params.fit_type)]);
 disp(['Ratio (after adjust): ',(num2str(process_params.ratio_mean))]);
