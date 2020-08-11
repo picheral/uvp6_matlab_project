@@ -84,8 +84,13 @@ disp(['SMBase              : ',num2str(adj_cast.SMBase)]);
 disp(['Image volume [L]    : ',num2str(adj_cast.img_vol_data)]);
 disp(['Pixel        [µm]   : ',num2str(adj_cast.pix)]);
 disp(['Pixel Area   [µm²]  : ',num2str(adj_cast.pix^2)]);
-disp(['Aa                  : ',num2str(aa_adj)]);
-disp(['Exp                 : ',num2str(expo_adj)]);  
+if strcmp(process_params.set_aa_exp, 'y')
+disp(['Aa                  : ',num2str(process_params.users_aa)]);
+disp(['Exp                 : ',num2str(process_params.users_exp)]);  
+else
+    disp(['Aa                  : ',num2str(aa_adj)]);
+    disp(['Exp                 : ',num2str(process_params.users_exp)]); 
+end
 disp('-------------------------------------------------------------------------');
 end
 

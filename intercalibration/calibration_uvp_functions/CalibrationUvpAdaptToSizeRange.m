@@ -14,9 +14,11 @@ function [uvp_cast] = CalibrationUvpAdaptToSizeRange(uvp_cast, esd_min, esd_max)
 %% -------------- Range ----------------------------------------------------
 Smin_mm = pi * (esd_min/2)^2;
 Smin_px = ceil(Smin_mm/(uvp_cast.pix^2));
+%Smin_px = ceil((((esd_min*1000/2)^2)*pi/2342)^(1/1.1359))-1;
 
 Smax_mm = pi * (esd_max/2)^2;
 Smax_px = round(Smax_mm/(uvp_cast.pix^2));
+%Smax_px = round((((esd_max*1000/2))^2*pi/2342)^(1/1.1359));
 
 uvp_cast.Smin_px = Smin_px;
 uvp_cast.Smax_px = Smax_px;
