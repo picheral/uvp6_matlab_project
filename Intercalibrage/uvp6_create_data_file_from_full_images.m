@@ -27,6 +27,13 @@ raw_folder = [folder,'\raw\'];
 results_folder = [folder,'\results\'];
 
 %% Settings
+% Va créer un vecteur de profondeur fictif en utilisant le N° d'image
+fake_prof = input('Process data from aquarium inter-calibration ? (n/y) ','s');
+if isempty(fake_prof); fake_prof = 'n'; end
+if strcmp(fake_prof, 'y')
+    disp('Aquarium experiment: Creation of fake depth from image number')
+end
+
 % depth range
 zmin = input('Min depth for all profiles (default = 100) ? ');
 if isempty(zmin);zmin = 100; end
@@ -94,8 +101,13 @@ for i = 1 : N_seq
         hend = 1;
         max_prof_data = -10;
         for h=1:n
-            C = strsplit(meta{h},{','});
-            prof_data =  str2double(C{2});
+            if strcmp(fake_prof,'n')
+                C = strsplit(meta{h},{','});
+                prof_data =  str2double(C{2});
+            else
+                prof_data = h;
+            end
+            
             if (prof_data <= zmin) && (h <= hstart+1)
                 hstart = h;
             end
@@ -127,7 +139,11 @@ for i = 1 : N_seq
             % -------- METADATA -------
             C = strsplit(meta{h},{','});
             time = C{1};
-            prof_data =  C{2};
+            if strcmp(fake_prof,'n')
+                prof_data =  C{2};
+            else
+                prof_data = num2str(h);
+            end
             temp_data = C{3};
             Flag = C{4};
             
