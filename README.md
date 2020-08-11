@@ -15,7 +15,7 @@ Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'uti
 
 - **Intercalibrage**
 
-  Scripts et fonctions pour l'intercalibrage des instruments et la création du rapport.
+  Scripts et fonctions pour l'intercalibrage des instruments et la création du rapport. Script pour la création de thresholds.
 
 - **Ressources_partagees**
 
@@ -35,7 +35,7 @@ Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'uti
 
 - **UVP6_traitement_donnees_projets**
 
-  Scripts pour traiter les données des différents projets: mise en base, concatenation, calibration horloge et profondeur, création de thresholds.
+  Scripts pour traiter les données des différents projets: mise en base, concatenation, calibration horloge et profondeur.
   
 - **UVP_reglages_caractérisations**
 
