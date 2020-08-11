@@ -13,37 +13,33 @@ Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'uti
 
 ## description du projet
 
-- *Camera_adjustment_MTF_adjust_4_mtf.m*
+- **intercalibrage**
 
-  Outil de reglage du focus de la caméra
+  Scripts et fonctions pour l'intercalibrage des instruments et la création du rapport.
+
+- **Ressources_partagees**
+
+  Fonctions communes utilisées par différents scripts, notamment ce qui est lié à sfrmat3 (fonction d'analyse des images de caméra), les fits, le calcul du score, la qualité, les I/O, les modifications des bases pour les deux instruments.
   
-- *Camera_caracterisation_XXXXXXXX.mlx*
+- **UVP5_mise_base**
 
-  analyse de la caractérisation du focus de la caméra
+  Mise en base des données UVP5.
   
-- *Reglages_verrine_ho.m*
+- **UVP6_correction_zonale**
 
-  outil de réglage du faisceau des verrines HO
+  Création des matrices de correction zonale. Analyse de la correction zonale.
   
-- *uvp6_concatenation_fichiers_data.m*
-
-  outil de concatenation de fichiers de données uvp6
-  
-- *uvp6_make_base_from_data_file_n_auto.m*
-
-  prétraitement des données instrumentales
-
-- **overexposure_study**
+- **UVP6_overexposure_study**
 
   étude de la surexposition. Pour une particule d'une taille donnée, calcule le poucentage de lignes du capteur surexposées pour différents nombres de lignes analysées.
 
-- **Traitement_données_projets**
+- **UVP6_traitement_donnees_projets**
 
-  Scripts pour traiter les données des différents projets
+  Scripts pour traiter les données des différents projets: mise en base, concatenation, calibration horloge et profondeur, création de thresholds.
+  
+- **UVP_reglages_caractérisations**
 
-- **Ressources_partagées**
-
-  Fonctions communes utilisées par différents scripts, notamment ce qui est lié à sfrmat3, fonction d'analyse des images de caméra.
+  Scripts pour le réglage des instruments: réglage des verrines, du focus, de l'ouverture,...
 
 - **resources**
 
