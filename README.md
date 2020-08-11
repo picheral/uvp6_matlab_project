@@ -13,7 +13,7 @@ Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'uti
 
 ## description du projet
 
-- **intercalibrage**
+- **Intercalibrage**
 
   Scripts et fonctions pour l'intercalibrage des instruments et la création du rapport.
 
@@ -60,4 +60,4 @@ Les codes font partie d'un projet matlab qui aide à laur gestion.
 
 Avant de lancer un code, il est impératif d'ouvrir le projet matlab (ouvrir le fichier \*.prj). Le path sera automatiquement updaté pour faire tourner les codes. La fenêtre projet permet de vérifier les fichiers/dossiers suivis par matlab project et git.
 
-Il est recomandé d'effectuer les actions de refactoring sur les dossiers/fichiers (déplacer, supprimer, renomer,...) dans la fenêtre projet. Ainsi ces changements seront bien pris en compte par Matlab project et git.
+Il est recommandé d'effectuer les actions de refactoring sur les dossiers/fichiers (déplacer, supprimer, renomer,...) dans la fenêtre projet. Ainsi ces changements seront bien pris en compte par Matlab project et git.
