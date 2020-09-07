@@ -67,7 +67,7 @@ close
 if ~isempty(aa) && ch1_miss_rate ~= 0
     figure
     subplot(3,1,1)
-    stem(aa, ones(length(aa)), '+')
+    stem(aa, ones(length(aa),1), '+')
     xlim([0 length(t.Channel0)])
     xlabel('time indice')
     title(['Missing flashes : '  num2str(ch1_miss_rate*100) '% (' num2str(ch1_nb_pulses) '/' num2str(ch0_nb_pulses) ')'])
@@ -118,7 +118,7 @@ close
 if ~isempty(aa) && ch2_miss_rate ~= 0
     figure
     subplot(3,1,1)
-    stem(aa, ones(length(aa)), '+')
+    stem(aa, ones(length(aa),1), '+')
     xlim([0 length(t.Channel0)])
     xlabel('time indice')
     title(['Missing flashes : '  num2str(ch2_miss_rate*100) '% (' num2str(ch2_nb_pulses) '/' num2str(ch0_nb_pulses) ')'])
