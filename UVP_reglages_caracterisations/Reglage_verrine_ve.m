@@ -490,6 +490,9 @@ while fin == hh | last_image <= 10
             title('Intensity Profile')
             xlabel('Lenght of the beam (mm)')
             ylabel('Intensity')
+            dim = [.7 .1 .3 .3];
+            str = ['maximum position = ' num2str(mid*pixel) 'mm'];
+            annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'Color', 'red');
             
             subplot(2,3,4)
             plot7 = plot(intervalles([1:2*N+1],11)*pixel,indice(:,3),'b');
