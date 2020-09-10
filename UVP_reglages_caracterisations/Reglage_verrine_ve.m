@@ -490,6 +490,9 @@ while fin == hh | last_image <= 10
             title('Intensity Profile')
             xlabel('Lenght of the beam (mm)')
             ylabel('Intensity')
+            dim = [.7 .1 .3 .3];
+            str = ['maximum position = ' num2str(mid*pixel, 4) 'mm'];
+            annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'Color', 'red');
             
             subplot(2,3,4)
             plot7 = plot(intervalles([1:2*N+1],11)*pixel,indice(:,3),'b');
@@ -583,6 +586,7 @@ if cc == 2
     fprintf(fid_uvp,'%s\r',['UVP LIGHT type             : ',char(UVP_light_type)]);
     fprintf(fid_uvp,'%s\r',['Livecamera shutter             : ',shutter]);
     fprintf(fid_uvp,'%s\r',['Livecamera gain                : ',gain]);
+    fprintf(fid_uvp,'%s\r',['Shift of the beam center [mm]  : ', num2str(max_int_location(end)*pixel)]);
     fprintf(fid_uvp,'%s\r',['BEAM ANGLE [degre]             : ',num2str(round(angle_deg,2))]);
     fprintf(fid_uvp,'%s\r',['Pixel size in air [mm]      : ',num2str(pixel)]);
     fprintf(fid_uvp,'%s\r',['Mean thickness L [mm]  : ',num2str(pixel*mean(thickness(end-9:end)))]);
