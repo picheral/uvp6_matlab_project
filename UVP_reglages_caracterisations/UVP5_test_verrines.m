@@ -16,7 +16,7 @@ disp(['Analysed file : ' data_filename])
 % channel 1 and 2 for the verrines
 filename = [data_folder, data_filename];
 t = readtable(filename);
-t.Var4 = [];
+t.Var4_1 = [];
 
 % auto detection and counting of the rising edges of each signal
 [ch0_rises, ch0_rises_LT, ch0_rises_UT, ch0_rises_ll, ch0_rises_ul] = risetime(t.Channel0, 'StateLevels', [1,3.5]);
