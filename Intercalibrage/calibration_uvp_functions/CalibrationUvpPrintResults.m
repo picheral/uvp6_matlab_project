@@ -89,7 +89,7 @@ disp(['Aa                  : ',num2str(process_params.users_aa)]);
 disp(['Exp                 : ',num2str(process_params.users_exp)]);  
 else
     disp(['Aa                  : ',num2str(aa_adj)]);
-    disp(['Exp                 : ',num2str(process_params.users_exp)]); 
+    disp(['Exp                 : ',num2str(expo_adj)]); 
 end
 disp('-------------------------------------------------------------------------');
 end
