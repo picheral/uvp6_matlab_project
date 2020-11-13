@@ -12,14 +12,14 @@ meta.PREDEPLOYMENT_CALIB_COEFFICIENT'
 
 % % ---------- Trajectoire --------------------
 % Rtraj = ncstruct('C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\6903069_dac\6903069_Rtraj.nc');
-% 
+%
 % % ---------------- Profiles ---------------------------
 % Profile = ncstruct('C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\6903069_dac\profiles\BR6903069_004.nc');
 % Profile.LATITUDE'
 % Profile.LONGITUDE'
 % JULD = Profile.JULD'
 % datestr(JULD(1))
-% 
+%
 % JULD_LOCATION = Profile.JULD_LOCATION'
 % datestr(JULD_LOCATION(1))
 
@@ -117,7 +117,7 @@ FLOAT_META_DATA_DESCRIPTION =              meta_aux.FLOAT_META_DATA_DESCRIPTION'
 SENSOR =                                    meta_aux.SENSOR'                     % PARTICLES_PLANKTON_CAMERA
 SENSOR_MODEL =                              meta_aux.SENSOR_MODEL'               % UVP6-LP
 SENSOR_SERIAL_NO =                          meta_aux.SENSOR_SERIAL_NO'           % 000110LP
-PARAMETER =                                 meta_aux.PARAMETER' 
+PARAMETER =                                 meta_aux.PARAMETER'
 %     'NB_SIZE_SPECTRA_PARTICLES                                       '
 %     'GREY_SIZE_SPECTRA_PARTICLES                                     '
 %     'TEMP_PARTICLES                                                  '
@@ -171,8 +171,8 @@ PROFILE_ID =                        FILENAME(1:strfind(FILENAME, 'aux')-2);
 INSTRUMENT_SN =                     strip(SENSOR_SERIAL_NO);
 LATITUDE =                          Profile_aux.LATITUDE(1,:);
 LONGITUDE =                         Profile_aux.LONGITUDE(1,:);
-JULD_LOCATION =                     datestr(Profile_aux.JULD_LOCATION(1),31);
-PROFILE_UTC_DATE_TIME =             datestr(JULD_LOCATION,31);
+JULD_LOCATION =                     datestr(Profile_aux.JULD_LOCATION(1)+712224,31);
+PROFILE_UTC_DATE_TIME =             JULD_LOCATION;
 
 % ---------------- UVP settings ------------------------
 HWCONF =                            strsplit(meta_aux.FLOAT_META_DATA_VALUE(:,27,1)',',');
@@ -205,5 +205,124 @@ PRES_BLACK =                        Profile_aux.PRES(bb,2);
 BLACK_NB_SIZE_SPECTRA_PARTICLES =   Profile_aux.BLACK_NB_SIZE_SPECTRA_PARTICLES(:,bb,2)';
 DATA_BLACK =    [PRES_BLACK,BLACK_NB_SIZE_SPECTRA_PARTICLES];
 
+% ---------- S/N ------------------
+SN_lim = 5;
+NOISE = sortrows(DATA_BLACK);
+NOISE_U = NOISE(1,:);
+k=2;
+for i = 2 : size(NOISE,1)
+    if NOISE(i,1) > NOISE(i-1,1)
+        NOISE_U(k,:) = NOISE(i,:);
+        k=k+1;
+    end
+end
+DEPTH = [0:5:1000];
+BLACK = interp1(NOISE_U(:,1),  NOISE_U(:,5)  ,DEPTH,'linear')';
 
-    
+SIGNAL = sortrows(DATA_LPM);
+SIGNAL_U = SIGNAL(1,:);
+k=2;
+for i = 2 : size(SIGNAL,1)
+    if SIGNAL(i,1) > SIGNAL(i-1,1)
+        SIGNAL_U(k,:) = SIGNAL(i,:);
+        k=k+1;
+    end
+end
+LPM = interp1(SIGNAL_U(:,1),  SIGNAL_U(:,7)  ,DEPTH,'linear')';
+DATA_SN = [DEPTH',LPM./BLACK];
+
+%% ------------- détection de la couche utile (non impactée par le soleil ---------
+
+% --------- stats sur couche surface -------------------
+Zutile = 0;
+Zlim = 100;
+aa = find( NOISE_U(:,1) <= Zlim);
+quantile_noise_surf = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
+mean_noise_surf = mean(NOISE_U(aa,5));
+std_noise_surf = std(NOISE_U(aa,5));
+
+% --------- Stats sur couche profonde -------------
+aa = find( NOISE_U(:,1) > Zlim);
+quantile_noise_deep = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
+mean_noise_deep = mean(NOISE_U(aa,5));
+std_noise_deep = std(NOISE_U(aa,5));
+
+% -------- Profil impacté ou pas  ----------------
+if mean_noise_surf > mean_noise_deep + std_noise_deep / 2
+    % ------- Recherche de la Zutile ------------
+    movmean_noise = movmean(NOISE_U(:,5),10);
+    diff_noise = diff(movmean_noise);
+    aa = find(diff_noise == min(diff_noise));
+    if NOISE_U(aa(1),1) < Zlim && min(diff_noise) < -3
+        Zutile = NOISE_U(aa(1),1);
+    end
+end
+
+aa= DATA_SN(:,1) > Zutile;
+DATA_SN_utile = DATA_SN(aa,:);
+aa= DATA_LPM(:,1) > Zutile;
+DATA_LPM_utile = DATA_LPM(aa,:);
+
+%% ------------- Graphs ---------------------------------
+texte = [char(PROFILE_ID),'  ',char(INSTRUMENT_SN),'  ',char(PROFILE_UTC_DATE_TIME),'  ',num2str(LATITUDE),'°/',num2str(LONGITUDE),'°'];
+texte = regexprep(texte, '_', '-');
+% ---------- QC --------------------
+figure1 = figure('name','Plot_CTRL','Position',[10 200 800 800]);
+sgtitle(texte);
+
+subplot(2,2,1)
+plot(NOISE_U(:,5),-NOISE_U(:,1),'.')
+hold on
+plot(movmean_noise,-NOISE_U(:,1))
+ylabel('Pressure [becibars]');
+xlabel(['BLACK : ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm'])
+legend('Raw','Movmean,10','Location','southeast');
+
+subplot(2,2,2)
+plot(diff_noise,-NOISE_U(1:numel(diff_noise),1),'+')
+hold on
+if Zutilie > 0
+    plot(min(diff_noise),-Zutile,'ro');
+end
+xlabel(['Zutile detection : ',num2str(Zutile),' [decibars]'])
+
+subplot(2,2,3)
+semilogx(DATA_SN(:,2),-DATA_SN(:,1),'r.')
+hold on
+aa = find(DATA_SN(:,2) < SN_lim);
+semilogx(DATA_SN(aa,2),-DATA_SN(aa,1),'g.')
+semilogx([SN_lim ,SN_lim],[-1000 0],'k--')
+xlim([0.1 1000]);
+ylabel('Pressure [becibars]');
+xlabel(['S/N for ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm'])
+
+subplot(2,2,4)
+plot (DATA_LPM(:,2),-DATA_LPM(:,1),'k.')
+ylabel('Pressure [becibars]');
+xlabel(['UVP6 T [°C]'])
+
+
+% -------------- DATA -----------------------------------
+figure2 = figure('name','Plot_DATA','Position',[10 200 1700 1000]);
+% ----------- LPM AB ------------
+for i = 1:14
+    subplot(2,14,i)    
+    semilogx (DATA_LPM(:,i+6),-DATA_LPM(:,1),'r.')
+    hold on
+    semilogx (DATA_LPM_utile(:,i+6),-DATA_LPM_utile(:,1),'g.')    
+    xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])    
+    title('LPM [#/L]');
+end
+
+% ----------- LPM GREY ------------
+for i = 1:14
+    subplot(2,14,i+14)
+    semilogx(DATA_LPM(:,i+24),-DATA_LPM(:,1),'r.')
+    hold on
+    semilogx(DATA_LPM_utile(:,i+24),-DATA_LPM_utile(:,1),'g.')    
+    title('LPM GREY');
+    xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])
+    xlim([10,200])
+end
+sgtitle(texte);
+
