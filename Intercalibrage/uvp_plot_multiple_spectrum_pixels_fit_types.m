@@ -208,10 +208,7 @@ if nb_of_ref >1 && type_plot == 'c'
         i_size_limit = aa(1);
 
         pixsize= [1:size(refpix,2)];
-        tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-        newsize=tailleref;
         camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-
         % --------- Selection gamme de taille REF -----------------------
         aa = find(camsm_ref <= esd_min);
         bb = find(camsm_ref <= esd_max);
@@ -225,7 +222,6 @@ if nb_of_ref >1 && type_plot == 'c'
         else
             end_x = bb(end);
         end
-
         refsum=nanmean(refs);
         refsum_log = log(refsum);
         
@@ -334,14 +330,11 @@ else
     i_size_limit = aa(1);
 
     pixsize= [1:size(refpix,2)];
-    tailleref=2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-    newsize=tailleref;
     if type_plot == 'c'
         camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
     else
         camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
     end
-
     % --------- Selection gamme de taille REF -----------------------
     aa = find(camsm_ref <= esd_min);
     bb = find(camsm_ref <= esd_max);
@@ -355,7 +348,6 @@ else
     else
         end_x = bb(end);
     end
-
     refsum=nanmean(refs);
     refsum_log = log(refsum);
 
@@ -518,7 +510,7 @@ while other_cast == 1
     nbsum=nanmean(nbre);
     nbsum_adj_log = log(nbsum);
     x = [esd_min:0.01:esd_max];
-
+    
     % -------- max size where <30 object counts ---------------------------
     aa = find( sum(data_raw,1) <= 1);
     i_size_limit = aa(1);
@@ -727,6 +719,8 @@ T = array2table(data_table,'VariableNames',data_list(2:end));
 T.profilename = data_name';
 writetable(T,[results_dir_ref,'\',char(titre_file),'.txt']);
 T
-
+if type_plot == 'c'
+    disp('WARNING: for calibrated graphs, the ESD range is used after calibration, so the score');
+end
 disp('--------------- Table saved -------------------------- ');
 disp('------------------ END ------------------------------- ');
