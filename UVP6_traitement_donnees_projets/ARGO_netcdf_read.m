@@ -1,9 +1,13 @@
 
+% function ARGO_netcdf_read(path_dac,path_aux,WMO)
+path_dac = 'C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\argo\dac\coriolis';
+path_aux = 'C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\argo\aux_\coriolis';
+WMO = '6903069';
 
 %% --------- DAC ------------------------
-
 % ---------- metadata -------------------
-meta = ncstruct('C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\6903069_dac\6903069_meta.nc');
+meta = ncstruct([path_dac,'\',WMO,'\',WMO,'_meta.nc']);
+
 meta.PLATFORM_TYPE'
 meta.PLATFORM_NUMBER'
 meta.SENSOR'
@@ -25,7 +29,7 @@ meta.PREDEPLOYMENT_CALIB_COEFFICIENT'
 
 %% ----------- AUX --------------------------
 % ---------- metadata -------------------
-meta_aux = ncstruct('C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\6903069_aux\6903069_meta_aux.nc');
+meta_aux = ncstruct([path_aux,'\',WMO,'\',WMO,'_meta_aux.nc']);
 PLATFORM_NUMBER =                      meta_aux.PLATFORM_NUMBER'            % 6903069
 FLOAT_META_DATA_NAME =                 meta_aux.FLOAT_META_DATA_NAME'
 %     'FLOAT_IP_ADDRESS                                                                                                                '
@@ -163,166 +167,235 @@ PARAMETER_UNITS =                           meta_aux.PARAMETER_UNITS'
 %     'count                           '
 %     'bit                             '
 
-%% ---------------- Profiles ---------------------------
-FILENAME = 'R6903069_006_aux.nc';           % Catalogue des fichiers du répertoire
-Profile_aux = ncstruct(['C:\Dvlpt_projet_UVP6\Integration_vecteur\NKE\ARGO\Ressources_pour_ARGO_netcdf_ecotaxa\Tests-netcdf\6903069_aux\profiles\',FILENAME]);
-% ---------------- Sample metadata ---------------------
-PROFILE_ID =                        FILENAME(1:strfind(FILENAME, 'aux')-2);
-INSTRUMENT_SN =                     strip(SENSOR_SERIAL_NO);
-LATITUDE =                          Profile_aux.LATITUDE(1,:);
-LONGITUDE =                         Profile_aux.LONGITUDE(1,:);
-JULD_LOCATION =                     datestr(Profile_aux.JULD_LOCATION(1)+712224,31);
-PROFILE_UTC_DATE_TIME =             JULD_LOCATION;
+%% ---------------- Profiles (boucle) ---------------------------
+% Catalogue des fichiers du répertoire
+nc_list = dir([path_aux,'\',WMO,'\profiles\R',WMO,'_*.nc']);
 
-% ---------------- UVP settings ------------------------
-HWCONF =                            strsplit(meta_aux.FLOAT_META_DATA_VALUE(:,27,1)',',');
-Aa =                                str2num(char(HWCONF(18)));
-Exp =                               str2num(char(HWCONF(19)));
-IMAGE_VOL =                         str2num(char(HWCONF(21)));
-PIXEL_SIZE =                        str2num(char(HWCONF(20)));
-DEPTH_OFFSET =                      str2num(char(HWCONF(9)));
-ACQ_SHUTTER_SPEED =                 str2num(char(HWCONF(15)));
-ACQ_GAIN =                          str2num(char(HWCONF(16)));
-ACQ_THRESHOLD =                     str2num(char(HWCONF(17)));
-
-% --------------- Definition des bornes des classes ------
-CLASS = [];
-for i = 0:17
-    CLASS(i+1) = str2num(char(HWCONF(25+i)));
-end
-
-% --------------- Sample data ---------------------------
-aa =                                isfinite(Profile_aux.PRES(:,1));
-PRES =                              Profile_aux.PRES(aa,1);
-IMAGE_NUMBER_PARTICLES =            Profile_aux.IMAGE_NUMBER_PARTICLES(aa,1);
-TEMP_PARTICLES =                    Profile_aux.TEMP_PARTICLES(aa,1);
-NB_SIZE_SPECTRA_PARTICLES =         Profile_aux.NB_SIZE_SPECTRA_PARTICLES(:,aa,1)';
-GREY_SIZE_SPECTRA_PARTICLES =       Profile_aux.GREY_SIZE_SPECTRA_PARTICLES(:,aa,1)';
-DATA_LPM =      [PRES,TEMP_PARTICLES,IMAGE_NUMBER_PARTICLES,NB_SIZE_SPECTRA_PARTICLES,GREY_SIZE_SPECTRA_PARTICLES];
-
-bb =                                isfinite(Profile_aux.PRES(:,2));
-PRES_BLACK =                        Profile_aux.PRES(bb,2);
-BLACK_NB_SIZE_SPECTRA_PARTICLES =   Profile_aux.BLACK_NB_SIZE_SPECTRA_PARTICLES(:,bb,2)';
-DATA_BLACK =    [PRES_BLACK,BLACK_NB_SIZE_SPECTRA_PARTICLES];
-
-% ---------- S/N ------------------
-SN_lim = 5;
-NOISE = sortrows(DATA_BLACK);
-NOISE_U = NOISE(1,:);
-k=2;
-for i = 2 : size(NOISE,1)
-    if NOISE(i,1) > NOISE(i-1,1)
-        NOISE_U(k,:) = NOISE(i,:);
-        k=k+1;
+% ---------------- Répertoire des graphs ---------------
+path_graphs = [path_aux,'\',WMO,'\graphs'];
+mkdir([path_aux,'\',WMO,'\'],'graphs');
+    
+for nc_file = 1 : numel(nc_list)
+    FILENAME = nc_list(nc_file).name;
+    Profile_aux = ncstruct([path_aux,'\',WMO,'\profiles\',FILENAME]);
+        
+    % ---------------- Sample metadata ---------------------
+    PROFILE_ID =                        FILENAME(1:strfind(FILENAME, 'aux')-2);
+    INSTRUMENT_SN =                     strip(SENSOR_SERIAL_NO);
+    LATITUDE =                          Profile_aux.LATITUDE(1,:);
+    LONGITUDE =                         Profile_aux.LONGITUDE(1,:);
+    JULD_LOCATION =                     datestr(Profile_aux.JULD_LOCATION(1)+712224,31);
+    PROFILE_UTC_DATE_TIME =             JULD_LOCATION;
+    
+    % ---------------- UVP settings ------------------------
+    HWCONF =                            strsplit(meta_aux.FLOAT_META_DATA_VALUE(:,27,1)',',');
+    Aa =                                str2num(char(HWCONF(18)));
+    Exp =                               str2num(char(HWCONF(19)));
+    IMAGE_VOL =                         str2num(char(HWCONF(21)));
+    PIXEL_SIZE =                        str2num(char(HWCONF(20)));
+    DEPTH_OFFSET =                      str2num(char(HWCONF(9)));
+    ACQ_SHUTTER_SPEED =                 str2num(char(HWCONF(15)));
+    ACQ_GAIN =                          str2num(char(HWCONF(16)));
+    ACQ_THRESHOLD =                     str2num(char(HWCONF(17)));
+    
+    % --------------- Definition des bornes des classes ------
+    CLASS = [];
+    for i = 0:17
+        CLASS(i+1) = str2num(char(HWCONF(25+i)));
     end
-end
-DEPTH = [0:5:1000];
-BLACK = interp1(NOISE_U(:,1),  NOISE_U(:,5)  ,DEPTH,'linear')';
-
-SIGNAL = sortrows(DATA_LPM);
-SIGNAL_U = SIGNAL(1,:);
-k=2;
-for i = 2 : size(SIGNAL,1)
-    if SIGNAL(i,1) > SIGNAL(i-1,1)
-        SIGNAL_U(k,:) = SIGNAL(i,:);
-        k=k+1;
+    
+    % --------------- Sample data ---------------------------
+    aa =                                isfinite(Profile_aux.PRES(:,1));
+    PRES =                              Profile_aux.PRES(aa,1);
+    IMAGE_NUMBER_PARTICLES =            Profile_aux.IMAGE_NUMBER_PARTICLES(aa,1);
+    TEMP_PARTICLES =                    Profile_aux.TEMP_PARTICLES(aa,1);
+    NB_SIZE_SPECTRA_PARTICLES =         Profile_aux.NB_SIZE_SPECTRA_PARTICLES(:,aa,1)';
+    GREY_SIZE_SPECTRA_PARTICLES =       Profile_aux.GREY_SIZE_SPECTRA_PARTICLES(:,aa,1)';
+    DATA_LPM =      [PRES,TEMP_PARTICLES,IMAGE_NUMBER_PARTICLES,NB_SIZE_SPECTRA_PARTICLES,GREY_SIZE_SPECTRA_PARTICLES];
+    
+    bb =                                isfinite(Profile_aux.PRES(:,2));
+    PRES_BLACK =                        Profile_aux.PRES(bb,2);
+    BLACK_NB_SIZE_SPECTRA_PARTICLES =   Profile_aux.BLACK_NB_SIZE_SPECTRA_PARTICLES(:,bb,2)';
+    DATA_BLACK =    [PRES_BLACK,BLACK_NB_SIZE_SPECTRA_PARTICLES];
+    
+    % ---------- S/N ------------------
+    SN_lim = 2;
+    NOISE = sortrows(DATA_BLACK);
+    NOISE_U = NOISE(1,:);
+    k=2;
+    for i = 2 : size(NOISE,1)
+        if NOISE(i,1) > NOISE(i-1,1)
+            NOISE_U(k,:) = NOISE(i,:);
+            k=k+1;
+        end
     end
-end
-LPM = interp1(SIGNAL_U(:,1),  SIGNAL_U(:,7)  ,DEPTH,'linear')';
-DATA_SN = [DEPTH',LPM./BLACK];
-
-%% ------------- détection de la couche utile (non impactée par le soleil ---------
-
-% --------- stats sur couche surface -------------------
-Zutile = 0;
-Zlim = 100;
-aa = find( NOISE_U(:,1) <= Zlim);
-quantile_noise_surf = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
-mean_noise_surf = mean(NOISE_U(aa,5));
-std_noise_surf = std(NOISE_U(aa,5));
-
-% --------- Stats sur couche profonde -------------
-aa = find( NOISE_U(:,1) > Zlim);
-quantile_noise_deep = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
-mean_noise_deep = mean(NOISE_U(aa,5));
-std_noise_deep = std(NOISE_U(aa,5));
-
-% -------- Profil impacté ou pas  ----------------
-if mean_noise_surf > mean_noise_deep + std_noise_deep / 2
-    % ------- Recherche de la Zutile ------------
+    DEPTH = [0:5:1000];
+    BLACK = interp1(NOISE_U(:,1),  NOISE_U(:,5)  ,DEPTH,'linear')';
+    
+    SIGNAL = sortrows(DATA_LPM);
+    SIGNAL_U = SIGNAL(1,:);
+    k=2;
+    for i = 2 : size(SIGNAL,1)
+        if SIGNAL(i,1) > SIGNAL(i-1,1)
+            SIGNAL_U(k,:) = SIGNAL(i,:);
+            k=k+1;
+        end
+    end
+    LPM = interp1(SIGNAL_U(:,1),  SIGNAL_U(:,7)  ,DEPTH,'linear')';
+    DATA_SN = [DEPTH',LPM./BLACK];
+    
+    %% ------------- détection de la couche utile (non impactée par le soleil ---------
+    
+    % --------- stats sur couche surface -------------------
+    Zutile_diff = 0;
+    Zutile_mean = 0;
+    Zlim = 100;
+    aa = find( NOISE_U(:,1) <= Zlim);
+    quantile_noise_surf = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
+    mean_noise_surf = mean(NOISE_U(aa,5));
+    std_noise_surf = std(NOISE_U(aa,5));
+    
+    % --------- Stats sur couche profonde -------------
+    aa = find( NOISE_U(:,1) > Zlim);
+    quantile_noise_deep = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
+    mean_noise_deep = mean(NOISE_U(aa,5));
+    std_noise_deep = std(NOISE_U(aa,5));
+    
+    % -------- Profil impacté ou pas  ----------------
     movmean_noise = movmean(NOISE_U(:,5),10);
     diff_noise = diff(movmean_noise);
-    aa = find(diff_noise == min(diff_noise));
-    if NOISE_U(aa(1),1) < Zlim && min(diff_noise) < -3
-        Zutile = NOISE_U(aa(1),1);
+    % Methode pente max
+    if mean_noise_surf > mean_noise_deep + std_noise_deep * 5
+        % Recherche de la Zutile_diff si la moyenne est très supérieure à celle < 100m 
+        aa = find(diff_noise == min(diff_noise));
+        % Recherche pente maximum dans la couche de surface
+        if NOISE_U(aa(1),1) < Zlim && min(diff_noise) < -3
+            Zutile_diff = NOISE_U(aa(1),1);
+        end        
+
     end
-end
-
-aa= DATA_SN(:,1) > Zutile;
-DATA_SN_utile = DATA_SN(aa,:);
-aa= DATA_LPM(:,1) > Zutile;
-DATA_LPM_utile = DATA_LPM(aa,:);
-
-%% ------------- Graphs ---------------------------------
-texte = [char(PROFILE_ID),'  ',char(INSTRUMENT_SN),'  ',char(PROFILE_UTC_DATE_TIME),'  ',num2str(LATITUDE),'°/',num2str(LONGITUDE),'°'];
-texte = regexprep(texte, '_', '-');
-% ---------- QC --------------------
-figure1 = figure('name','Plot_CTRL','Position',[10 200 800 800]);
-sgtitle(texte);
-
-subplot(2,2,1)
-plot(NOISE_U(:,5),-NOISE_U(:,1),'.')
-hold on
-plot(movmean_noise,-NOISE_U(:,1))
-ylabel('Pressure [becibars]');
-xlabel(['BLACK : ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm'])
-legend('Raw','Movmean,10','Location','southeast');
-
-subplot(2,2,2)
-plot(diff_noise,-NOISE_U(1:numel(diff_noise),1),'+')
-hold on
-if Zutilie > 0
-    plot(min(diff_noise),-Zutile,'ro');
-end
-xlabel(['Zutile detection : ',num2str(Zutile),' [decibars]'])
-
-subplot(2,2,3)
-semilogx(DATA_SN(:,2),-DATA_SN(:,1),'r.')
-hold on
-aa = find(DATA_SN(:,2) < SN_lim);
-semilogx(DATA_SN(aa,2),-DATA_SN(aa,1),'g.')
-semilogx([SN_lim ,SN_lim],[-1000 0],'k--')
-xlim([0.1 1000]);
-ylabel('Pressure [becibars]');
-xlabel(['S/N for ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm'])
-
-subplot(2,2,4)
-plot (DATA_LPM(:,2),-DATA_LPM(:,1),'k.')
-ylabel('Pressure [becibars]');
-xlabel(['UVP6 T [°C]'])
-
-
-% -------------- DATA -----------------------------------
-figure2 = figure('name','Plot_DATA','Position',[10 200 1700 1000]);
-% ----------- LPM AB ------------
-for i = 1:14
-    subplot(2,14,i)    
-    semilogx (DATA_LPM(:,i+6),-DATA_LPM(:,1),'r.')
+    
+    % Methode seuil bruit
+    aa = find(movmean_noise > mean_noise_deep + std_noise_deep * 5);
+    if ~isempty(aa)
+        Zutile_mean = NOISE_U(aa(end),1);
+    end
+    
+    aa= DATA_SN(:,1) > Zutile_diff;
+    DATA_SN_utile = DATA_SN(aa,:);
+    aa= DATA_LPM(:,1) > Zutile_diff;
+    DATA_LPM_utile = DATA_LPM(aa,:);
+    
+    %% ------------- Graphs ---------------------------------
+    texte = [char(PROFILE_ID),'  ',char(INSTRUMENT_SN),'  ',char(PROFILE_UTC_DATE_TIME),'  ',num2str(LATITUDE),'°/',num2str(LONGITUDE),'°'];
+    texte = regexprep(texte, '_', '-');
+    % ---------- QC --------------------
+    figure1 = figure('name','Plot_CTRL','Position',[10 200 800 800]);
+    sgtitle(texte);
+    
+    subplot(3,2,1)
+    semilogx(NOISE_U(:,5),-NOISE_U(:,1),'m.')
     hold on
-    semilogx (DATA_LPM_utile(:,i+6),-DATA_LPM_utile(:,1),'g.')    
-    xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])    
-    title('LPM [#/L]');
-end
-
-% ----------- LPM GREY ------------
-for i = 1:14
-    subplot(2,14,i+14)
-    semilogx(DATA_LPM(:,i+24),-DATA_LPM(:,1),'r.')
+    semilogx(movmean_noise,-NOISE_U(:,1),'b')
+    ylabel('Pressure [becibars]');
+    xlabel(['BLACK : ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm [#/F] (mean deep : ',num2str(mean_noise_deep,2),')'])
+    legend('Raw','Movmean,10','Location','southeast');
+    xlim([1 20000]);
+    
+    subplot(3,2,2)
+    plot(diff_noise,-NOISE_U(1:numel(diff_noise),1),'b.')
     hold on
-    semilogx(DATA_LPM_utile(:,i+24),-DATA_LPM_utile(:,1),'g.')    
-    title('LPM GREY');
-    xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])
-    xlim([10,200])
+    if Zutile_diff > 0
+        plot(min(diff_noise),-Zutile_diff,'ro');
+    end
+    xlabel(['Diff(movmean) (Zmindiff : ',num2str(Zutile_diff),', Zminmean : ',num2str(Zutile_mean),') [db]']);
+    ylabel('Pressure [becibars]');
+%     ylim([-1000 0]);
+%     xlim([-0.0001 100])
+    
+    subplot(3,2,3)
+    semilogx(NOISE_U(:,5),-NOISE_U(:,1),'m.')
+    hold on
+    semilogx(movmean_noise,-NOISE_U(:,1),'b')        
+    if Zutile_diff > 0
+        plot([0.1 20000],[-Zutile_diff,-Zutile_diff],'r');
+    end
+    if Zutile_mean > 0
+        plot([0.1 20000],[-Zutile_mean,-Zutile_mean],'g');
+    end     
+    ylabel('Pressure [becibars]');
+    xlabel(['Zoomed BLACK : ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm [#/F] (mean deep : ',num2str(mean_noise_deep,2),')'])
+    legend('Raw','Movmean,10','Location','southeast');
+    xlim([1 20000]);
+    ylim([-100 0]);
+    
+    subplot(3,2,4)
+    plot(diff_noise,-NOISE_U(1:numel(diff_noise),1),'b.')
+    hold on
+    if Zutile_diff > 0
+        plot(min(diff_noise),-Zutile_diff,'ro');
+    end
+    xlabel(['Diff(movmean) (Zmindiff : ',num2str(Zutile_diff),', Zminmean : ',num2str(Zutile_mean),') [db]']);
+    ylabel('Pressure [becibars]');
+    ylim([-100 0]);    
+    
+    subplot(3,2,5)
+    semilogx(DATA_SN(:,2),-DATA_SN(:,1),'r.')
+    hold on
+    aa = find(DATA_SN(:,2) > SN_lim);
+    semilogx(DATA_SN(aa,2),-DATA_SN(aa,1),'g.')
+    semilogx([SN_lim ,SN_lim],[-1000 0],'k--')
+    xlim([0.1 1000]);
+    ylabel('Pressure [becibars]');
+    xlabel(['S/N for ',num2str(CLASS(4)),'-',num2str(CLASS(5)),'µm limit : ',num2str(SN_lim)])
+    
+    subplot(3,2,6)
+    plot (DATA_LPM(:,2),-DATA_LPM(:,1),'k.')
+    ylabel('Pressure [becibars]');
+    xlabel(['UVP6 Tinternal [°C]'])
+    
+    orient tall
+    set(gcf,'PaperPositionMode','auto')
+    saveas(figure1,[path_graphs,'/',char(FILENAME), '_QC.png']);
+    savefig(figure1,[path_graphs,'/',char(FILENAME), '_QC.fig']);
+    close(figure1);
+    
+    
+    % -------------- DATA -----------------------------------
+    figure2 = figure('name','Plot_DATA','Position',[10 200 1700 1000]);
+    % ----------- LPM AB ------------
+    for i = 1:14
+        subplot(2,14,i)
+        if i == 1
+            offset = mean_noise_deep;
+        else
+            offset = 0;
+        end
+        semilogx (DATA_LPM(:,i+6)-offset,-DATA_LPM(:,1),'r.')
+        hold on
+        semilogx (DATA_LPM_utile(:,i+6)-offset,-DATA_LPM_utile(:,1),'g.')
+        xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])
+        ylim([-1000 0 ]);
+        title('LPM [#/L]');
+    end
+    
+    % ----------- LPM GREY ------------
+    for i = 1:14
+        subplot(2,14,i+14)
+        semilogx(DATA_LPM(:,i+24),-DATA_LPM(:,1),'r.')
+        hold on
+        semilogx(DATA_LPM_utile(:,i+24),-DATA_LPM_utile(:,1),'g.')
+        title('LPM GREY');
+        xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])
+        xlim([10,200])
+        ylim([-1000 0 ]);
+    end
+    sgtitle(texte);
+    % ------------ Save graphs ------------
+    orient tall
+    set(gcf,'PaperPositionMode','auto')
+    saveas(figure2,[path_graphs,'/',char(FILENAME), '_profiles.png']);
+    savefig(figure2,[path_graphs,'/',char(FILENAME), '_profiles.fig']);
+    close(figure2);
 end
-sgtitle(texte);
 
