@@ -208,8 +208,9 @@ if nb_of_ref >1 && type_plot == 'c'
         i_size_limit = aa(1);
 
         pixsize= [1:size(refpix,2)];
-        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-        % --------- Selection gamme de taille REF -----------------------
+        
+        % --------- Selection gamme de taille REF on RAW -----------------------
+        camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
         aa = find(camsm_ref <= esd_min);
         bb = find(camsm_ref <= esd_max);
         if isempty(aa)
@@ -222,6 +223,9 @@ if nb_of_ref >1 && type_plot == 'c'
         else
             end_x = bb(end);
         end
+        
+        % ---------------------------------------
+        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
         refsum=nanmean(refs);
         refsum_log = log(refsum);
         
@@ -234,9 +238,9 @@ if nb_of_ref >1 && type_plot == 'c'
     end
     
     % -------- FIT sur données REF ------------------------------
-    [fitresult] = create_two_fits(camsm_ref_sum, refsum_log_sum, fit_type, 0, camsm_ref_sum, refsum_log_sum, fit_type);
-    x_ref = [esd_min:0.01:esd_max];
-    [y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
+    [fitresult] = create_two_fits(log(camsm_ref_sum), refsum_log_sum, fit_type, 0, camsm_ref_sum, refsum_log_sum, fit_type);
+    x_ref = [camsm_ref(deb_x):0.01:camsm_ref(end_x)];
+    [y_ref] = poly_from_fit(log(x_ref),fitresult,fit_type);
 
     % -------------------------- Table données synthétiques ---------
     data_table(index_plot,:) = [0 0 0 img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
@@ -330,12 +334,8 @@ else
     i_size_limit = aa(1);
 
     pixsize= [1:size(refpix,2)];
-    if type_plot == 'c'
-        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-    else
-        camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
-    end
-    % --------- Selection gamme de taille REF -----------------------
+    % --------- Selection gamme de taille REF on RAW -----------------------
+    camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
     aa = find(camsm_ref <= esd_min);
     bb = find(camsm_ref <= esd_max);
     if isempty(aa)
@@ -348,13 +348,20 @@ else
     else
         end_x = bb(end);
     end
+    
+    % --------------------------------------
+    if type_plot == 'c'
+        camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
+    else
+        camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
+    end
     refsum=nanmean(refs);
     refsum_log = log(refsum);
 
     % -------- FIT sur données REF ------------------------------
-    [fitresult] = create_two_fits(camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type,0,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
-    x_ref = [esd_min:0.01:esd_max];
-    [y_ref] = poly_from_fit(x_ref,fitresult,fit_type);
+    [fitresult] = create_two_fits(log(camsm_ref(deb_x:end_x)),(refsum_log(deb_x:end_x)),fit_type,0,camsm_ref(deb_x:end_x),(refsum_log(deb_x:end_x)),fit_type);
+    x_ref = [camsm_ref(deb_x):0.01:camsm_ref(end_x)];
+    [y_ref] = poly_from_fit(log(x_ref),fitresult,fit_type);
 
     % -------------------------- Table données synthétiques ---------
     data_table(index_plot,:) = [0 aa_ref*1000000 expo_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
@@ -526,19 +533,9 @@ while other_cast == 1
         expo_adj = expo_adj_from_base;
     end
     
-    % -------- Figure RAW data ----------------------------------
-    %subplot(2,2,1)
-    subplot(1,2,1)
-    hold on
-    if type_plot == 'c'
-        camsm_adj = 2*((aa_adj*(pixsize.^expo_adj)./pi).^0.5);
-    else
-        camsm_adj = 2*(((pix_adj^2)*(pixsize)./pi).^0.5);
-    end
-    camsm_adj_log = log(camsm_adj);
-    loglog(exp(camsm_adj_log),exp(nbsum_adj_log),[color(index_plot+1),'+']);
 
-    % --------- Selection gamme de taille ADJ -----------------------
+    % --------- Selection gamme de taille ADJ on RAW -----------------------
+    camsm_adj = 2*(((pix_adj^2)*(pixsize)./pi).^0.5);
     aa = find(camsm_adj <= esd_min);
     bb = find(camsm_adj <= esd_max);
     if isempty(aa)
@@ -551,20 +548,31 @@ while other_cast == 1
     else
         end_x = bb(end);
     end
+    
+    % -------- Figure RAW data ----------------------------------
+    %subplot(2,2,1)
+    subplot(1,2,1)
+    hold on
+    if type_plot == 'c'
+        camsm_adj = 2*((aa_adj*(pixsize.^expo_adj)./pi).^0.5);
+    else
+        camsm_adj = 2*(((pix_adj^2)*(pixsize)./pi).^0.5);
+    end
+    camsm_adj_log = log(camsm_adj);
+    loglog(exp(camsm_adj_log),exp(nbsum_adj_log),[color(index_plot+1),'+']);
 
     % -------- FIT sur données RAW ------------------------------
-    [fitresult] = create_two_fits(camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type,0,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
-    [y] = poly_from_fit(x,fitresult,fit_type);
+    [fitresult] = create_two_fits(log(camsm_adj(deb_x:end_x)),(nbsum_adj_log(deb_x:end_x)),fit_type,0,camsm_adj(deb_x:end_x),(nbsum_adj_log(deb_x:end_x)),fit_type);
+    [y_adj] = poly_from_fit(log(x_ref),fitresult,fit_type);
 
     % -------------- Pour calcul Score final -----------------------------
-    [y_adj] = poly_from_fit(x_ref,fitresult,fit_type);
     Score = data_similarity_score(exp(y_adj), exp(y_ref));
     
     % -------- Figure FIT ADJ -------------------------------------
     %subplot(2,2,2)
     subplot(1,2,2)
     hold on
-    loglog(x,exp(y),[color(index_plot+1),'-']);
+    loglog(x_ref,exp(y_adj),[color(index_plot+1),'-']);
 
     % -------- Figure RATIO --------------------------------------
     %subplot(2,2,3)
@@ -579,7 +587,7 @@ while other_cast == 1
     legende(index_plot) = {txt};    %{char(uvp_adj)};
     
     % -------------------------- Table données synthétiques ---------
-    data_table(index_plot+1,:) = [Score aa_adj*1000000 expo_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y./y_ref), camsm_adj(i_size_limit)];
+    data_table(index_plot+1,:) = [Score aa_adj*1000000 expo_adj img_vol_data_adj pix_adj gain_adj Thres_adj Exposure_adj ShutterSpeed_adj SMBase_adj nanmean(y_adj./y_ref), camsm_adj(i_size_limit)];
     data_name(index_plot+1) = {txt};
     
     if type_selection == 1
@@ -719,8 +727,8 @@ T = array2table(data_table,'VariableNames',data_list(2:end));
 T.profilename = data_name';
 writetable(T,[results_dir_ref,'\',char(titre_file),'.txt']);
 T
-if type_plot == 'c'
-    disp('WARNING: for calibrated graphs, the ESD range is used after calibration, so the score');
-end
+
+disp('WARNING: the ESD range is used on the ref raw size, so the score.');
+
 disp('--------------- Table saved -------------------------- ');
 disp('------------------ END ------------------------------- ');
