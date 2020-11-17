@@ -206,7 +206,7 @@ for nc_file = 1 : numel(nc_list)
     
     % --------------- Sample data ---------------------------
     aa =                                isfinite(Profile_aux.PRES(:,1));
-    PRES =                              Profile_aux.PRES(aa,1);
+    PRES =                              Profile_aux.PRES(aa,1) - DEPTH_OFFSET;
     IMAGE_NUMBER_PARTICLES =            Profile_aux.IMAGE_NUMBER_PARTICLES(aa,1);
     TEMP_PARTICLES =                    Profile_aux.TEMP_PARTICLES(aa,1);
     NB_SIZE_SPECTRA_PARTICLES =         Profile_aux.NB_SIZE_SPECTRA_PARTICLES(:,aa,1)';
@@ -214,11 +214,11 @@ for nc_file = 1 : numel(nc_list)
     DATA_LPM =      [PRES,TEMP_PARTICLES,IMAGE_NUMBER_PARTICLES,NB_SIZE_SPECTRA_PARTICLES,GREY_SIZE_SPECTRA_PARTICLES];
     
     bb =                                isfinite(Profile_aux.PRES(:,2));
-    PRES_BLACK =                        Profile_aux.PRES(bb,2);
+    PRES_BLACK =                        Profile_aux.PRES(bb,2) - DEPTH_OFFSET;
     BLACK_NB_SIZE_SPECTRA_PARTICLES =   Profile_aux.BLACK_NB_SIZE_SPECTRA_PARTICLES(:,bb,2)';
     DATA_BLACK =    [PRES_BLACK,BLACK_NB_SIZE_SPECTRA_PARTICLES];
     
-    % ---------- S/N ------------------
+    % ---------- S/N based on #/frame ------------------
     SN_lim = 2;
     NOISE = sortrows(DATA_BLACK);
     NOISE_U = NOISE(1,:);
@@ -366,14 +366,15 @@ for nc_file = 1 : numel(nc_list)
     % ----------- LPM AB ------------
     for i = 1:14
         subplot(2,14,i)
+        % ----- La première classe est corrigée du bruit ---------
         if i == 1
             offset = mean_noise_deep;
         else
             offset = 0;
         end
-        semilogx (DATA_LPM(:,i+6)-offset,-DATA_LPM(:,1),'r.')
+        semilogx ((DATA_LPM(:,i+6)-offset)/IMAGE_VOL,-DATA_LPM(:,1),'r.')
         hold on
-        semilogx (DATA_LPM_utile(:,i+6)-offset,-DATA_LPM_utile(:,1),'g.')
+        semilogx ((DATA_LPM_utile(:,i+6)-offset)/IMAGE_VOL,-DATA_LPM_utile(:,1),'g.')
         xlabel([num2str(CLASS(i+3)),'-',num2str(CLASS(i+4)),'µm'])
         ylim([-1000 0 ]);
         title('LPM [#/L]');
