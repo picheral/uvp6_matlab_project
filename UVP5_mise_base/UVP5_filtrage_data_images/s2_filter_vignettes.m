@@ -4,12 +4,12 @@ close all; clc
 
 %% input variables
 
-root_projectsPath = '/home/leandro/dataset/LOV/uvp5_sn200_ilhas_2017/work'; % projects start with HDR
+root_projectsPath = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017/raw'; % projects start with HDR
 [NN, TT] = xlsread('uvp5_header_sn200_ilhas_2017.xls');
 
 th_area = 79;
 inputMat = 'm1';        % mat files
-flag_moveFiles = 0;     % 1 for moving files, -- 0 for skipping
+flag_moveFiles = 1;     % 1 for moving files, -- 0 for skipping
 
 %% output variables
 outDir = 'logDir';

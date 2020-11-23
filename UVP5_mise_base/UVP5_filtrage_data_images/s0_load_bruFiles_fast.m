@@ -1,7 +1,7 @@
 clear; close all; clc
 
 %% input variable
-indir = 'bru_filtered_files';               % define the full path of the filtered BRU file location.
+indir = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017\results';               % define the full path of the filtered BRU file location.
 bru_list = dir([indir '/*.bru']);
 nB = length(bru_list);
 

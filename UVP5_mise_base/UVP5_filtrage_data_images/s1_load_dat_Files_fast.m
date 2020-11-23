@@ -1,7 +1,7 @@
 clear; close all; clc
 
 %% define the location of original DATFILEs
-indir = '/home/leandro/dataset/LOV/uvp5_sn200_ilhas_2017/results/';     % edit here
+indir = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017\results';     % edit here
 dat_list = dir([indir '/*_datfile.txt']);
 nB = length(dat_list);
 
