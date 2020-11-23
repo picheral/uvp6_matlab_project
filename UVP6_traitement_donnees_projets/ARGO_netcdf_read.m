@@ -247,8 +247,6 @@ for nc_file = 1 : numel(nc_list)
     %% ------------- détection de la couche utile (non impactée par le soleil ---------
     
     % --------- stats sur couche surface -------------------
-    Zutile_diff = 0;
-    Zutile_mean = 0;
     Zlim = 100;
     aa = find( NOISE_U(:,1) <= Zlim);
     quantile_noise_surf = quantile(NOISE_U(aa,5),[0.25 .5 .75]);
@@ -265,21 +263,12 @@ for nc_file = 1 : numel(nc_list)
     movmean_noise = movmean(NOISE_U(:,5),10);
     diff_noise = diff(movmean_noise);
     % Methode pente max
-    if mean_noise_surf > mean_noise_deep + std_noise_deep * 5
-        % Recherche de la Zutile_diff si la moyenne est très supérieure à celle < 100m 
-        aa = find(diff_noise == min(diff_noise));
-        % Recherche pente maximum dans la couche de surface
-        if NOISE_U(aa(1),1) < Zlim && min(diff_noise) < -3
-            Zutile_diff = NOISE_U(aa(1),1);
-        end        
-
-    end
+    Zutile_diff = UsableDepthLimit(NOISE_U(:,1), NOISE_U(:,5), 'diff');
+    
     
     % Methode seuil bruit
-    aa = find(movmean_noise > mean_noise_deep + std_noise_deep * 5);
-    if ~isempty(aa)
-        Zutile_mean = NOISE_U(aa(end),1);
-    end
+    Zutile_mean = UsableDepthLimit(NOISE_U(:,1), NOISE_U(:,5), 'thres');
+    
     
     aa= DATA_SN(:,1) > Zutile_diff;
     DATA_SN_utile = DATA_SN(aa,:);
