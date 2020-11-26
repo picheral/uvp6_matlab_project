@@ -64,9 +64,37 @@ list_of_sequences = dir(fullfile(project_folder, 'raw', '20*'));
 idx = cellfun('isempty',regexp({list_of_sequences.name}, 'UsedForMerge'));
 list_of_sequences = list_of_sequences(idx);
 
-% volimage;aa;exp,pixelsize
-% detection auto first image
-% datetime first image
+% get metadata from each sequence data file
+aa_list = zeros(1, length(list_of_sequences));
+exp_list = zeros(1, length(list_of_sequences));
+volimage_list = zeros(1, length(list_of_sequences));
+pixelsize_list = zeros(1, length(list_of_sequences));
+for seq_nb = 1:length(list_of_sequences)
+    % get hw conf data
+    seq_dat_file = fullfile(list_of_sequences(seq_nb).folder, list_of_sequences(seq_nb).name, [list_of_sequences(seq_nb).name, '_data.txt']);
+    fid = fopen(seq_dat_file);
+    tline = fgetl(fid);
+    hw_line = strsplit(tline,{','});
+    [sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromhwline(hw_line);
+    fclose(fid);
+    
+    % volimage;aa;exp,pixelsize
+    aa_list(seq_nb) = Aa;
+    exp_list(seq_nb) = Exp;
+    volimage_list(seq_nb) = volume;
+    pixelsize_list(seq_nb) = pixel;
+    
+    % detection auto first image
+    T = readtable(seq_dat_file,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
+    data = table2array(T(:,2));
+    meta = table2array(T(:,1));
+    
+    
+    % datetime first image
+end
+
+
+
 
 
 %% get lat-lon from vector meta data
