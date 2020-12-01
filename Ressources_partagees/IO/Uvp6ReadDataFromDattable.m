@@ -1,5 +1,7 @@
-function [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta_table, data_table)
+function [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta_table, data_table)
 % read data (prof, time, black, raw,...) from table from uvp6 dat file
+%
+% time_data is in num format
 %
 % meta_table and data_table must be cell array with each cell is a line
 % T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
@@ -11,7 +13,7 @@ function [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFr
 %       data_table : data cell array
 %
 %   outputs:
-%       time_data, prof_data, image_status as vectors
+%       time_data, prof_data, image_status as num vectors
 %       black_nb, raw_nb as vectorsx900
 %
 
@@ -19,7 +21,7 @@ function [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFr
 %Initialisation of the variables updated for each line of the text
 %file / each image
 [n,m]=size(data_table);
-prof_data =     NaN*zeros(n,1);
+depth_data =     NaN*zeros(n,1);
 time_data =     NaN*zeros(n,1);
 black_nb =      NaN*zeros(n,900);
 raw_nb =        NaN*zeros(n,900);
@@ -41,7 +43,7 @@ for h=1:n
     % -------- VECTEURS METADATA -------
     C = strsplit(meta_table{h},{','});
     time_data(h) = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-    prof_data(h) =  str2double(C{2});
+    depth_data(h) =  str2double(C{2});
     Flag = str2double(C{4});
 
     % --------- VECTEURS DATA -------------

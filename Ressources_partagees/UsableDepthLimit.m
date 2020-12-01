@@ -18,7 +18,7 @@ function [Zusable] = UsableDepthLimit(depth, noise, optional_method)
 %   inputs:
 %       depth : depth vector
 %       noise : noise vector
-%       optional_method = 'diff', 'diff2' or 'thres', default='diff'
+%       optional_method = 'diff', 'diff2' or 'thres', default='thres'
 %
 %   outputs:
 %       Zusable
@@ -28,15 +28,19 @@ function [Zusable] = UsableDepthLimit(depth, noise, optional_method)
 Zlim = 100;
 
 aa = find(depth <= Zlim);
-
 if isempty(aa)
-    disp('WARNING : no data under 100m ! Zlim can not be computed)');
+    warning('WARNING : only deep data. Zlim is set to 0m');
     Zusable = 0;
     return;
 end
 mean_noise_surf = mean(noise(aa));
 
 aa = find(depth > Zlim);
+if isempty(aa)
+    warning('WARNING : no data under 100m ! Zlim can not be computed');
+    Zusable = 0;
+    return;
+end
 mean_noise_deep = mean(noise(aa));
 std_noise_deep = std(noise(aa));
 
@@ -46,7 +50,7 @@ movmean_noise = movmean(noise,10);
 if nargin > 2
     method = optional_method;
 else
-    method = 'diff';
+    method = 'thres';
 end
     
 %% finding Zusable

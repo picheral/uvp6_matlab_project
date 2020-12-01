@@ -166,19 +166,7 @@ while j < N_seq+1
     %file / each image
     [n,m]=size(data);
     nb_d = [];
-    prof_data =     NaN*zeros(n,1);
-    time_data =     NaN*zeros(n,1);
-    black_nb =      NaN*zeros(n,900);
-    raw_nb =        NaN*zeros(n,900);
-    image_status =  NaN*zeros(n,1);
     
-    % -------- Boucle sur les lignes (images) --------------
-    % h is the number of the line
-    % n is the max number of lines
-    % for each image / each text file line
-    % overexposed = 1
-    % black = 2
-    % data = 3
     
     disp('----------------- Reading loop ----------------------')
     [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
