@@ -124,7 +124,14 @@ for seq_nb = 1:seq_nb_max
     profile_type_list(seq_nb) = profile_type;
     
     % detection auto first image by using default method
-    [Zusable] = UsableDepthLimit(black_nb(:,1), black_nb(:,3));
+    % test if black 1pix is all 0
+    if any(black_nb(:,3))
+        fisrt_black = black_nb(:,3);
+    else
+        first_black = black_nb(:,4);
+    end
+    % detection auto first image by using default method
+    [Zusable] = UsableDepthLimit(black_nb(:,1), first_black);
     
     % datetime first image
     Zusable_idx = find(depth_data>=Zusable);
