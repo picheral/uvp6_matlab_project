@@ -1,7 +1,9 @@
-clear; close all; clc
+function s1_load_dat_Files_fast(project_name)
+
+% clear; close all; clc
 
 %% define the location of original DATFILEs
-indir = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017\results';     % edit here
+indir = [project_name,'\results'];      % edit here
 dat_list = dir([indir '/*_datfile.txt']);
 nB = length(dat_list);
 

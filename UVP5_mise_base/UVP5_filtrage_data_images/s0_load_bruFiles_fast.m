@@ -1,7 +1,7 @@
-clear; close all; clc
+function s0_load_bruFiles_fast(project_name)
 
 %% input variable
-indir = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017\results';               % define the full path of the filtered BRU file location.
+indir = [project_name,'\results'];               % define the full path of the filtered BRU file location.
 bru_list = dir([indir '/*.bru']);
 nB = length(bru_list);
 

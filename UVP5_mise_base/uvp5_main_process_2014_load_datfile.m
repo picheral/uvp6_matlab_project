@@ -2,8 +2,8 @@
 % Picheral, 2017/03, 2020/03/25
 
 
-function [Imagelist Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste Image_name] = uvp5_main_process_2014_load_datfile(base,fichier,sample_dir,depth_offset,process_calib)
-
+function [Imagelist, Pressure, Temp_interne, Peltier, Temp_cam, Flag ,Part, listecor, liste] = uvp5_main_process_2014_load_datfile(base,fichier,sample_dir,depth_offset,process_calib)
+global Image_name
 % ---------- Chargement _datfile.txt -------------
 datfile=[sample_dir,char(base(fichier).profilename), '_datfile.txt'];
 test=exist(datfile);
