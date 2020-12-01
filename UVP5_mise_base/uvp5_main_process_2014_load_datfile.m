@@ -36,7 +36,7 @@ if chargement == 1
     Temp_cam = [];
     Part = [];
     pressure_prev = 0;
-    Image_name = {};
+    Image_name = [];
     while 1                     % loop on the number of lines of the file
         tline = fgetl(fid);
         if ~ischar(tline), break, end
@@ -63,11 +63,11 @@ if chargement == 1
         Temp_interne = [Temp_interne temp_interne];
         Peltier = [Peltier;peltier/1000];
         Temp_cam = [Temp_cam;temp_cam/1000];
-        
+        Image_name = [Image_name string(name)];
         compteur=compteur+1;
         pressure_prev = pressure;
     end             % end of loop to open one file
-    Image_name = Image_name'
+%     Image_name = Image_name'
     
     fclose(fid);
     Temp_interne = Temp_interne';
