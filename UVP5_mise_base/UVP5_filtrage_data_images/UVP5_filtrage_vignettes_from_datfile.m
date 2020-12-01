@@ -57,15 +57,15 @@ else
 end
 
 %% test if filtered database exists
-if isfile([results_dir,'baseuvp5_',project_name,'_filtered.mat'])
-    % if base filtered exists, it is loaded
-    toto=['load ',results_dir,base_new,'.mat;'];
-    eval(toto);
-    eval(['base = ',base_new,';']);
-    disp(['Previous database ','baseuvp5_',project_name,'_filtered',' loaded'])
-    recover_settings = input('Recover settings from previous process if exist ([y]/n) ? ','s');
-    if isempty(recover_settings); recover_settings = 'y';end
-else
+% if isfile([results_dir,'baseuvp5_',project_name,'_filtered.mat'])
+%     % if base filtered exists, it is loaded
+%     toto=['load ',results_dir,base_new,'.mat;'];
+%     eval(toto);
+%     eval(['base = ',base_new,';']);
+%     disp(['Previous database ','baseuvp5_',project_name,'_filtered',' loaded'])
+%     recover_settings = input('Recover settings from previous process if exist ([y]/n) ? ','s');
+%     if isempty(recover_settings); recover_settings = 'y';end
+% else
     % lecture des metadata et creation base
     meta_file = ['uvp5_header_',project_name,'.txt'];
     fid=fopen([meta_dir,meta_file]);
@@ -86,7 +86,7 @@ else
         compteur = compteur +1;
     end
     fclose(fid);
-end
+% end
 
 %% Main process
 process = 1;
