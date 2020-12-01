@@ -1,11 +1,13 @@
-clear;
-close all; clc
+function s2_filter_vignettes(project_name)
 
+% clear;
+% close all; clc
 
 %% input variables
 
-root_projectsPath = '\\plankton.obs-vlfr.fr\uvp_b\uvp5_sn200_ilhas_2017/raw'; % projects start with HDR
-[NN, TT] = xlsread('uvp5_header_sn200_ilhas_2017.xls');
+root_projectsPath = [project_name,'\raw'];   % projects start with HDR
+meta_projectsPath = [project_name,'\meta'];   % projects start with HDR
+[NN, TT] = xlsread([meta_projectsPath,'\uvp5_header_',project_name,'.xls']);
 
 th_area = 79;
 inputMat = 'm1';        % mat files

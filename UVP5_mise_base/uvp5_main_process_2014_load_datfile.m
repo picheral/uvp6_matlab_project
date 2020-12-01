@@ -2,8 +2,8 @@
 % Picheral, 2017/03, 2020/03/25
 
 
-function [Imagelist Pressure Temp_interne Peltier Temp_cam Flag Part listecor liste] = uvp5_main_process_2014_load_datfile(base,fichier,sample_dir,depth_offset,process_calib)
-
+function [Imagelist, Pressure, Temp_interne, Peltier, Temp_cam, Flag ,Part, listecor, liste] = uvp5_main_process_2014_load_datfile(base,fichier,sample_dir,depth_offset,process_calib)
+global Image_name
 % ---------- Chargement _datfile.txt -------------
 datfile=[sample_dir,char(base(fichier).profilename), '_datfile.txt'];
 test=exist(datfile);
@@ -36,11 +36,13 @@ if chargement == 1
     Temp_cam = [];
     Part = [];
     pressure_prev = 0;
+    Image_name = [];
     while 1                     % loop on the number of lines of the file
         tline = fgetl(fid);
         if ~ischar(tline), break, end
         dotcom=findstr(tline,';');  % find the end of petit gros column
         image = str2num(tline(1:dotcom(1)-1));
+        name = tline(dotcom(1)+2:dotcom(2)-1);
         pressure = tline(dotcom(2)+1:dotcom(3)-1);
         part = tline(dotcom(14)+1:dotcom(15)-1);
         temp_interne = str2num(tline(dotcom(5)+1:dotcom(6)-1));
@@ -61,10 +63,12 @@ if chargement == 1
         Temp_interne = [Temp_interne temp_interne];
         Peltier = [Peltier;peltier/1000];
         Temp_cam = [Temp_cam;temp_cam/1000];
-        
+        Image_name = [ Image_name string(name)];
         compteur=compteur+1;
         pressure_prev = pressure;
     end             % end of loop to open one file
+%     Image_name = Image_name';
+    
     fclose(fid);
     Temp_interne = Temp_interne';
     %     liste = [Imagelist Pressure/10 Flag];

@@ -175,7 +175,7 @@ nc_list = dir([path_aux,'\',WMO,'\profiles\R',WMO,'_*.nc']);
 path_graphs = [path_aux,'\',WMO,'\graphs'];
 mkdir([path_aux,'\',WMO,'\'],'graphs');
     
-for nc_file = 1 : numel(nc_list)
+for nc_file = 1 : 1 %numel(nc_list)
     FILENAME = nc_list(nc_file).name;
     Profile_aux = ncstruct([path_aux,'\',WMO,'\profiles\',FILENAME]);
         
