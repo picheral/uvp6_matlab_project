@@ -163,7 +163,7 @@ while process == 1
             
             % --------- Entete -------------------
             fprintf(fid_f,'%s\n',char(tline));
-            
+            vig = 0;
             removed_vig = 0;
             while 1
                 tline = fgetl(fid_s);
@@ -182,12 +182,13 @@ while process == 1
                 else
                     % ----------- NOT in ImageList ----------
                     new_line = [tline(1:dotcom(end)),'2'];
-                    disp([ 'filtered ',new_line])
+%                     disp([ 'filtered ',new_line])
                     removed_vig = removed_vig +1;
                 end
-                fprintf(fid_f,'%s\n',char(new_line));                
+                fprintf(fid_f,'%s\n',char(new_line));      
+                vig = vig+1;
             end
-            disp(['Removed vignettes : ',num2str(removed_vig)])
+            disp(['Removed vignettes : ',num2str(removed_vig),' / ',num2str(vig)])
             %% --------------- Fermeture des fichiers -------------
             fclose(fid_s);
             fclose(fid_f);
