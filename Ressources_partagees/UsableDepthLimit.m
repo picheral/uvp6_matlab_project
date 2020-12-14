@@ -12,7 +12,7 @@ function [Zusable] = UsableDepthLimit(depth, noise, optional_method)
 % The noise is smoothed by a moving mean
 % The noise is max closed to the surface, decreasing with the depth until a
 % plateau
-% The depth goes bellow 100m
+% The depth goes bellow 100m (if not, return NaN)
 %   
 %
 %   inputs:
@@ -36,9 +36,9 @@ end
 mean_noise_surf = mean(noise(aa));
 
 aa = find(depth > Zlim);
-if isempty(aa)
+if isempty(aa) || length(aa)<2
     warning('WARNING : no data under 100m ! Zlim can not be computed');
-    Zusable = 0;
+    Zusable = nan;
     return;
 end
 mean_noise_deep = mean(noise(aa));
@@ -98,7 +98,7 @@ if mean_noise_surf > mean_noise_deep + std_noise_deep * 5
     if depth(aa(1)) < Zlim% && min(diff_noise) < -3
         Zusable = depth(aa(1));
     else
-        Zusable = 0;
+        Zusable = depth(aa(1));
         %disp('WARNING : not reliable usable depth limit')
     end        
 else
@@ -138,7 +138,7 @@ if mean_noise_surf > mean_noise_deep + std_noise_deep * 5
     if depth(aa(1)) < Zlim% && min(diff_noise) < -3
         Zusable = depth(aa(1));
     else
-        Zusable = 0;
+        Zusable = depth(aa(1));
         %disp('WARNING : not reliable usable depth limit')
     end        
 else

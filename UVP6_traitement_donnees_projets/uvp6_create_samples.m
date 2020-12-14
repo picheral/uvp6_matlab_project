@@ -132,12 +132,20 @@ for seq_nb = 1:seq_nb_max
     end
     % detection auto first image by using default method
     [Zusable] = UsableDepthLimit(black_nb(:,1), first_black);
-    
+    %if strcmp(list_of_sequences(seq_nb).name, '20201114-055036')
+    %    plop
+    %end
     % datetime first image
-    Zusable_idx = find(depth_data>=Zusable);
-    start_idx_list(seq_nb) = Zusable_idx(1) - 1; % uvpapp is in python and start at index 0 for the image number
-    end_idx_list(seq_nb) = Zusable_idx(end) - 1;
-    start_time_list(seq_nb) = time_data(Zusable_idx(1));
+    if isnan(Zusable)
+        start_idx_list(seq_nb) = nan; % uvpapp is in python and start at index 0 for the image number
+        end_idx_list(seq_nb) = nan;
+        start_time_list(seq_nb) = time_data(1);
+    else
+        Zusable_idx = find(depth_data>=Zusable);
+        start_idx_list(seq_nb) = Zusable_idx(1) - 1; % uvpapp is in python and start at index 0 for the image number
+        end_idx_list(seq_nb) = Zusable_idx(end) - 1;
+        start_time_list(seq_nb) = time_data(Zusable_idx(1));
+    end
     bottom_depth_list(seq_nb) = max(depth_data);
     
     
@@ -175,7 +183,7 @@ for meta_nb = 1:length(list_of_vector_meta)
         time_to_find = start_time_list(seq_nb);
         % check that the datetime of the sequence IS in the file
         % if not, go to the next meta data file
-        if (time_to_find >= meta(1,1)) & (time_to_find <= meta(end,1))
+        if (time_to_find >= meta(1,1)) && (time_to_find <= meta(end,1))
            aa =  find(meta(1,1) <= time_to_find);
            disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
            lon_list(seq_nb) = meta(seq_nb, 3);
