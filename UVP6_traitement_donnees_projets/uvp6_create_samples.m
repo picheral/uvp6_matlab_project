@@ -88,7 +88,6 @@ pixelsize_list = zeros(1, seq_nb_max);
 start_idx_list = zeros(1, seq_nb_max);
 end_idx_list = zeros(1, seq_nb_max);
 start_time_list = zeros(1, seq_nb_max);
-bottom_depth_list = zeros(1, seq_nb_max);
 profile_type_list = strings(1, seq_nb_max);
 for seq_nb = 1:seq_nb_max
     % get hw conf data
@@ -132,9 +131,7 @@ for seq_nb = 1:seq_nb_max
     end
     % detection auto first image by using default method
     [Zusable] = UsableDepthLimit(black_nb(:,1), first_black);
-    %if strcmp(list_of_sequences(seq_nb).name, '20201114-055036')
-    %    plop
-    %end
+
     % datetime first image
     if isnan(Zusable)
         start_idx_list(seq_nb) = nan; % uvpapp is in python and start at index 0 for the image number
@@ -146,7 +143,6 @@ for seq_nb = 1:seq_nb_max
         end_idx_list(seq_nb) = Zusable_idx(end) - 1;
         start_time_list(seq_nb) = time_data(Zusable_idx(1));
     end
-    bottom_depth_list(seq_nb) = max(depth_data);
     
     
     disp(['Sequence ' list_of_sequences(seq_nb).name ' done.'])
@@ -234,7 +230,7 @@ for seq_nb = 1:seq_nb_max
     lon = [num2str(lon_deg) '°' num2str(lon_min) ' ' num2str(lon_sec, '%02.f')];
     % line to write
     seq_line = [cruise ';' ['Seaeplorer_' seaexplorer_sn] ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
-        num2str(bottom_depth_list(seq_nb)) ';' num2str(yo_list(seq_nb)) ';' num2str(lat) ';' num2str(lon) ';'...
+        '' ';' num2str(yo_list(seq_nb)) ';' num2str(lat) ';' num2str(lon) ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' '' ';' '' ';' '' ';'...
         '' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
