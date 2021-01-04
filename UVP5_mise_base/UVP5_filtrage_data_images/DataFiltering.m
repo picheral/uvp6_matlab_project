@@ -107,9 +107,20 @@ while not(strcmp(filter_is_good, 'y'))
     
     % add results on plot
     subplot(2,2,3)
-    semilogx(part_util_filtered,-press_util_filtered,'.g');
+    %scatter_1 = semilogx(part_util_filtered,-press_util_filtered,'.g');
+    %hold on
+    %semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    %alpha(.5)
+    %hold on
+    % code changed by R Kiko on 20201104 to have dots transparent
+    scatter1 = scatter(log(part_util_filtered),-press_util_filtered,3,'MarkerFaceColor','g','MarkerEdgeColor','g');
+    scatter1.MarkerFaceAlpha = .2;
+    scatter1.MarkerEdgeAlpha = .2;
     hold on
-    semilogx(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    %plot2 = plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    scatter2 = scatter(log(part_util_filtered_rejected),-press_util_filtered_rejected,3,'MarkerFaceColor','r','MarkerEdgeColor','r');
+    scatter2.MarkerFaceAlpha = .2;
+    scatter2.MarkerEdgeAlpha = .2;
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
     %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');
@@ -121,9 +132,15 @@ while not(strcmp(filter_is_good, 'y'))
     xlabel(['TOTAL abundance [RED = rejected images, GREEN = good images]']);
     
     subplot(2,2,4)
-    plot(part_util_filtered,-press_util_filtered,'.g');
+    %plot1 = plot(part_util_filtered,-press_util_filtered,'Color',[1,0,0,0.2]);
+    scatter1 = scatter(part_util_filtered,-press_util_filtered,3,'MarkerFaceColor','g','MarkerEdgeColor','g');
+    scatter1.MarkerFaceAlpha = .2;
+    scatter1.MarkerEdgeAlpha = .2;
     hold on
-    plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    %plot2 = plot(part_util_filtered_rejected,-press_util_filtered_rejected,'.r');
+    scatter2 = scatter(part_util_filtered_rejected,-press_util_filtered_rejected,3,'MarkerFaceColor','r','MarkerEdgeColor','r');
+    scatter2.MarkerFaceAlpha = .2;
+    scatter2.MarkerEdgeAlpha = .2;
     hold on
     %     plot(threshold_percent*mov_mean_util,-press_util_filtered,'--g');
     %     plot(threshold_percent*movmean(part_util,movmean_window),-press_util,'--g');

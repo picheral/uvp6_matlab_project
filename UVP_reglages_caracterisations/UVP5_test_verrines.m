@@ -11,12 +11,13 @@ disp('')
 disp(['Analysed file : ' data_filename])
 
 % read the data
-% the table has 3 columns (= 3 channels)
+% the table has 3 columns (= 3 channels) or 5 if board
 % channel 0 is for the trigger
 % channel 1 and 2 for the verrines
+% if board, channel 3 and 4
 filename = [data_folder, data_filename];
 t = readtable(filename);
-t.Var4 = [];
+t.Var5  = [];
 
 %% compute variables
 % auto detection and counting of the rising edges of each signal

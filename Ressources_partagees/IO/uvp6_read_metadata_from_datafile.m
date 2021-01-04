@@ -19,20 +19,11 @@ end
 
 % ---- get all the metadata from the hardware line of the text file --
 % ---- premiere sequence ---------
-sn = hw_line{2};
-day = hw_line{25+X};
+[sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromhwline(hw_line);
 cruise = folder(4:end);
 base_name = ['base',folder(4:end)];
 pvmtype = ['uvp6_sn' sn];
 soft = 'uvp6';
-light =  hw_line{6};
-shutter = str2double(hw_line{17+X});
-threshold = str2double(hw_line{19+X});
-volume = str2double(hw_line{23+X});
-gain = str2double(hw_line{18+X});
-pixel = str2double(hw_line{22+X})/1000;
-Aa = str2double(hw_line{20});
-Exp = str2double(hw_line{21});
 
 % ------------ LIgne ACQ ----------------------------------
 tline = fgetl(fid);
