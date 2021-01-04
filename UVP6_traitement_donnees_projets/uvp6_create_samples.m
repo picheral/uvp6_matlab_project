@@ -99,7 +99,7 @@ for seq_nb = 1:seq_nb_max
     fclose(fid);
     
     % volimage;aa;exp,pixelsize
-    aa_list(seq_nb) = Aa;
+    aa_list(seq_nb) = Aa/1000000;
     exp_list(seq_nb) = Exp;
     volimage_list(seq_nb) = volume;
     pixelsize_list(seq_nb) = pixel;
@@ -194,6 +194,7 @@ for meta_nb = 1:length(list_of_vector_meta)
         break
     end
 end
+
 disp('---------------------------------------------------------------')
 
 

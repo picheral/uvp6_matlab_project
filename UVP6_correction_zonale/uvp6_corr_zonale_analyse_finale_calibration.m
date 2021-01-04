@@ -82,7 +82,7 @@ scale_option = 't';
 
 if strcmp(scale_option,'t')
     %max_a = 10; max_b = 30; max_area = 3; max_grey = 2;
-    max_a = 10; max_b = 0.5; max_area = 3; max_grey = 2;
+    max_a = 10; max_b = 3; max_area = 3; max_grey = 2;
 else
     max_a = 200; max_b = 200; max_area = 3; max_grey = 3;
 end
@@ -282,11 +282,12 @@ if option == 'a'
             
             % ------------------ Affichage positions de certains objets --
             subplot(4,3,3)
-            area_min = 5;
+            area_min = 5; %5
             aa = find(data.data_final(:,4) > area_min);
-            nb_obj = min([1000 numel(aa)]);
+            t=10;
+            nb_obj = min([1000*t numel(aa)]);
             %         plot(data.data_final(aa,2),flip(data.data_final(aa,3)),'k.')
-            plot(data.data_final(aa(1:nb_obj),2),data.data_final(aa(1:nb_obj),3),'k.')
+            plot(data.data_final(aa(1:t:nb_obj),2),data.data_final(aa(1:t:nb_obj),3),'k.')
             axis([0 img_ho 0 img_ve]);
             title([num2str(nb_obj),' objects  [area > ',num2str(area_min),' pixels]'],'fontsize',7);
             
@@ -343,7 +344,8 @@ if option == 'a'
                         hold on
                         xlabel('Area [pixel]','fontsize',7);
                         ylabel('Fitted abundance per zone [# image-1]','fontsize',7);
-                        xlim([1 5*end_x]);
+                        %xlim([1 5*end_x]);
+                        xlim([1 100]);
                         ylim([0.001 1000000]);
                         title(['FIT '],'fontsize',7);
                         
