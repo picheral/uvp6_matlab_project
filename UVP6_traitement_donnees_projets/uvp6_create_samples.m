@@ -171,7 +171,10 @@ yo_list = zeros(1, seq_nb_max);
 seq_nb = 1;
 for meta_nb = 1:length(list_of_vector_meta)
     % read metadata from file
-    meta = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
+    % need the file where the seq ends and the next file (for start and end
+    % coordinates)
+    meta_1 = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
+    meta_2 = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb+1).name));
     right_meta = 1;
     % while it is a useful meta data file compared to the datetime of the
     % sequence
@@ -179,11 +182,41 @@ for meta_nb = 1:length(list_of_vector_meta)
         time_to_find = start_time_list(seq_nb);
         % check that the datetime of the sequence IS in the file
         % if not, go to the next meta data file
-        if (time_to_find >= meta(1,1)) && (time_to_find <= meta(end,1))
-           aa =  find(meta(1,1) <= time_to_find);
+        if (time_to_find >= meta_1(1,1)) && (time_to_find <= meta_1(end,1))
            disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
-           lon_list(seq_nb) = meta(seq_nb, 3);
-           lat_list(seq_nb) = meta(seq_nb, 4);
+           % look for the datetime of first image in the meta data file
+           aa =  find(meta_1(:,1) <= time_to_find);
+           lon_start = meta_1(aa(end),3);
+           lat_start = meta_1(aa(end),4);
+           % find the first meta data line with the same lat-lon
+           aa_start_lon = find(meta_1(:,3) == lon_start);
+           aa_start_lat = find(meta_1(:,4) == lat_start);
+           time_start = meta_1(max(aa_start_lon(1), aa_start_lat(1)), 1);
+           
+           % find the last meta data line with the same lat-lon
+           if (meta_1(end,3) ~= lon_start) && (meta_1(end,4) ~= lat_start)
+               % in same file if latlon(end) is different:
+               time_end_index = min(aa_start_lon(end), aa_start_lat(end)) + 1;
+               time_end = meta_1(time_end_index, 1);
+               lon_end = meta_1(time_end_index, 3);
+               lat_end = meta_1(time_end_index, 4);
+           else
+               % in next file if latlon(end) is the same
+               aa_end_lon = find(meta_2(:,3) == lon_start);
+               aa_end_lat = find(meta_2(:,4) == lat_start);
+               time_end_index = min(aa_end_lon(end), aa_end_lat(end)) + 1;
+               time_end = meta_2(time_end_index, 1);
+               lon_end = meta_2(time_end_index, 3);
+               lat_end = meta_2(time_end_index, 4);
+           end
+           
+           % interp lat and lon between start time and end time
+           lon_start = ConvertLatLonSeaexplorer(lon_start);
+           lat_start = ConvertLatLonSeaexplorer(lat_start);
+           lon_end = ConvertLatLonSeaexplorer(lon_end);
+           lat_end = ConvertLatLonSeaexplorer(lat_end);
+           lon_list(seq_nb) = interp1([time_start,time_end], [lon_start, lon_end], time_to_find);
+           lat_list(seq_nb) = interp1([time_start,time_end], [lat_start, lat_end], time_to_find);
            yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
            seq_nb = seq_nb + 1;
         else
@@ -194,7 +227,6 @@ for meta_nb = 1:length(list_of_vector_meta)
         break
     end
 end
-
 disp('---------------------------------------------------------------')
 
 
@@ -220,18 +252,18 @@ fprintf(sample_file,'%s\n',line);
 % one sample by sequence
 for seq_nb = 1:seq_nb_max
     % lat format
-    lat_deg = fix(lat_list(seq_nb)/100);
-    lat_min = fix(rem(lat_list(seq_nb),100));
-    lat_sec = rem(rem(lat_list(seq_nb),100),1)*60;
+    lat_deg = fix(lat_list(seq_nb));
+    lat_min = fix(rem(lat_list(seq_nb),1)*60);
+    lat_sec = rem(rem(lat_list(seq_nb),1)*60,1)*60;
     lat = [num2str(lat_deg) '°' num2str(lat_min) ' ' num2str(lat_sec, '%02.f')];
     % lon format
-    lon_deg = fix(lon_list(seq_nb)/100);
-    lon_min = fix(rem(lon_list(seq_nb),100));
-    lon_sec = rem(rem(lon_list(seq_nb),100),1)*60;
+    lon_deg = fix(lon_list(seq_nb));
+    lon_min = fix(rem(lon_list(seq_nb),1)*60);
+    lon_sec = rem(rem(lon_list(seq_nb),1)*60,1)*60;
     lon = [num2str(lon_deg) '°' num2str(lon_min) ' ' num2str(lon_sec, '%02.f')];
     % line to write
     seq_line = [cruise ';' ['Seaeplorer_' seaexplorer_sn] ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
-        '' ';' num2str(yo_list(seq_nb)) ';' num2str(lat) ';' num2str(lon) ';'...
+        '' ';' num2str(yo_list(seq_nb)) ';' lat ';' lon ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' '' ';' '' ';' '' ';'...
         '' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...

@@ -340,13 +340,17 @@ if option == 'a'
                         % ------- Plot ajustements --------------------------
                         subplot(4,3,5)
                         %                     loglog( pixsize(deb_x:end_x), (y_sel_zone), '-' );
-                        loglog( pixsize(deb_x:end_x), exp(y_sel_zone), '-' );
+                        %loglog( pixsize(deb_x:end_x), exp(y_sel_zone), '-' );
+                        handle1=loglog( pixsize(deb_x:end_x), exp(y_sel_zone), 'k-' );
+                        handle1.Color(4) = 0.1;
                         hold on
+                        grid on
                         xlabel('Area [pixel]','fontsize',7);
                         ylabel('Fitted abundance per zone [# image-1]','fontsize',7);
                         %xlim([1 5*end_x]);
-                        xlim([1 100]);
-                        ylim([0.001 1000000]);
+                        xlim([2.5 50]);
+                        %ylim([0.001 1000000]);
+                        ylim([0.05 100000])
                         title(['FIT '],'fontsize',7);
                         
                         % ------- Calcul écart au spectre de la zone entière ----
@@ -401,7 +405,8 @@ if option == 'a'
             
             % ------------------ Ajout courbe image entière --------------
             subplot(4,3,5)
-            loglog( pixsize(deb_x:end_x), exp(y_sel),'g-','LineWidth',2 );
+            %loglog( pixsize(deb_x:end_x), exp(y_sel),'g-','LineWidth',2 );
+            loglog( pixsize(deb_x:end_x), exp(y_sel),'k-','LineWidth',2 );
             
             % ------------------ Histo des ecarts spectres a-------
             %         subplot(4,3,6)
