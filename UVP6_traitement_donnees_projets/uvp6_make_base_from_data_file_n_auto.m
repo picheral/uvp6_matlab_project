@@ -133,7 +133,7 @@ while j < N_seq+1
     
     % ------------ Ligne ACQ ----------------------------------
     tline = fgetl(fid);
-    tline = fgetl(fid);
+%     tline = fgetl(fid);
     acq_line = strsplit(tline,{','});
     black_ratio = str2double(acq_line{15+X});
     
@@ -401,7 +401,7 @@ while j < N_seq+1
         
         % ------------ PROFIL Abondance DATA -----------------
         subplot(3,2,4)
-        for k=6:8
+        for k=6:5:40
             semilogx((base(sample).histopx(:,k) ./ base(sample).histopx(:,3)), -base(sample).histopx(:,1));
             hold on
         end
@@ -411,7 +411,7 @@ while j < N_seq+1
         aa = titre == '_';
         titre(aa) = ' ';
         title(titre);
-        legend('1 pixel','2 pixels','3 pixels','Location','best');
+        %legend('1 pixel','2 pixels','3 pixels','Location','best');
         axis([1 10000 -100*ceil(max(prof_data)/100) 0]);
         
         % --------------- FIGURE spectre de tailles ---------------------
