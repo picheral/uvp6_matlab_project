@@ -151,7 +151,7 @@ for i = 1 : N_seq
             % pour LP files
             img_name = [time,'.png'];
             % pour HF files
-            img_name = [time, '_01.png'];
+            % img_name = [time, '_01.png'];
             if last_time == time
                 same_time_ = same_time_ + 1;
                 img_name = [time, '_', num2str(same_time_, '%02i'), '.png'];
