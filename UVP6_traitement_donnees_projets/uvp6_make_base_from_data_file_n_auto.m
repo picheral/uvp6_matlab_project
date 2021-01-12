@@ -133,7 +133,7 @@ while j < N_seq+1
     
     % ------------ Ligne ACQ ----------------------------------
     tline = fgetl(fid);
-    tline = fgetl(fid);
+%     tline = fgetl(fid);
     acq_line = strsplit(tline,{','});
     black_ratio = str2double(acq_line{15+X});
     
@@ -166,72 +166,11 @@ while j < N_seq+1
     %file / each image
     [n,m]=size(data);
     nb_d = [];
-    prof_data =     NaN*zeros(n,1);
-    time_data =     NaN*zeros(n,1);
-    black_nb =      NaN*zeros(n,900);
-    raw_nb =        NaN*zeros(n,900);
-    image_status =  NaN*zeros(n,1);
     
-    % -------- Boucle sur les lignes (images) --------------
-    % h is the number of the line
-    % n is the max number of lines
-    % for each image / each text file line
-    % overexposed = 1
-    % black = 2
-    % data = 3
     
     disp('----------------- Reading loop ----------------------')
-    for h=1:n
-        if h/500==floor(h/500)
-            disp(num2str(h))
-        end
-        
-        % -------- VECTEURS METADATA -------
-        C = strsplit(meta{h},{','});
-        time_data(h) = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
-        prof_data(h) =  str2double(C{2});
-        Flag = str2double(C{4});
-        
-        % --------- VECTEURS DATA -------------
-        if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY'))
-            % -------- DATA ------------
-            % cast the data line in nb_classx4 numerical matrix
-            temp_matrix = str2num(data{h}); %#ok<ST2NM>
-            % limit to class of 900 pixels wide objects
-            % ------------ Ligne de zeros -----------------------
-            line = zeros(1,900);
-            [o,p]=size(temp_matrix);
-            for k=1:o
-                if temp_matrix(k,1)<=900
-                    line(temp_matrix(k,1)) = temp_matrix(k,2);
-                end
-            end
-            seen_classes_nb = length(line);
-            
-            if Flag == 1
-                raw_nb(h,:) = 0;
-                raw_nb(h,1:seen_classes_nb) = line;
-                image_status(h) = 3;
-            else
-                black_nb(h,:) = 0;
-                black_nb(h,1:seen_classes_nb) = line;
-                image_status(h) = 2;
-            end
-        elseif ~isempty(strfind(data{h},'OVER'))
-            % if the line is overexposed
-            image_status(h) = 1;
-        elseif ~isempty(strfind(data{h},'EMPTY'))
-            if Flag == 1
-                raw_nb(h,:) = 0;
-                image_status(h) = 3;
-            else
-                black_nb(h,:) = 0;
-                image_status(h) = 2;
-            end
-        end
-    end
+    [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
     disp('----------------- end of loop ----------------------')
-    
     
     
     
@@ -462,7 +401,7 @@ while j < N_seq+1
         
         % ------------ PROFIL Abondance DATA -----------------
         subplot(3,2,4)
-        for k=6:8
+        for k=6:5:40
             semilogx((base(sample).histopx(:,k) ./ base(sample).histopx(:,3)), -base(sample).histopx(:,1));
             hold on
         end
@@ -472,7 +411,7 @@ while j < N_seq+1
         aa = titre == '_';
         titre(aa) = ' ';
         title(titre);
-        legend('1 pixel','2 pixels','3 pixels','Location','best');
+        %legend('1 pixel','2 pixels','3 pixels','Location','best');
         axis([1 10000 -100*ceil(max(prof_data)/100) 0]);
         
         % --------------- FIGURE spectre de tailles ---------------------

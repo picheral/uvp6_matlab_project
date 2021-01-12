@@ -75,7 +75,7 @@ else
 disp(['Adjusted profile    : ',char(adj_cast.profilename)]);
 end
 disp(['Adjusted profile #  : ',num2str(adj_cast.record)]);
-disp(['Observed volume [L] : ', num2str(sum(adj_cast.vol_ech(:,1), 'all'),1)]);
+disp(['Observed volume [L] : ', num2str(sum(adj_cast.vol_ech(:,1), 'all'))]);
 disp(['Shutter             : ',num2str(adj_cast.ShutterSpeed)]);
 disp(['Gain                : ',num2str(adj_cast.gain)]);
 disp(['Threshold           : ',num2str(adj_cast.Thres)]);
@@ -89,7 +89,7 @@ disp(['Aa                  : ',num2str(process_params.users_aa)]);
 disp(['Exp                 : ',num2str(process_params.users_exp)]);  
 else
     disp(['Aa                  : ',num2str(aa_adj)]);
-    disp(['Exp                 : ',num2str(process_params.users_exp)]); 
+    disp(['Exp                 : ',num2str(expo_adj)]); 
 end
 disp('-------------------------------------------------------------------------');
 end
