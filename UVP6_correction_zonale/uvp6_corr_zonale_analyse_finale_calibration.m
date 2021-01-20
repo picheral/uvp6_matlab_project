@@ -107,7 +107,7 @@ if option == 'c'
             
             % ------------- Liste des images -------------------
             %             im_list = dir('save*.png');
-            im_list = dir('20*.png');
+            im_list = dir('*/20*.png');
             
             if ~isempty(im_list)
                 % --------- Si au moins une image --------------
@@ -119,7 +119,7 @@ if option == 'c'
                         disp(['Processing image ',num2str(i),' / ',num2str(numel(im_list))])
                     end
                     %Read the image, switch it to black and white with the preset threshold
-                    img = imread(im_list(i).name);
+                    img = imread(fullfile(im_list(i).folder, im_list(i).name));
                     img_bw = im2bw(img,threshold/256); % Tableau de la dimension d'une image 2056x2464 contenant des 0 et des 1 pour chaque pixel
                     objects = regionprops(img_bw, img,{'Area','Centroid','PixelValues'});
                     %             disp(['Processing ' im_list(i).name '...'])
