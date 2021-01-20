@@ -417,11 +417,11 @@ if option == 'a'
             
             % ------------------ Histo des ecarts spectres b -------
             subplot(4,3,12)
-            data = ecarts(:,2);
-            aa = ~isnan(data);
+            data_hist = ecarts(:,2);
+            aa = ~isnan(data_hist);
             aa = find(aa==1);
-            data = data(aa);
-            histogram(data,30,'BinLimits',[0 max_b]);
+            data_hist = data_hist(aa);
+            histogram(data_hist,30,'BinLimits',[0 max_b]);
             xlim([0 max_b]);
             ylim([0 nb_zones]);
             title('Differences of spectra ','fontsize',7);
