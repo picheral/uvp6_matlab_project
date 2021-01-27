@@ -284,7 +284,7 @@ if option == 'a'
             subplot(4,3,3)
             area_min = 5; %5
             aa = find(data.data_final(:,4) > area_min);
-            t=10;
+            t=1;
             nb_obj = min([1000*t numel(aa)]);
             %         plot(data.data_final(aa,2),flip(data.data_final(aa,3)),'k.')
             plot(data.data_final(aa(1:t:nb_obj),2),data.data_final(aa(1:t:nb_obj),3),'k.')
@@ -417,11 +417,11 @@ if option == 'a'
             
             % ------------------ Histo des ecarts spectres b -------
             subplot(4,3,12)
-            data = ecarts(:,2);
-            aa = ~isnan(data);
+            data_hist = ecarts(:,2);
+            aa = ~isnan(data_hist);
             aa = find(aa==1);
-            data = data(aa);
-            histogram(data,30,'BinLimits',[0 max_b]);
+            data_hist = data_hist(aa);
+            histogram(data_hist,30,'BinLimits',[0 max_b]);
             xlim([0 max_b]);
             ylim([0 nb_zones]);
             title('Differences of spectra ','fontsize',7);
