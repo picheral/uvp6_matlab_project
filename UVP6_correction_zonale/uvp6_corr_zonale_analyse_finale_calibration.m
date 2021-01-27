@@ -107,7 +107,7 @@ if option == 'c'
             
             % ------------- Liste des images -------------------
             %             im_list = dir('save*.png');
-            im_list = dir('*/20*.png');
+            im_list = dir('**/20*.png');
             
             if ~isempty(im_list)
                 % --------- Si au moins une image --------------
@@ -136,7 +136,7 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    data_img = [i*ones(numel(area),1) centroids area mean_px];
+                    data_img = [i*ones(numel(area),1) centroids area mean_px i*ones(numel(area),1)];
                     
                     % ------------ Objets supérieurs à 2 pixels ---------------
                     aa = area > 2;
