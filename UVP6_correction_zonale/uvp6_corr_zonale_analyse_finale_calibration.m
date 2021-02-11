@@ -107,7 +107,7 @@ if option == 'c'
             
             % ------------- Liste des images -------------------
             %             im_list = dir('save*.png');
-            im_list = dir('*/20*.png');
+            im_list = dir('**/20*.png');
             
             if ~isempty(im_list)
                 % --------- Si au moins une image --------------
@@ -136,7 +136,7 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    data_img = [i*ones(numel(area),1) centroids area mean_px];
+                    data_img = [i*ones(numel(area),1) centroids area mean_px i*ones(numel(area),1)];
                     
                     % ------------ Objets supérieurs à 2 pixels ---------------
                     aa = area > 2;
@@ -284,7 +284,7 @@ if option == 'a'
             subplot(4,3,3)
             area_min = 5; %5
             aa = find(data.data_final(:,4) > area_min);
-            t=1;
+            t=10;
             nb_obj = min([1000*t numel(aa)]);
             %         plot(data.data_final(aa,2),flip(data.data_final(aa,3)),'k.')
             plot(data.data_final(aa(1:t:nb_obj),2),data.data_final(aa(1:t:nb_obj),3),'k.')
