@@ -245,7 +245,7 @@ if nb_of_ref >1 && type_plot == 'c'
     % -------------------------- Table données synthétiques ---------
     data_table(index_plot,:) = [0 0 0 img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
     data_name(index_plot) = {'mean_ref'};
-    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
+    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat_size_limit'};
 
 else
     %% ref base histopx and configuration
@@ -366,7 +366,7 @@ else
     % -------------------------- Table données synthétiques ---------
     data_table(index_plot,:) = [0 aa_ref*1000000 expo_ref img_vol_data_ref pix_ref gain_ref Thres_ref Exposure_ref ShutterSpeed_ref SMBase_ref 1 camsm_ref(i_size_limit)];
     data_name(index_plot) = {txt_ref};
-    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat size limit'};
+    data_list = {'profilename' 'score' 'aa' 'exp' 'img_vol' 'pixel' 'gain' 'threshold' 'exposure' 'shutter' 'smbase' 'ratio' 'stat_size_limit'};
 end
 
 
