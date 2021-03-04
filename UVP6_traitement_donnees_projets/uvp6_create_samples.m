@@ -125,7 +125,7 @@ for seq_nb = 1:seq_nb_max
     % detection auto first image by using default method
     % test if black 1pix is all 0
     if any(black_nb(:,3))
-        fisrt_black = black_nb(:,3);
+        first_black = black_nb(:,3);
     else
         first_black = black_nb(:,4);
     end
