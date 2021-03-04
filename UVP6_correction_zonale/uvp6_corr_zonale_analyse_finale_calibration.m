@@ -82,7 +82,7 @@ scale_option = 't';
 
 if strcmp(scale_option,'t')
     %max_a = 10; max_b = 30; max_area = 3; max_grey = 2;
-    max_a = 10; max_b = 3; max_area = 3; max_grey = 2;
+    max_a = 10; max_b = 0.5; max_area = 3; max_grey = 2;
 else
     max_a = 200; max_b = 200; max_area = 3; max_grey = 3;
 end
@@ -136,7 +136,8 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    data_img = [i*ones(numel(area),1) centroids area mean_px i*ones(numel(area),1)];
+                    date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+                    data_img = [i*ones(numel(area),1) centroids area mean_px date_num*ones(numel(area),1)];
                     
                     % ------------ Objets supérieurs à 2 pixels ---------------
                     aa = area > 2;

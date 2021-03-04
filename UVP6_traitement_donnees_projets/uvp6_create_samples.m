@@ -28,7 +28,7 @@ disp(['Project folder : ', project_folder])
 disp('---------------------------------------------------------------')
 
 % detection seaexplorer in name
-if ~contains(project_folder, 'seaexplorer')
+if ~contains(project_folder, 'sea')
     warning('Only seaexplorer project are supported')
     error('ERROR : the project is not a seaexplorer project')
 end
@@ -169,6 +169,11 @@ lat_list = zeros(1, seq_nb_max);
 yo_list = zeros(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
+
+% find lat-lon with interpolation between two surfacing
+% out of use since udpate of sea002 15/02/2021
+% the glider makes its own interpolation
+%{
 for meta_nb = 1:length(list_of_vector_meta)
     % read metadata from file
     % need the file where the seq ends and the next file (for start and end
@@ -194,7 +199,7 @@ for meta_nb = 1:length(list_of_vector_meta)
            time_start = meta_1(max(aa_start_lon(1), aa_start_lat(1)), 1);
            
            % find the last meta data line with the same lat-lon
-           if (meta_1(end,3) ~= lon_start) && (meta_1(end,4) ~= lat_start)
+           if (meta_1(end,3) ~= lon_start) || (meta_1(end,4) ~= lat_start)
                % in same file if latlon(end) is different:
                time_end_index = min(aa_start_lon(end), aa_start_lat(end)) + 1;
                time_end = meta_1(time_end_index, 1);
@@ -217,6 +222,35 @@ for meta_nb = 1:length(list_of_vector_meta)
            lat_end = ConvertLatLonSeaexplorer(lat_end);
            lon_list(seq_nb) = interp1([time_start,time_end], [lon_start, lon_end], time_to_find);
            lat_list(seq_nb) = interp1([time_start,time_end], [lat_start, lat_end], time_to_find);
+           yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
+           seq_nb = seq_nb + 1;
+        else
+            right_meta = 0;
+        end
+    end
+    if seq_nb > seq_nb_max
+        break
+    end
+end
+%}
+
+% find lat-lon directly with time first image
+% assume lat-lon is interpolated by the glider
+for meta_nb = 1:length(list_of_vector_meta)
+    % read metadata from file
+    meta = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
+    right_meta = 1;
+    % while it is a useful meta data file compared to the datetime of the
+    % sequence
+    while right_meta == 1 && seq_nb <= seq_nb_max
+        time_to_find = start_time_list(seq_nb);
+        % check that the datetime of the sequence IS in the file
+        % if not, go to the next meta data file
+        if (time_to_find >= meta(1,1)) && (time_to_find <= meta(end,1))
+           aa =  find(meta(:,1) <= time_to_find);
+           disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
+           lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
+           lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
            yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
            seq_nb = seq_nb + 1;
         else
