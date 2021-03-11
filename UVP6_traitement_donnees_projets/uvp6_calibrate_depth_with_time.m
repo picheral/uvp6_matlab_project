@@ -46,7 +46,8 @@ ref_table = readtable([ref_folder, ref_filename],'Filetype','text','ReadVariable
 ref_data = table2array(ref_table(:,2));
 ref_meta = table2array(ref_table(:,1));
 ref_meta = split(ref_meta, ',');
-ref_datetime = datetime(cell2mat(ref_meta(:,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+ref_date_time = cell2mat(ref_meta(:,1));
+ref_datetime = datetime(ref_date_time(:,1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
 ref_depth = str2double(ref_meta(:,2));
 
 %% replace data file or create a new one
@@ -69,7 +70,8 @@ fprintf(WithDepth_file,'%s\n',ACQline);
 %% find ref depth for each data time
 disp("looking for depth information...")
 for line_nb = 1:size(meta,1)
-    data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+    date_time = cell2mat(meta(line_nb,1));
+    data_datetime = datetime(date_time(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
     % interpolation and extrapolation of depth based on date time
     [ref_datetime_unique, unique_index] = unique(ref_datetime);
     depth = interp1(ref_datetime_unique, ref_depth(unique_index), data_datetime, 'linear','extrap');

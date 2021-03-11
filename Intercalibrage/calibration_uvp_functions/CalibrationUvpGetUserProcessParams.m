@@ -11,7 +11,7 @@ function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
 % ------------------- params user inputs  ---------------------------------
 
 % user's aa and exp
-set_aa_exp = input('Set the aa and exp ? ([y]/n) ', 's');
+set_aa_exp = input('Set the aa and exp ? (UVP6 only) ([y]/n) ', 's');
 if isempty(set_aa_exp); set_aa_exp = 'y'; end
 users_aa = 2342;
 users_exp = 1.1359;
