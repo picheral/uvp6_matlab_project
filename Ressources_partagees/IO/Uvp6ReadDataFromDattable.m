@@ -42,7 +42,8 @@ for h=1:n
 
     % -------- VECTEURS METADATA -------
     C = strsplit(meta_table{h},{','});
-    time_data(h) = datenum(datetime(char(C(1)),'InputFormat','yyyyMMdd-HHmmss'));
+    date_time = char(C(1));
+    time_data(h) = datenum(datetime(date_time(1:15),'InputFormat','yyyyMMdd-HHmmss'));
     depth_data(h) =  str2double(C{2});
     Flag = str2double(C{4});
 
