@@ -42,8 +42,8 @@ zmax = input('Max depth for all profiles (default = max) ? ');
 if isempty(zmax);zmax = 100000; end
 
 % gamme threshold selon fonction de transfert
-mat_thres = input('Input threshold matrix (log1:1 = [17:1:28] = default, log1:2 = [10:5:30]) ');
-if isempty(mat_thres); mat_thres = [17:1:28]; end
+mat_thres = input('Input threshold matrix (log1:1 = [17:1:25] = default, log1:2 = [10:5:30]) ');
+if isempty(mat_thres); mat_thres = [17:1:25]; end
 
 % create threshold in txt format for dealing with files and folders
 threstxt = strings(numel(mat_thres),1);
