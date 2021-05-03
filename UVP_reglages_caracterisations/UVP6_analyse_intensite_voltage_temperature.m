@@ -116,7 +116,7 @@ for i = 1 : numel(light_list)
         bb = find(data_ver(:,3) == volt_list(j));
         mean_int_plot = mean([data_ver(bb,10) data_ver(bb,11)],2);
         minimum = min(mean_int_plot);
-        mean_int_plot_pcent = 100*(mean_int_plot/minimum - 1);        
+        mean_int_plot_pcent = 100*(mean_int_plot-minimum)/minimum;        
         plot(temp_list,mean_int_plot_pcent);
         hold on
     end
@@ -149,7 +149,7 @@ for i = 1 : numel(light_list)
         bb = find(data_ver(:,3) == volt_list(j));
         mean_int_plot = mean([data_ver(bb,8) data_ver(bb,9)],2);
         minimum = min(mean_int_plot);
-        mean_int_plot_pcent = 100*(mean_int_plot/minimum - 1);        
+        mean_int_plot_pcent = 100*(mean_int_plot-minimum)/minimum;
         plot(temp_list,mean_int_plot_pcent);
         hold on
     end
