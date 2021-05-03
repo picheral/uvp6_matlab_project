@@ -11,6 +11,7 @@ warning('OFF');
 segmentation = 50;
 angle_limit = 2;
 figure_plot = 0;     % Figure de contrôle pour chaque image
+index = 3;
 volt_list = [10 12 15 18 21 24 27];
 
 % Size calibration (voir protocole tomographie)
@@ -42,7 +43,7 @@ for m = 3 : size(temp_list,1)
             cd(img_dir)
             disp(img_dir)
             
-            % Boucle sur les images
+            % Boucle sur les images (Voltages)
             for k = 1 : numel(img_list)
                 voltage = volt_list(k);
                 
@@ -58,7 +59,7 @@ for m = 3 : size(temp_list,1)
                 %                 imshow(img);
                 
                 % Calculs sur l'image
-                [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6_measurements_light(img,segmentation,angle_limit,pixel,figure_plot);
+                [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6_measurements_light(img,segmentation,angle_limit,pixel,figure_plot,index);
                 mean_thick = mean([(thick_right),thick_left]);
                 mean_int = mean([(mean_right),mean((mean_left))]);
                 
@@ -92,9 +93,9 @@ for i = 1 : numel(light_list)
     aa = find(data(:,1) == light_list(i));
     data_ver = data(aa,:);
     
-    fig = figure('name','Raw image','Position',[50 50 900 450]);
+    fig = figure('name','Raw image','Position',[50 50 900 900]);
     % Plot I = f(T)
-    subplot(1,2,1)
+    subplot(2,2,1)
     % Boucle sur les voltages
     for j = 1 : numel(volt_list)
         bb = find(data_ver(:,3) == volt_list(j));
@@ -106,10 +107,28 @@ for i = 1 : numel(light_list)
     ylabel('Intensity mean [0-255]');
     legend('10 volt' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-    ylim([26 32]);
+    ylim([50 70]);
+    
+    % Plot I = f(T) %
+    subplot(2,2,3)
+    % Boucle sur les voltages
+    for j = 1 : numel(volt_list)
+        bb = find(data_ver(:,3) == volt_list(j));
+        mean_int_plot = mean([data_ver(bb,10) data_ver(bb,11)],2);
+        minimum = min(mean_int_plot);
+        mean_int_plot_pcent = 100*(mean_int_plot/minimum - 1);        
+        plot(temp_list,mean_int_plot_pcent);
+        hold on
+    end
+    xlabel('Temperature [°C]');
+    ylabel('Intensity mean increase [%]');
+    legend('10 volt' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
+    ylim([0 15]);
+    
     
     % Plot Thickness = f(T)
-    subplot(1,2,2)
+    subplot(2,2,2)
     % Boucle sur les voltages
     for j = 1 : numel(volt_list)
         bb = find(data_ver(:,3) == volt_list(j));
@@ -121,7 +140,24 @@ for i = 1 : numel(light_list)
     ylabel('Thickness mean [mm]');
     legend('10 volt' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-    ylim([20 25]);
+   ylim([20 25]);
+   
+       % Plot Thickness = f(T)
+    subplot(2,2,4)
+    % Boucle sur les voltages
+    for j = 1 : numel(volt_list)
+        bb = find(data_ver(:,3) == volt_list(j));
+        mean_int_plot = mean([data_ver(bb,8) data_ver(bb,9)],2);
+        minimum = min(mean_int_plot);
+        mean_int_plot_pcent = 100*(mean_int_plot/minimum - 1);        
+        plot(temp_list,mean_int_plot_pcent);
+        hold on
+    end
+    xlabel('Temperature [°C]');
+    ylabel('Thickness mean increase [%]');
+    legend('10 volt' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
+   ylim([0 15]);
     
     % ---------------------- Save figure --------------------------------------
     orient tall
