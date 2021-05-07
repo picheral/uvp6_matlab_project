@@ -59,7 +59,7 @@ for m = 3 : size(temp_list,1)
                 %                 imshow(img);
                 
                 % Calculs sur l'image
-                [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6_measurements_light(img,segmentation,angle_limit,pixel,figure_plot,index);
+                [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6MmeasurementsLight(img,segmentation,angle_limit,pixel,figure_plot,index);
                 mean_thick = mean([(thick_right),thick_left]);
                 mean_int = mean([(mean_right),mean((mean_left))]);
                 
