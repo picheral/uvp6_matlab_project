@@ -285,9 +285,9 @@ if option == 'a'
             subplot(4,3,3)
             area_min = 5; %5
             aa = find(data.data_final(:,4) > area_min);
-            t=10;
+            t=1;
             nb_obj = min([1000*t numel(aa)]);
-            %         plot(data.data_final(aa,2),flip(data.data_final(aa,3)),'k.')
+            %plot(data.data_final(aa,2),flip(data.data_final(aa,3)),'k.')
             plot(data.data_final(aa(1:t:nb_obj),2),data.data_final(aa(1:t:nb_obj),3),'k.')
             axis([0 img_ho 0 img_ve]);
             title([num2str(nb_obj),' objects  [area > ',num2str(area_min),' pixels]'],'fontsize',7);

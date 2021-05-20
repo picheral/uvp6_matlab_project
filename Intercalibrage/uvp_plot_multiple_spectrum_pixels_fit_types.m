@@ -226,7 +226,7 @@ if nb_of_ref >1 && type_plot == 'c'
         
         % ---------------------------------------
         camsm_ref = 2*((aa_ref*(pixsize.^expo_ref)./pi).^0.5);
-        refsum=nanmean(refs);
+        refsum=nanmean(refs,1);
         refsum_log = log(refsum);
         
         camsm_ref_list = [camsm_ref_list; camsm_ref];
@@ -355,7 +355,7 @@ else
     else
         camsm_ref = 2*(((pix_ref^2)*(pixsize)./pi).^0.5);
     end
-    refsum=nanmean(refs);
+    refsum=nanmean(refs,1);
     refsum_log = log(refsum);
 
     % -------- FIT sur données REF ------------------------------
@@ -514,7 +514,7 @@ while other_cast == 1
     nbre=data./volumeech;
     [n,m]=size(nbre);
     %refsum=sum(refs);
-    nbsum=nanmean(nbre);
+    nbsum=nanmean(nbre,1);
     nbsum_adj_log = log(nbsum);
     x = [esd_min:0.01:esd_max];
     
