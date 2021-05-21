@@ -23,8 +23,8 @@ disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
 
 % ----- RAW folder -----------------------------
-raw_folder = [folder,'\raw\'];
-results_folder = [folder,'\results\'];
+raw_folder = fullfile(folder,'raw');
+results_folder = fullfile(folder,'results');
 
 %% Settings
 % Va créer un vecteur de profondeur fictif en utilisant le N° d'image
