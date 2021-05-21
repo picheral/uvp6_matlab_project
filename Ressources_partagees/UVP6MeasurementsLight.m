@@ -1,7 +1,7 @@
 %% Uvp6 measurements from light images acquired with the tomography setup
 % Picheral 2021/05/02
 
-function [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6_measurements_light(img,segmentation,angle_limit,pixel,figure_plot,index)
+function [max_h_profile_i,angle_deg,thick_left,thick_right,mean_left,mean_right,Intensity] = UVP6MeasurementsLight(img,segmentation,angle_limit,pixel,figure_plot,index)
 
 % Measure intensity profiles and limits to adjust angle
 limits = [];
