@@ -16,8 +16,8 @@ if isempty(set_aa_exp); set_aa_exp = 'y'; end
 users_aa = 2342;
 users_exp = 1.1359;
 if strcmp(set_aa_exp,'y')
-    users_aa = input('Enter the aa value (default = 2342) : ');
-    if isempty(users_aa); users_aa = 2342; end
+    users_aa = input('Enter the aa value (default = 2300) : ');
+    if isempty(users_aa); users_aa = 2300; end
     users_aa = users_aa / 1000000;
     users_exp = input('Enter the exp value (default = 1.1359) : ');
     if isempty(users_exp); users_exp = 1.1359; end

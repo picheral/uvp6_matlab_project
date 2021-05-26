@@ -148,10 +148,10 @@ for i = 1 : N_seq
             Flag = C{4};
             
             % creation du nom d'image (fichier image à ouvrir et analyser)
-            % pour LP files
+            % pour LP files et new hf
             img_name = [time,'.png'];
-            % pour HF files
-            % img_name = [time, '_01.png'];
+            % pour HF files ancienne version (125hf)
+            %img_name = [time, '_01.png'];
             if last_time == time
                 same_time_ = same_time_ + 1;
                 img_name = [time, '_', num2str(same_time_, '%02i'), '.png'];
