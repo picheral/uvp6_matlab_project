@@ -36,6 +36,21 @@ if strcmp(process_params.set_aa_exp, 'y')
 end
 disp('-------------------------------------------------------------------------');
 
+% parameters goals
+if contains(adj_cast.uvp,'uvp6')
+    if process_params.Score_set > 0.04 & strcmp(process_params.set_aa_exp, 'y')
+        %disp('WARNING ! the score for the set Aa and Exp is out of range')
+        fprintf(2, 'WARNING ! the score for the set Aa and Exp is out of range\n');
+        disp('-------------------------------------------------------------------------');
+    end
+    disp(['Threshold           : ',num2str(adj_cast.Thres)]);
+    disp(['Threshold target    : [20:22]']);
+    disp(['Score target        : < 0.04']);
+    disp(['Aa adjusted desired : [1900:2555]']);
+    disp(['Exp adjusted desired: [1.10:1.20]']);
+end
+disp('-------------------------------------------------------------------------');
+
 % ref uvp
 for i = 1:length(ref_cast_list)
     aa_data_ref = ref_cast_list(i).aa_data;

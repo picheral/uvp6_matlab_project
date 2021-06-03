@@ -23,8 +23,8 @@ disp(['Folder : ',char(folder)])
 disp('---------------------------------------------------------------')
 
 % ----- RAW folder -----------------------------
-raw_folder = [folder,'\raw\'];
-results_folder = [folder,'\results\'];
+raw_folder = fullfile(folder,'raw');
+results_folder = fullfile(folder,'results');
 
 %% Settings
 % Va créer un vecteur de profondeur fictif en utilisant le N° d'image
@@ -74,7 +74,7 @@ for i = 1 : N_seq
         disp('---------------------------------------------------------------')
         disp(['Sequence : ',seq(i).name])
         % Ouverture des fichiers data pour lecture des trames HW et ACQ
-        path = [raw_folder,seq(i).name,'\',seq(i).name, '_data.txt'];
+        path = [raw_folder,'\', seq(i).name,'\',seq(i).name, '_data.txt'];
         fid = fopen(path);
         % ----------------- Ligne HW and ACQ -----------------
         HWline = fgetl(fid);
@@ -148,10 +148,10 @@ for i = 1 : N_seq
             Flag = C{4};
             
             % creation du nom d'image (fichier image à ouvrir et analyser)
-            % pour LP files
+            % pour LP files et new hf
             img_name = [time,'.png'];
-            % pour HF files
-            % img_name = [time, '_01.png'];
+            % pour HF files ancienne version (125hf)
+            %img_name = [time, '_01.png'];
             if last_time == time
                 same_time_ = same_time_ + 1;
                 img_name = [time, '_', num2str(same_time_, '%02i'), '.png'];
@@ -160,7 +160,7 @@ for i = 1 : N_seq
             end
             last_time = time;
             % Test if file exist (and look in subdirectories as well)
-            filelist = dir(fullfile([raw_folder,seq(i).name],'\**\',img_name));
+            filelist = dir(fullfile([raw_folder,'\',seq(i).name],'\**\',img_name));
             if ~isempty(filelist)
                 % abs path filename
                 imgfile_pathname = [filelist.folder, '\',filelist.name];
@@ -234,7 +234,7 @@ for i = 1 : N_seq
             disp(['Recording ',seq(i).name,'_',threstxt(j,:),'_data.txt'])
             
             % correction noms fichiers et repertoires
-            subfolder = [raw_folder,seq(i).name,'_',threstxt(j,:),'\'];
+            subfolder = [raw_folder, '\',seq(i).name,'_',threstxt(j,:),'\'];
             mkdir(subfolder);
             
             % Creation des fichiers DATA pour chaque valeur de Threshold
