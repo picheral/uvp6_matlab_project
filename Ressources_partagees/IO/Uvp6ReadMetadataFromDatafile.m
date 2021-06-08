@@ -1,5 +1,5 @@
-function [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = uvp6_read_metadata_from_datafile(folder,path)
-% Lecture des metadata à partir du fichier data
+function [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromDatafile(folder,path)
+% Lecture des metadata Ã  partir du fichier data
 % Picheral, 2020/04/17
 
 
@@ -10,7 +10,7 @@ tline = fgetl(fid);
 %tline is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
 hw_line = strsplit(tline,{','});
 
-%----- Vérification longueur ligne ----------
+%----- VÃ©rification longueur ligne ----------
 if size(hw_line,2) == 45 || size(hw_line,2) == 44
     X = 0;
 else
