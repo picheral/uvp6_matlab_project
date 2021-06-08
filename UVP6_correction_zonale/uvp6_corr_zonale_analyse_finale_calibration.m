@@ -507,7 +507,7 @@ if option == 'a'
                 ['mean score : ', num2str(mean_ecarts_spectres_fit_b)], ['(must be < 1, goal is < 0.65)'], ['min score : ', num2str(min_ecarts_spectres_fit_b)],...
                 ['max score : ', num2str(max_ecarts_spectres_fit_b)], ['std score : ', num2str(std_ecarts_spectres_fit_b)]};
             t = annotation('textbox', pos, 'Units', un, 'String', d, 'Interpreter', 'none', 'EdgeColor', 'none');
-            t.FontSize = 9;
+            t.FontSize = 8;
             
             % ------------------ Sauvegarde image --------------------------
             orient tall
