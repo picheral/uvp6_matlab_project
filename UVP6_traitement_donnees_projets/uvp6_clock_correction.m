@@ -32,9 +32,7 @@ end
 [HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 %% read data lines from data file
-data_table = readtable([data_folder, data_filename],'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-data = table2array(data_table(:,2));
-meta = table2array(data_table(:,1));
+[data, meta] = Uvp6DatafileToArray([data_folder, data_filename]);
 meta = split(meta, ',');
 
 %% replace data file or create a new one

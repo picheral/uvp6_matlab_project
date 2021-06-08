@@ -105,9 +105,7 @@ for seq_nb = 1:seq_nb_max
     pixelsize_list(seq_nb) = pixel;
     
     % read data from dat file
-    T = readtable(seq_dat_file,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-    data = table2array(T(:,2));
-    meta = table2array(T(:,1));
+    [data, meta] = Uvp6DatafileToArray(seq_dat_file);
     [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
     black_nb = [depth_data time_data black_nb];
     I = isnan(black_nb(:,3));

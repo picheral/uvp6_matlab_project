@@ -1,4 +1,4 @@
-function [hw_line, empty_line, acq_line] = Uvp6ReadMetadataFromDatafile(file_path)
+function [hw_line, empty_line, acq_line] = Uvp6ReadMetalinesFromDatafile(file_path)
 % read meta data lines from data files
 % file_path = [data_folder, data_filename];
 %

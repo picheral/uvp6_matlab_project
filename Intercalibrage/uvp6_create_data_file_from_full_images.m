@@ -82,9 +82,7 @@ for i = 1 : N_seq
         disp('----------------- Reading DATA file --------------------------')
         
         % Table des metadata et data
-        T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-        data = table2array(T(:,2));
-        meta = table2array(T(:,1));
+        [data, meta] = Uvp6DatafileToArray(path);
         [n,m]=size(data);        
         
         % détection h pour zmin et zmax

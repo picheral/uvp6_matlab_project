@@ -3,7 +3,7 @@ function [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,ga
 % Picheral, 2020/04/17
 
 
-[hw_line, empty_line, acq_line] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
+[hw_line, empty_line, acq_line] = Uvp6ReadMetalinesFromDatafile(path);
 
 % ----------------- Ligne HW -----------------
 %hw_line is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
