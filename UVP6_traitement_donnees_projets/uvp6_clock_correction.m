@@ -18,7 +18,6 @@ disp('------------------------------------------------------')
 disp("Selection of the data file to correct")
 [data_filename, data_folder] = uigetfile('*.txt','Select the data file to correct');
 disp("Selected data file : " + data_folder + data_filename)
-data_file = fopen([data_folder, data_filename]);
 disp('------------------------------------------------------')
 
 %% time offset input
@@ -30,10 +29,7 @@ if ~isnumeric(time_offset) || isempty(time_offset) || time_offset == 0
 end
 
 %% read HW and ACQ lines from data file
-HWline = fgetl(data_file);
-line = fgetl(data_file);
-ACQline = fgetl(data_file);
-fclose(data_file);
+[HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 %% read data lines from data file
 data_table = readtable([data_folder, data_filename],'Filetype','text','ReadVariableNames',0,'Delimiter',':');

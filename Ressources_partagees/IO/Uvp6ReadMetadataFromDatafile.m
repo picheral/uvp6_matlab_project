@@ -3,12 +3,11 @@ function [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,ga
 % Picheral, 2020/04/17
 
 
-fid = fopen(path);
+[hw_line, empty_line, acq_line] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 % ----------------- Ligne HW -----------------
-tline = fgetl(fid);
-%tline is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
-hw_line = strsplit(tline,{','});
+%hw_line is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
+hw_line = strsplit(hw_line,{','});
 
 %----- Vérification longueur ligne ----------
 if size(hw_line,2) == 45 || size(hw_line,2) == 44
@@ -26,13 +25,9 @@ pvmtype = ['uvp6_sn' sn];
 soft = 'uvp6';
 
 % ------------ LIgne ACQ ----------------------------------
-tline = fgetl(fid);
-tline = fgetl(fid);
-acq_line = strsplit(tline,{','});
+acq_line = strsplit(acq_line,{','});
 black_ratio = str2double(acq_line{15+X});
 
-% ------------- Fermeture fichier -------------------------
-fclose(fid);
 
 end
 
