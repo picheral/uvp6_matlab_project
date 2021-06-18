@@ -56,9 +56,15 @@ fprintf(clock_correct_file,'%s\n',ACQline);
 %% time correction in data file
 disp("time correction...")
 for line_nb = 1:size(meta,1)
-    data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+    try
+        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss-SSS');
+        date_format = 'yyyyMMdd-HHmmss-SSS';
+    catch
+        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+        date_format = 'yyyyMMdd-HHmmss';
+    end
     new_data_datetime = data_datetime + seconds(time_offset);
-    meta(line_nb,1) = {char(new_data_datetime, 'yyyyMMdd-HHmmss')};
+    meta(line_nb,1) = {char(new_data_datetime, date_format)};
 end
     
 
@@ -80,23 +86,26 @@ disp('------------------------------------------------------')
 disp("rename all images in the directory...")
 filelist = dir([data_folder, '**\*.png']);
 if isempty(filelist)
+    filelist = dir([data_folder, '**\*.vig']);
+end
+if isempty(filelist)
     disp("WARNING: No image found in the directory or subdirectories") 
 else
     % test sign of time offset in order to not replace existing image
     if time_offset > 0
         for i=length(filelist):-1:1
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:15) = char(new_data_datetime, 'yyyyMMdd-HHmmss');
+            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     elseif time_offset < 0
         for i=1:length(filelist)
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:15) = char(new_data_datetime, 'yyyyMMdd-HHmmss');
+            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     end

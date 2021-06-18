@@ -136,7 +136,11 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+                    try
+                        date_num = datenum(datetime(im_list(i).name(1:19),'InputFormat','yyyyMMdd-HHmmss-SSS'));
+                    catch
+                        date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+                    end
                     data_img = [i*ones(numel(area),1) centroids area mean_px date_num*ones(numel(area),1)];
                     
                     % ------------ Objets supérieurs à 2 pixels ---------------
