@@ -134,6 +134,7 @@ axis([0 15 0.01 50000]);
 
 % -------------- Part d ----------------------------------
 % compute local spectrum slope
+%{
 affine_fit = fittype({'x'});
 ref_local_spectr_slope = zeros(size(ref_histo_ab_red_log,1),1);
 for i=1:length(ref_local_spectr_slope)
@@ -166,6 +167,7 @@ title('SPECTRUM SLOPE','fontsize',14);
 xlabel('SLOPE [#/L/mm]','fontsize',12);
 ylabel('DEPTH [db]','fontsize',12);
 legend(uvp_ref,uvp_adj);
+%}
 
 
 %% ---------------------- Save figure --------------------------------------

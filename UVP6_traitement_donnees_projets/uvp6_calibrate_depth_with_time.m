@@ -20,7 +20,6 @@ disp('------------------------------------------------------')
 disp("Selection of the data file to calibrate")
 [data_filename, data_folder] = uigetfile('*.txt','Select the data file to calibrate');
 disp("Selected data file : " + data_folder + data_filename)
-data_file = fopen([data_folder, data_filename]);
 disp('------------------------------------------------------')
 
 %% input reference file
@@ -30,15 +29,10 @@ disp("Selected reference file : " + ref_folder + ref_filename)
 disp('------------------------------------------------------')
 
 %% read HW and ACQ lines from data file
-HWline = fgetl(data_file);
-line = fgetl(data_file);
-ACQline = fgetl(data_file);
-fclose(data_file);
+[HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 %% read data lines from data file
-data_table = readtable([data_folder, data_filename],'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-data = table2array(data_table(:,2));
-meta = table2array(data_table(:,1));
+[data, meta] = Uvp6DatafileToArray([data_folder, data_filename]);
 meta = split(meta, ',');
 
 %% read data lines from ref file
@@ -47,7 +41,13 @@ ref_data = table2array(ref_table(:,2));
 ref_meta = table2array(ref_table(:,1));
 ref_meta = split(ref_meta, ',');
 ref_date_time = cell2mat(ref_meta(:,1));
-ref_datetime = datetime(ref_date_time(:,1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+try
+    ref_datetime = datetime(ref_date_time(:,1:19), 'InputFormat', 'yyyyMMdd-HHmmss-SSS');
+    date_format = 'yyyyMMdd-HHmmss-SSS';
+catch
+    ref_datetime = datetime(ref_date_time(:,1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+    date_format = 'yyyyMMdd-HHmmss';
+end
 ref_depth = str2double(ref_meta(:,2));
 
 %% replace data file or create a new one
@@ -71,7 +71,7 @@ fprintf(WithDepth_file,'%s\n',ACQline);
 disp("looking for depth information...")
 for line_nb = 1:size(meta,1)
     date_time = cell2mat(meta(line_nb,1));
-    data_datetime = datetime(date_time(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+    data_datetime = datetime(date_time(1:19), 'InputFormat', date_format);
     % interpolation and extrapolation of depth based on date time
     [ref_datetime_unique, unique_index] = unique(ref_datetime);
     depth = interp1(ref_datetime_unique, ref_depth(unique_index), data_datetime, 'linear','extrap');

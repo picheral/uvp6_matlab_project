@@ -1,10 +1,10 @@
-%% Mise en matrice des données des objets d'images UVP6 acquises en Livecamera
-% Fonctionne dans l'architecture projet après selection du threshold (cf
+%% Mise en matrice des donnÃ©es des objets d'images UVP6 acquises en Livecamera
+% Fonctionne dans l'architecture projet aprÃ¨s selection du threshold (cf
 % protocole)
-% objets, leur coordonnées x et y dans l'image, l'aire en pixel et le niveau
+% objets, leur coordonnÃ©es x et y dans l'image, l'aire en pixel et le niveau
 % de gris moyen des pixels
-% Toutes les séquences ont été acquises/traitées avec le même threshold
-% Les images *.png sont à la racine de la séquence
+% Toutes les sÃ©quences ont Ã©tÃ© acquises/traitÃ©es avec le mÃªme threshold
+% Les images *.png sont Ã  la racine de la sÃ©quence
 % Date : 16/04/2020
 
 close all
@@ -24,10 +24,10 @@ results_folder = [folder,'\results\'];
 doc_folder = [folder,'\doc\'];
 filename = folder(4:end);
 
-% ------------------- Liste des répertoires ----------------
+% ------------------- Liste des rÃ©pertoires ----------------
 list_seq = dir(raw_folder);
 
-% --------------------- Verification "propreté" des noms --------
+% --------------------- Verification "propretÃ©" des noms --------
 index = 0;
 for k = 3:numel(list_seq)
     if list_seq(k).isdir == 1 && ~isempty(find(list_seq(k).name == '_', 1))
@@ -61,7 +61,7 @@ pixel = 0.073;
 % pas d'objets de plus de 300 pixels
 pixsize= [1:300];
 
-% ----------------- Paramétrages ------------------------
+% ----------------- ParamÃ©trages ------------------------
 disp('The analysis will be done only in the square zones, excluding the top, bottom and right remaining pixels')
 nb_zones_v = input('Input number of vertical analyzed zones in the image, must be even (CR = 10) ');
 if isempty(nb_zones_v);nb_zones_v = 10; end
@@ -88,7 +88,7 @@ else
 end
 
 
-%% -------------- Creation matrice à partir images -------------------
+%% -------------- Creation matrice Ã  partir images -------------------
 if option == 'c'
     %------------- Boucle sur sequences ---------------
     data_final = [];
@@ -100,7 +100,7 @@ if option == 'c'
             
             % ------------- Lecture du threshold dans le fichier data ---------
             path = [list_seq(k).folder,'\',list_seq(k).name,'\',list_seq(k).name,'_data.txt'];
-            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = uvp6_read_metadata_from_datafile(folder,path);
+            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromDatafile(folder,path);
             
             % ------------- correction threshold Matlab/uvp6
             threshold = threshold + 1;
@@ -136,10 +136,14 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+                    try
+                        date_num = datenum(datetime(im_list(i).name(1:19),'InputFormat','yyyyMMdd-HHmmss-SSS'));
+                    catch
+                        date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+                    end
                     data_img = [i*ones(numel(area),1) centroids area mean_px date_num*ones(numel(area),1)];
                     
-                    % ------------ Objets supérieurs à 2 pixels ---------------
+                    % ------------ Objets supÃ©rieurs Ã  2 pixels ---------------
                     aa = area > 2;
                     data_final = [data_final ;data_img(aa,:)];
                 end
@@ -196,17 +200,17 @@ if option == 'a'
     % ----------------- Liste des matrices disponibles ---------
     list_mat = dir([results_folder,'data_corr_zonale_*.mat']);
     
-    %% ---------------- Boucle sur les matrices à analyser ------
+    %% ---------------- Boucle sur les matrices Ã  analyser ------
     
     if ~isempty(list_mat)
         for i = numel(list_mat) :-1: 1
-            % ---------- Chargement données ----------------
+            % ---------- Chargement donnÃ©es ----------------
             disp(['Analysing ',list_mat(i).name])
             data = load([results_folder,list_mat(i).name]);
             data_final = data.data_final;
             %       data_final = [image x_centroids y_centroids area mean_px];
             
-            % -------------- Données totales des N zones ------------
+            % -------------- DonnÃ©es totales des N zones ------------
             aa = data_final(:,2) >= vect_x(1) & data_final(:,2) < vect_x(end) & data_final(:,3) >= vect_y(1) & data_final(:,3) < vect_y(end);
             data_final = data_final(aa,:);
             
@@ -246,7 +250,7 @@ if option == 'a'
             [fitresult_all, gof] = fit( xData, yData, ft );
             [y_all] = poly_from_fit(log(pixsize),fitresult_all,fit_type);
             
-            % --- Ajustement polynomial sur spectre de taille réduit --------------------------
+            % --- Ajustement polynomial sur spectre de taille rÃ©duit --------------------------
             [xData, yData] = prepareCurveData( log(pixsize(deb_x:end_x)), log(spectre_tot(deb_x:end_x)) );
             [fitresult_sel, gof] = fit( xData, yData, ft );
             [y_sel] = poly_from_fit(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
@@ -255,7 +259,7 @@ if option == 'a'
             fig1 = figure('numbertitle','off','name','UVP6_cor_zonale','Position',[10 50 900 1200]);
             titre =  list_mat(i).name;
             sgtitle({'Zonal Correction Analysis';titre}, 'Interpreter', 'none');
-            % -------- Spectre entier et réduit ----------------------------
+            % -------- Spectre entier et rÃ©duit ----------------------------
             subplot(4,3,1)
             loglog(pixsize,spectre_tot,'r.');
             hold on
@@ -320,13 +324,13 @@ if option == 'a'
                         % --- Correction par le nb de pixels de la zone / image
                         spectre_zone = spectre_zone * nb_zones;
                         
-                        % --- Ajustement polynomial sur spectre de taille réduit --------------------------
+                        % --- Ajustement polynomial sur spectre de taille rÃ©duit --------------------------
                         [xData, yData] = prepareCurveData( log(pixsize(deb_x:end_x)), log(spectre_zone(deb_x:end_x)) );
                         [fitresult_sel, gof] = fit( xData, yData, ft );
                         [y_sel_zone] = poly_from_fit(log(pixsize(deb_x:end_x)),fitresult_sel,fit_type);
                         
                         
-                        % -------- Spectre réduit ----------------------------
+                        % -------- Spectre rÃ©duit ----------------------------
                         subplot(4,3,4)
                         loglog(pixsize(deb_x:end_x),spectre_zone(deb_x:end_x),'k.');
                         hold on
@@ -354,7 +358,7 @@ if option == 'a'
                         ylim([0.05 100000])
                         title(['FIT '],'fontsize',7);
                         
-                        % ------- Calcul écart au spectre de la zone entière ----
+                        % ------- Calcul Ã©cart au spectre de la zone entiÃ¨re ----
                         %                     ecart_spectre = nansum(abs((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
                         %                     ecart_spectre_a = nansum(((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
                         ecart_spectre_a = (nansum((abs(exp(y_sel_zone) - exp(y_sel)))./exp(y_sel)))/(numel(y_sel_zone));
@@ -404,7 +408,7 @@ if option == 'a'
             disp(['Sum of area differences    : ',num2str(somme_ecarts_area)])
             disp(['Sum of grey differences    : ',num2str(somme_ecarts_grey)])
             
-            % ------------------ Ajout courbe image entière --------------
+            % ------------------ Ajout courbe image entiÃ¨re --------------
             subplot(4,3,5)
             %loglog( pixsize(deb_x:end_x), exp(y_sel),'g-','LineWidth',2 );
             loglog( pixsize(deb_x:end_x), exp(y_sel),'k-','LineWidth',2 );
@@ -447,7 +451,7 @@ if option == 'a'
             %         image = - ecart_spectre_min + image_ecarts_spectres_a *(255-ecart_spectre_min)/ecart_spectre_max;
             %         image =  50 + image_ecarts_spectres_a *2;
             %         image = image_ecarts_spectres + 1;
-            % ------------------ Affichage des carrés couleur proportionnels --
+            % ------------------ Affichage des carrÃ©s couleur proportionnels --
             %         subplot(4,3,7)
             %         imagesc(image_ecarts_spectres_a,[0 max_a]);
             %         title(['Map spectral differences (a) S : ',num2str(somme_ecarts_spectres_fit_a,5)],'fontsize',10);
@@ -459,7 +463,7 @@ if option == 'a'
             %         disp(['ecart_spectre_max : ',num2str(ecart_spectre_max)]);
             %         image = image_ecarts_spectres_b * 255/350;
             %         image = image_ecarts_spectres + 1;
-            % ------------------ Affichage des carrés couleur proportionnels --
+            % ------------------ Affichage des carrÃ©s couleur proportionnels --
             subplot(4,3,9)
             imagesc(image_ecarts_spectres_b,[0 max_b]);
             colormap(fig1,gray);
@@ -472,7 +476,7 @@ if option == 'a'
             %         ecart_area_max = max(ecarts(:,2));
             %         image = image_ecarts_area * 255/ecart_area_max;
             %         image = 150*(image_ecarts_area + 1);
-            % ------------------ Affichage des carrés couleur proportionnels --
+            % ------------------ Affichage des carrÃ©s couleur proportionnels --
             subplot(4,3,7)
             imagesc(image_ecarts_area,[-max_area max_area]);
             title(['Area differences S : ',num2str(somme_ecarts_area,5)],'fontsize',7);
@@ -482,7 +486,7 @@ if option == 'a'
             %         ecart_grey_max = max(ecarts(:,3));
             %         image = image_ecarts_grey * 255/ecart_grey_max;
             %         image = 125*(image_ecarts_grey +1);
-            % ------------------ Affichage des carrés couleur proportionnels --
+            % ------------------ Affichage des carrÃ©s couleur proportionnels --
             subplot(4,3,8)
             imagesc(image_ecarts_grey,[-max_grey max_grey]);
             title(['Grey x Area differences S : ',num2str(somme_ecarts_grey,5)],'fontsize',7);
@@ -507,7 +511,7 @@ if option == 'a'
                 ['mean score : ', num2str(mean_ecarts_spectres_fit_b)], ['(must be < 1, goal is < 0.65)'], ['min score : ', num2str(min_ecarts_spectres_fit_b)],...
                 ['max score : ', num2str(max_ecarts_spectres_fit_b)], ['std score : ', num2str(std_ecarts_spectres_fit_b)]};
             t = annotation('textbox', pos, 'Units', un, 'String', d, 'Interpreter', 'none', 'EdgeColor', 'none');
-            t.FontSize = 9;
+            t.FontSize = 8;
             
             % ------------------ Sauvegarde image --------------------------
             orient tall
@@ -516,7 +520,7 @@ if option == 'a'
             print(gcf,'-dpdf','-bestfit',[results_folder,'\spectres_',num2str(nb_zones),'_zones_',num2str(1000*esd_min),'_',num2str(1000*esd_max),'_',list_mat(i).name(1:end-4)]);
             disp('-------------- Figure saved ----------------------------------- ');
             
-            % ----- Sauvegarde matrice de résultats pour matrice entrée ----
+            % ----- Sauvegarde matrice de rÃ©sultats pour matrice entrÃ©e ----
             disp('------------- SAVING matrix -----------------------------------')
             eval(['save ',results_folder,'spectres_',num2str(nb_zones),'_zones_',num2str(1000*esd_min),'_',num2str(1000*esd_max),'_',list_mat(i).name ,' spectre_select spectre_select_fit area_total mean_grey_total ecarts'])
         end

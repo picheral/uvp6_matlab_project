@@ -43,6 +43,8 @@ if contains(adj_cast.uvp,'uvp6')
         fprintf(2, 'WARNING ! the score for the set Aa and Exp is out of range\n');
         disp('-------------------------------------------------------------------------');
     end
+    disp(['Shutter             : ',num2str(adj_cast.ShutterSpeed)]);
+    disp(['Gain                : ',num2str(adj_cast.gain)]);
     disp(['Threshold           : ',num2str(adj_cast.Thres)]);
     disp(['Threshold target    : [20:22]']);
     disp(['Score target        : < 0.04']);

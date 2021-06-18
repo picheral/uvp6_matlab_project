@@ -46,7 +46,7 @@ if (strcmp(uvp_cast.project_folder(4:7),'uvp5'))
         disp(['Image volume [L]    : ',num2str(uvp_base.volimg0)]);
         uvp_cast.img_vol_data = uvp_base.volimg0;
     else
-        disp('All metadata of the reference profile are OK.')
+        disp('All metadata of the profile are OK.')
     end
 else
     % Reading data from UVP6 base

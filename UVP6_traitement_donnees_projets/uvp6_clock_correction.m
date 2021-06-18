@@ -18,7 +18,6 @@ disp('------------------------------------------------------')
 disp("Selection of the data file to correct")
 [data_filename, data_folder] = uigetfile('*.txt','Select the data file to correct');
 disp("Selected data file : " + data_folder + data_filename)
-data_file = fopen([data_folder, data_filename]);
 disp('------------------------------------------------------')
 
 %% time offset input
@@ -30,15 +29,10 @@ if ~isnumeric(time_offset) || isempty(time_offset) || time_offset == 0
 end
 
 %% read HW and ACQ lines from data file
-HWline = fgetl(data_file);
-line = fgetl(data_file);
-ACQline = fgetl(data_file);
-fclose(data_file);
+[HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 %% read data lines from data file
-data_table = readtable([data_folder, data_filename],'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-data = table2array(data_table(:,2));
-meta = table2array(data_table(:,1));
+[data, meta] = Uvp6DatafileToArray([data_folder, data_filename]);
 meta = split(meta, ',');
 
 %% replace data file or create a new one
@@ -62,9 +56,15 @@ fprintf(clock_correct_file,'%s\n',ACQline);
 %% time correction in data file
 disp("time correction...")
 for line_nb = 1:size(meta,1)
-    data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+    try
+        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss-SSS');
+        date_format = 'yyyyMMdd-HHmmss-SSS';
+    catch
+        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+        date_format = 'yyyyMMdd-HHmmss';
+    end
     new_data_datetime = data_datetime + seconds(time_offset);
-    meta(line_nb,1) = {char(new_data_datetime, 'yyyyMMdd-HHmmss')};
+    meta(line_nb,1) = {char(new_data_datetime, date_format)};
 end
     
 
@@ -86,23 +86,26 @@ disp('------------------------------------------------------')
 disp("rename all images in the directory...")
 filelist = dir([data_folder, '**\*.png']);
 if isempty(filelist)
+    filelist = dir([data_folder, '**\*.vig']);
+end
+if isempty(filelist)
     disp("WARNING: No image found in the directory or subdirectories") 
 else
     % test sign of time offset in order to not replace existing image
     if time_offset > 0
         for i=length(filelist):-1:1
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:15) = char(new_data_datetime, 'yyyyMMdd-HHmmss');
+            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     elseif time_offset < 0
         for i=1:length(filelist)
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:15), 'InputFormat', 'yyyyMMdd-HHmmss');
+            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:15) = char(new_data_datetime, 'yyyyMMdd-HHmmss');
+            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     end

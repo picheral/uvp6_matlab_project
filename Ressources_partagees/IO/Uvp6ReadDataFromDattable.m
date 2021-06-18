@@ -43,7 +43,11 @@ for h=1:n
     % -------- VECTEURS METADATA -------
     C = strsplit(meta_table{h},{','});
     date_time = char(C(1));
-    time_data(h) = datenum(datetime(date_time(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+    try
+        time_data(h) = datenum(datetime(date_time(1:19),'InputFormat','yyyyMMdd-HHmmss-SSS'));
+    catch
+        time_data(h) = datenum(datetime(date_time(1:15),'InputFormat','yyyyMMdd-HHmmss'));
+    end
     depth_data(h) =  str2double(C{2});
     Flag = str2double(C{4});
 
