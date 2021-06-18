@@ -2,7 +2,7 @@ function [meta_data] = ReadMetaSeaexplorer(filepathgz)
 %ReadMetaSeaexplorer read the metadata in the seaeplorer ccu file
 %
 % meta_data array is an num array (careful for <missing> values
-% PLD_REALTIMECLOCK, NAV_DEPTH, NAV_LONGITUDE, NAV_LATITUDE
+% PLD_REALTIMECLOCK, NAV_DEPTH, NAV_LATITUDE, NAV_LONGITUDE
 % PLD_REALTIMECLOCK is in num format
 %
 % inputs :
@@ -13,6 +13,6 @@ function [meta_data] = ReadMetaSeaexplorer(filepathgz)
 %
 filepath = gunzip(filepathgz);
 meta_table = readtable(filepath{1}, 'FileType', 'text', 'Format', '%{dd/MM/uuuu HH:mm:ss.SSS}D %f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
-meta_data = [datenum(meta_table.PLD_REALTIMECLOCK) meta_table.NAV_DEPTH meta_table.NAV_LONGITUDE meta_table.NAV_LATITUDE];
+meta_data = [datenum(meta_table.PLD_REALTIMECLOCK) meta_table.NAV_DEPTH meta_table.NAV_LATITUDE meta_table.NAV_LONGITUDE];
 delete(filepath{1});
 end

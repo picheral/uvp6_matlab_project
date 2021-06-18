@@ -56,15 +56,17 @@ for meta_nb = 1:length(list_of_vector_meta)
            aa =  find(meta(:,1) <= time_to_find);
            disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
            if strcmp(vector_type, 'SeaExplorer')
-               lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
-               lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
+               lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
+               lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
            elseif strcmp(vector_type, 'SeaGlider')
-               lon_list(seq_nb) = meta(aa(end), 3);
-               lat_list(seq_nb) = meta(aa(end), 4);
+               lat_list(seq_nb) = meta(aa(end), 3);
+               lon_list(seq_nb) = meta(aa(end), 4);
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(5:8));
            end
            seq_nb = seq_nb + 1;
+        elseif (time_to_find < meta(1,1))
+            seq_nb = seq_nb + 1;
         else
             right_meta = 0;
         end
