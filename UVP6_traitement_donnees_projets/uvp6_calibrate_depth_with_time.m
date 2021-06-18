@@ -71,7 +71,7 @@ fprintf(WithDepth_file,'%s\n',ACQline);
 disp("looking for depth information...")
 for line_nb = 1:size(meta,1)
     date_time = cell2mat(meta(line_nb,1));
-    data_datetime = datetime(date_time(1:19), 'InputFormat', date_format);
+    data_datetime = datetime(date_time(1:length(date_format)), 'InputFormat', date_format);
     % interpolation and extrapolation of depth based on date time
     [ref_datetime_unique, unique_index] = unique(ref_datetime);
     depth = interp1(ref_datetime_unique, ref_depth(unique_index), data_datetime, 'linear','extrap');
@@ -94,6 +94,7 @@ end
 fprintf(WithDepth_file,'%s\n',line);
 disp("Modified file : " + fopen(WithDepth_file))
 fclose(WithDepth_file);
+fclose('all');
 disp('------------------------------------------------------')
 
 
