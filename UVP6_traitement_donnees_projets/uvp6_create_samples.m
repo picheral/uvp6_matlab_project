@@ -1,7 +1,24 @@
 %% Create the sample file of a project
 % Create the sample file for all sequences
-% the meta data are extracted from the sequence and a nav file located in
-% the doc folder of the project
+% For SeaExplorer and for SeaGlider
+%
+% ----- SeaExplorer project -----
+% The project must contain "sea" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the doc folder of the project.
+% The meta data folder must start with "SEA" and the sn of the glider,
+% "SEA###*".
+% The files must be located directly in ccu/logs/*raw*.#.gz, with # the nb of the
+% yo.
+%
+% ----- SeaGlider project -----
+% The project must contain "SG" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the CTD folder of the project.
+% The meta data folder must be called "SG###_nc_files", with ### the sn of
+% the glider.
+% The files in it are called "p[sn]####.nc", with #### the nb of the yo.
+% 
 % 
 % use Mapping Toolbox 
 %
@@ -15,7 +32,8 @@ disp('------------------------------------------------------')
 disp('------------- uvp6 sample creator --------------------')
 disp('------------------------------------------------------')
 disp('')
-disp('WARNING : Work only for seaexplorer project')
+disp('WARNING : Work only for seaexplorer project and seaglider project')
+disp('Read the help of the script for information about the needed project structure')
 disp('')
 
 
@@ -31,7 +49,7 @@ disp('---------------------------------------------------------------')
 if contains(project_folder, 'sea')
     disp('SeaExplorer project')
     vector_type = 'SeaExplorer';
-elseif contains(project_folder, 'arctos')
+elseif contains(project_folder, 'SG')
     disp('SeaGlider project')
     vector_type = 'SeaGlider';
 else
@@ -56,7 +74,6 @@ disp('---------------------------------------------------------------')
 
 
 %% get cruise info
-% seaexplorer dependant
 try
     cruise_file = fullfile(project_folder, 'config', 'cruise_info.txt');
     fid = fopen(cruise_file);
