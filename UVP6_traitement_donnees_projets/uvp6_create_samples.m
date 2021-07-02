@@ -53,8 +53,16 @@ elseif contains(project_folder, 'SG')
     disp('SeaGlider project')
     vector_type = 'SeaGlider';
 else
-    warning('Only seaexplorer project are supported')
-    error('ERROR : the project is not a seaexplorer project')
+    warning('Only seaexplorer or seaglider project are supported')
+    vector_type = input('Is it a SeaExplorer (se) or a SeaGlider (sg) project ? ([se]/sg) ','s');
+    if isempty(vector_type) || strcmp(vector_type,'se')
+        vector_type = 'SeaExplorer';
+    elseif strcmp(vector_type, 'sg')
+        vector_type = 'SeaGlider';
+    else
+        error('ERROR : the project is not a seaexplorer or seaglider project')
+    end
+    
 end
 
 % detection meta in doc
