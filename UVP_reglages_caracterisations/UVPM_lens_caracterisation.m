@@ -45,6 +45,8 @@ plot(centroids(:,1), centroids(:,2),'r+')
 for i = 1 : length(centroids)
     text(centroids(i,1),centroids(i,2),[' ',num2str(i)],'FontSize',14,'Color', 'r');
 end
+savefig([image_folder, image_filename(1:end-4), '.fig'])
+saveas(gcf,[image_folder, image_filename(1:end-4), '.png'])
 
 %% -------------- element poistion in esaf -------------------
 % usaf group and element positions compared to barycenter
@@ -123,6 +125,8 @@ for el_nb = 1:3
     xlabel('pixels');
     ylabel('grey level');
     title(['groupe 2 element ' num2str(el_nb)]);
+    savefig([image_folder, image_filename(1:end-4), 'gr2el', num2str(el_nb), '.fig'])
+    saveas(gcf,[image_folder, image_filename(1:end-4), 'gr2el', num2str(el_nb), '.png'])
 
     data(el_nb).h_section = h_section;
     data(el_nb).h_profile = h_profile;
