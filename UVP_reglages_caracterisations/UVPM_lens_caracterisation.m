@@ -48,6 +48,7 @@ end
 
 %% -------------- element poistion in esaf -------------------
 % usaf group and element positions compared to barycenter
+% for uvp6
 % g2e1h = (x-15,y) [-4,-10]
 % g2e1v = (x-12,y-15) [-10,-4]
 usaf(1).x_h = -19;
