@@ -49,73 +49,83 @@ pasvert=1;
 %     'uvp5_sn207' 'uvp5_sn207a' 'uvp5_sn207b'};
 
 disp('------------------- UVP5 data process tools ------------------------');
-% ------------ Existence du répertoire CONFIG
+disp('--------------- Path du projet Matlab -------------------------------');
 
-if exist('W:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
-    zoo_list_dir = 'W:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
-elseif exist('Z:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
-    zoo_list_dir = 'Z:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
-elseif exist('Y:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
-    zoo_list_dir = 'Y:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
-elseif exist('X:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
-    zoo_list_dir = 'X:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
-elseif exist('C:\Users\zooprocess partage\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\')==7
-    zoo_list_dir = 'C:\Users\zooprocess partage\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\Marc Piheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\Marc Piheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Documents\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Documents\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\UVP5SN009\Documents\MATLAB\toolbox_uvp5\uvp5_bases\')==7
-    zoo_list_dir = 'C:\Users\UVP5SN009\Documents\MATLAB\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Documents\Documents\Matlab_toolbox\Marc\PVM2005_Matlab\UVP5_matlab\') == 7
-    zoo_list_dir = 'C:\Documents\Documents\Matlab_toolbox\Marc\PVM2005_Matlab\UVP5_matlab\';
-elseif exist('C:\Users\UVP5SN009\Documents\MATLAB\')== 7
-    zoo_list_dir = 'C:\Users\UVP5SN009\Documents\MATLAB\';
-elseif exist('C:\Users\picheral\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\picheral\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\emna\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\emna\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\user\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\user\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-elseif exist('C:\Users\Marc Picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
-    zoo_list_dir = 'C:\Users\Marc Picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
-end
-
-TXT_base = {};
-% ------------- LECTURE DU FICHIER base_to_process.xlsx -------------
-[NUMERIC,TXT_base,RAW]=xlsread([zoo_list_dir,'base_to_process.xlsx']);
-disp('------------------- Project in ''base_to_process.xlsx'' ---------------------------');
-for bbb = 1 : numel(TXT_base);        disp(char(TXT_base(bbb)));    end
+proj = matlab.project.rootProject;
+disp(['project path    : ',char(proj.RootFolder)]);
+uvp5_root_folder = [char(proj.RootFolder),'\Ressources_mise_base_uvp5\'];
+disp(['ressources      : ',uvp5_root_folder])
 disp('------------------------------------------------------------------');
 
-%% ------------------ BOUCLE / Unique --------------------------------
-general_process = input('Batch process using Base_to_process.xlsx or Unique project or All (u/b/a) ? ','s');
-if isempty(general_process) ; general_process = 'u'; end
+% if exist('W:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
+%     uvp5_root_folder = 'W:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
+% elseif exist('Z:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
+%     uvp5_root_folder = 'Z:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
+% elseif exist('Y:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
+%     uvp5_root_folder = 'Y:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
+% elseif exist('X:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\') == 7
+%     uvp5_root_folder = 'X:\_UVP5\Protocoles_codes\Codes_Matlab\mise_en_base\';
+% elseif exist('C:\Users\zooprocess partage\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\')==7
+%     uvp5_root_folder = 'C:\Users\zooprocess partage\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\Marc Piheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\Marc Piheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Documents\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Documents\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\UVP5SN009\Documents\MATLAB\toolbox_uvp5\uvp5_bases\')==7
+%     uvp5_root_folder = 'C:\Users\UVP5SN009\Documents\MATLAB\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Documents\Documents\Matlab_toolbox\Marc\PVM2005_Matlab\UVP5_matlab\') == 7
+%     uvp5_root_folder = 'C:\Documents\Documents\Matlab_toolbox\Marc\PVM2005_Matlab\UVP5_matlab\';
+% elseif exist('C:\Users\UVP5SN009\Documents\MATLAB\')== 7
+%     uvp5_root_folder = 'C:\Users\UVP5SN009\Documents\MATLAB\';
+% elseif exist('C:\Users\picheral\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\picheral\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\emna\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\emna\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\user\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\user\Documents\MATLAB\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% elseif exist('C:\Users\Marc Picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\') == 7
+%     uvp5_root_folder = 'C:\Users\Marc Picheral\Documents\Matlab_toolbox\toolbox_partagees\toolbox_uvp5\uvp5_bases\';
+% end
+
+TXT_base = {};
+general_process = 'u';
+% ------------- LECTURE DU FICHIER base_to_process.xlsx -------------
+if exist([uvp5_root_folder,'base_to_process.xlsx'],'file') ~= 0    
+    [NUMERIC,TXT_base,RAW]=xlsread([uvp5_root_folder,'base_to_process.xlsx']);
+    disp('------------------- Project in ''base_to_process.xlsx'' ---------------------------');
+    for bbb = 1 : numel(TXT_base);        disp(char(TXT_base(bbb)));    end
+    disp('------------------------------------------------------------------');
+    %% ------------------ BOUCLE / Unique --------------------------------
+    general_process = input('Batch process using Base_to_process.xlsx or Unique project or All (u/b/a) ? ','s');
+end
 
 if strcmp(general_process,'u')
-    disp('Select the ''uvp5_cruise'' root folder you want to process');
+    disp('Select the ''uvp5_snXXX_cruise'' root folder you want to process');
     TXT_base = {};
     %% ------------ Choix du projet ---------------------------------
     selectprojet = 0;
     while (selectprojet == 0)
         project_folder = uigetdir('Select UVP5 project directory');
-        if strcmp(project_folder(4:7),'uvp5');  selectprojet = 1;
-        else disp(['Selected project ' project_folder ' is not correct. It must be on the root of a drive.']); end
+        if ~contains(project_folder, 'uvp5_sn')  
+            disp(['Selected project ' project_folder ' is not correct. It must be on the root of a drive.']); 
+        else
+            selectprojet = 1;
+        end
     end
     TXT_base = {TXT_base;project_folder};
     disp('---------------------------------------------------------------------');
 elseif strcmp(general_process,'a')
     %% ------------- TOUS les projets du disque ----------------------
-    drive = uigetdir('Select DRIVE containing all PROJECTS ');
+    drive = uigetdir('Select FOLDER containing all uvp5 PROJECTS ');
     TXT_base = {};
-    %% Boucle sur les projets dans le "drive"
+    %% Boucle sur les projets dans le "folder "
     bb = dir(drive);
     index = 0;
     for m = 1: numel(bb)
         project_folder = bb(m).name;
-        if strncmp(project_folder,'uvp5_sn',7)
+        if contains(project_folder, 'uvp5_sn')
             TXT_base = {TXT_base;[drive,project_folder]};
             disp(project_folder);
         end
@@ -183,7 +193,7 @@ if strcmp(option_sel,'n')
             movmean_window = 25;
             threshold_percent = 0.8;
         elseif strcmp(method,'jo')
-            mult = 0.5; % multiplier of the quantile under which points are considered outliers
+            mult = 0.7; % multiplier of the quantile under which points are considered outliers
             movmean_window = 16;
             threshold_percent = 0.50;
         end
@@ -295,7 +305,7 @@ index = 0;
 biglist={};
 for m = 1:numel(bb)
     project_folder = bb(m).name;
-    if strncmp(project_folder,'uvp5_sn',7)
+    if contains(project_folder,'uvp5_sn')
         filename = [bb(m).name,'\PID_process\Pid_results\Dat1_validated\category_list.txt'];
         if exist(filename) == 2
             disp([num2str(m),' :  ',bb(m).name]);
@@ -317,7 +327,7 @@ for m = 1:numel(bb)
 end
 biglist=unique(biglist);
 % -------------------- Sauvegarde du fichier des taxo uniques --------------------
-fid=fopen([zoo_list_dir,'\category_list_all_projects.txt'],'w');
+fid=fopen([uvp5_root_folder,'\category_list_all_projects.txt'],'w');
 for i = 1 : numel(biglist)
     tline =char(biglist(i));
     aa = findstr(tline,'>');
@@ -333,7 +343,7 @@ for i = 1 : numel(biglist)
     %     fprintf(fid,'%s\n',char(biglist(i,1)));
 end
 fclose(fid);
-disp([zoo_list_dir,'\category_list_all_projects.txt SAVED now !']);
+disp([uvp5_root_folder,'\category_list_all_projects.txt SAVED now !']);
 cd(root);
 disp('-------------------------------------------------------------');
 %% =======================================================================
@@ -350,7 +360,7 @@ for bbb = 2 : numel(TXT_base);
     %++++++++++++++++++ Tests sur le projet ++++++++++++++++++++++++++++++++
     % ------------- Existence du répertoire META
     meta_dir = [project_folder,'\meta\'];
-    if isdir(meta_dir);
+    if isfolder(meta_dir);
         disp([meta_dir,' folder exists.']);
         % Existence d'un fichier entete
         meta_file = ['uvp5_header_',project_name,'.txt'];
@@ -597,7 +607,7 @@ for bbb = 2 : numel(TXT_base);
     end
     
     if strcmp( sbecnv,'y')
-        ctd_norm_file = [zoo_list_dir,'ctd_uvp_normalisation_for_ecotaxa.xlsx'];
+        ctd_norm_file = [uvp5_root_folder,'ctd_uvp_normalisation_for_ecotaxa.xlsx'];
         disp(['Normailsation for Ecotaxa using : ',ctd_norm_file])
         for fichier=1:ligne
             waitbar(fichier / ligne);
@@ -606,10 +616,10 @@ for bbb = 2 : numel(TXT_base);
             [base num_cce txt_cce] = uvp5_main_process_2014_load_ctd(base,fichier,ctdcnv_dir,num_cce,txt_cce,base_all);
             % ----------------- NORMALISATION CTD -------------------------------
             if isfield(base(fichier),'ctdrosettedata')
-                base = uvp5_main_process_2014_ctd_norm(base,fichier,zoo_list_dir);
+                base = uvp5_main_process_2014_ctd_norm(base,fichier,uvp5_root_folder);
                 
                 % ---------------- NORMALISATION POUR ECOTAXA ----------
-                base = uvp5_main_process_2014_ctd_norm_ecotaxa(base,fichier,zoo_list_dir);
+                base = uvp5_main_process_2014_ctd_norm_ecotaxa(base,fichier,uvp5_root_folder);
                 
             end
             
@@ -663,7 +673,7 @@ for bbb = 2 : numel(TXT_base);
     tsv_to_dat1_uvp(validated_dir);
     
     % ---------------- Vérification que toutes les catégories de la liste sont bien dans la table de mapping ZOO -------------------
-    %     uvp5_main_process_2014_check_taxa(validated_dir,zoo_list_dir,'Noms_zoo_UVP5_matlab_generic_ecotaxa.xls');
+    %     uvp5_main_process_2014_check_taxa(validated_dir,uvp5_root_folder,'Noms_zoo_UVP5_matlab_generic_ecotaxa.xls');
     
     for fichier=1:ligne
         waitbar(fichier / ligne);
@@ -675,7 +685,7 @@ for bbb = 2 : numel(TXT_base);
         base = uvp5_main_process_2014_load_zoopk(base,fichier, zooerase,zoopuvp5,validated_dir,results_dir,depth_offset,load_more_recent,pixel_size);
         
         %% ---------------- Normalisation et abondance des identifications---------
-        base = uvp5_main_process_2014_norm_ab_zoopk(base,fichier,zoo_norm,processnor,volume_zoo,matvert,min_zoo_esd,config_dir,zoo_list_dir);
+        base = uvp5_main_process_2014_norm_ab_zoopk(base,fichier,zoo_norm,processnor,volume_zoo,matvert,min_zoo_esd,config_dir,uvp5_root_folder);
         
         %% ---------- Existence de données Zoo dans la base -------
         if isfield(base(fichier),'zoopuvp5')

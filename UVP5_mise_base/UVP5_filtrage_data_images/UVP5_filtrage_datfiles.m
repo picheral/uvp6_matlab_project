@@ -54,7 +54,7 @@ if strcmp(method,'c')
     movmean_window = 25;
     threshold_percent = 0.8;
 elseif strcmp(method,'jo')
-    mult = 0.5; % multiplier of the quantile under which points are considered outliers
+    mult = 0.7; % multiplier of the quantile under which points are considered outliers
     movmean_window = 16;
     threshold_percent = 0.50;
 end
