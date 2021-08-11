@@ -15,7 +15,7 @@ selectprojet = 0;
 while (selectprojet == 0)
 %    disp(['>> Select UVP ',char(type),' project directory']);
     project_folder_ref = uigetdir('',['Select UVP ',char(type),' project directory']);
-    if strcmp(project_folder_ref(4:6),'uvp')
+    if contains(project_folder_ref,'uvp5_sn') || contains(project_folder_ref,'uvp6_sn')
         selectprojet = 1;
     else
         disp(['Selected project ' project_folder_ref ' is not correct. ']);
