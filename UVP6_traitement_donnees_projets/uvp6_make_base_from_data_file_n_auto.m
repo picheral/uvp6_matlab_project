@@ -158,9 +158,7 @@ while j < N_seq+1
     %% read data of the sequence
     %T is the table with all the lines of the text file, seperated in two tables : first part is the begnning with the date and time, pressure and black image flag
     %20190724-123151,22.31,34.50,1:  1,1048,41.7,14.5; 2,26,38.2,5.6;    3,1,66.0,28.5;
-    T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-    data = table2array(T(:,2));
-    meta = table2array(T(:,1));
+    [data, meta] = Uvp6DatafileToArray(path);
     
     %Initialisation of the variables updated for each line of the text
     %file / each image

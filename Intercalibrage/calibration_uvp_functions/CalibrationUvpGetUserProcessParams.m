@@ -1,8 +1,9 @@
-function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
+function [process_params] = CalibrationUvpGetUserProcessParams(uvp_ref, uvp_adj, pix_adj)
 % CalibrationUvpGetUserProcessParams  get user inputs for the process
 %
 %   inputs:
-%       uvp_adj: type of uvp to adjust "uvp6" or "uvp5"
+%       uvp_ref: type of reference uvp "uvp6-sn..." or "uvp6-sn..."
+%       uvp_adj: type of uvp to adjust "uvp6-sn..." or "uvp5-sn..."
 %       pix_adj: pixel size of adjusted uvp
 %
 %   outputs:
@@ -10,10 +11,14 @@ function [process_params] = CalibrationUvpGetUserProcessParams(uvp_adj, pix_adj)
 
 % ------------------- params user inputs  ---------------------------------
 
-% user's aa and exp
-set_aa_exp = input('Set the aa and exp ? (UVP6 only) ([y]/n) ', 's');
-if isempty(set_aa_exp); set_aa_exp = 'y'; end
-users_aa = 2342;
+% user's aa and exp for uvp6
+if contains(uvp_adj,'uvp6')
+    set_aa_exp = input('Set the aa and exp ? (UVP6 only) ([y]/n) ', 's');
+    if isempty(set_aa_exp); set_aa_exp = 'y'; end
+else
+    set_aa_exp = 'n';
+end
+users_aa = 2300;
 users_exp = 1.1359;
 if strcmp(set_aa_exp,'y')
     users_aa = input('Enter the aa value (default = 2300) : ');
@@ -23,15 +28,21 @@ if strcmp(set_aa_exp,'y')
     if isempty(users_exp); users_exp = 1.1359; end
 end
 
+uvps = [uvp_ref, uvp_adj];
 % min of size range
-esd_min = input('Enter raw ESD minimum for optimisation [mm] (default = 0.13) ');
-if isempty(esd_min); esd_min = 0.13; end
+if (contains(uvps,'uvp6') && contains(uvps,'uvp5')) || (contains(uvps,'uvp5-sn0') && contains(uvps,'uvp5sn-2'))
+    esd_min_default = 0.4;
+else
+    esd_min_default = 0.13;
+end
+esd_min = input(['Enter raw ESD minimum for optimisation [mm] (default = ',num2str(esd_min_default),') ']);
+if isempty(esd_min); esd_min = esd_min_default; end
 
 % max of size range
-tt = 1.5;
-if contains(uvp_adj,'uvp6'); tt = 1;end 
-esd_max = input(['Enter raw ESD maximum for optimisation [mm] (default = ',num2str(tt),') ']);
-if isempty(esd_max); esd_max = tt; end
+esd_max_default = 1.5;
+if contains(uvps,'uvp6'); esd_max_default = 1;end 
+esd_max = input(['Enter raw ESD maximum for optimisation [mm] (default = ',num2str(esd_max_default),') ']);
+if isempty(esd_max); esd_max = esd_max_default; end
 
 % startng value for aa and exp
 X0 = input(['Enter starting values X [',num2str(0.55*pix_adj^2),' 1.1] as défaut ']);

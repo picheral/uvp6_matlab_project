@@ -1,7 +1,24 @@
 %% Create the sample file of a project
 % Create the sample file for all sequences
-% the meta data are extracted from the sequence and a nav file located in
-% the doc folder of the project
+% For SeaExplorer and for SeaGlider
+%
+% ----- SeaExplorer project -----
+% The project must contain "sea" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the doc folder of the project.
+% The meta data folder must start with "SEA" and the sn of the glider,
+% "SEA###*".
+% The files must be located directly in ccu/logs/*raw*.#.gz, with # the nb of the
+% yo.
+%
+% ----- SeaGlider project -----
+% The project must contain "SG" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the CTD folder of the project.
+% The meta data folder must be called "SG###_nc_files", with ### the sn of
+% the glider.
+% The files in it are called "p[sn]####.nc", with #### the nb of the yo.
+% 
 % 
 % use Mapping Toolbox 
 %
@@ -15,7 +32,8 @@ disp('------------------------------------------------------')
 disp('------------- uvp6 sample creator --------------------')
 disp('------------------------------------------------------')
 disp('')
-disp('WARNING : Work only for seaexplorer project')
+disp('WARNING : Work only for seaexplorer project and seaglider project')
+disp('Read the help of the script for information about the needed project structure')
 disp('')
 
 
@@ -27,27 +45,28 @@ disp('---------------------------------------------------------------')
 disp(['Project folder : ', project_folder])
 disp('---------------------------------------------------------------')
 
-% detection seaexplorer in name
-if ~contains(project_folder, 'sea')
-    warning('Only seaexplorer project are supported')
-    error('ERROR : the project is not a seaexplorer project')
+% detection seaexplorer or seaglider in name
+if contains(project_folder, 'sea')
+    disp('SeaExplorer project')
+    vector_type = 'SeaExplorer';
+elseif contains(project_folder, 'SG')
+    disp('SeaGlider project')
+    vector_type = 'SeaGlider';
+else
+    warning('Only seaexplorer or seaglider project are supported')
+    vector_type = input('Is it a SeaExplorer (se) or a SeaGlider (sg) project ? ([se]/sg) ','s');
+    if isempty(vector_type) || strcmp(vector_type,'se')
+        vector_type = 'SeaExplorer';
+    elseif strcmp(vector_type, 'sg')
+        vector_type = 'SeaGlider';
+    else
+        error('ERROR : the project is not a seaexplorer or seaglider project')
+    end
+    
 end
 
 % detection meta in doc
-meta_data_folder_type = 'SEA';
-list_in_doc = dir(fullfile(project_folder, 'doc', [meta_data_folder_type '*']));
-if isempty(list_in_doc)
-    error('ERROR : No metadata folder found in \doc')
-else
-    meta_data_folder = fullfile(list_in_doc(1).folder, list_in_doc(1).name);
-    % if it is not a dir, try to unzip it
-    if ~list_in_doc(1).isdir
-        gunzip(meta_data_folder, list_in_doc(1).folder);
-        meta_data_folder = fullfile(list_in_doc(1).folder, list_in_doc(1).name(1:end-4));
-    end
-    disp(['Vector meta data folder : ', list_in_doc(1).name])
-    seaexplorer_sn = list_in_doc(1).name(4:6);
-end
+[meta_data_folder, vector_sn] = DetectionVectorMetaFile(project_folder, vector_type);
 
 % detection if sample file already exist
 list_in_meta = dir(fullfile(project_folder, 'meta', '*.txt'));
@@ -63,13 +82,16 @@ disp('---------------------------------------------------------------')
 
 
 %% get cruise info
-% seaexplorer dependant
-cruise_file = fullfile(project_folder, 'config', 'cruise_info.txt');
-fid = fopen(cruise_file);
-tline = fgetl(fid);
-tline = fgetl(fid);
-cruise = tline(7:end);
-fclose(fid);
+try
+    cruise_file = fullfile(project_folder, 'config', 'cruise_info.txt');
+    fid = fopen(cruise_file);
+    tline = fgetl(fid);
+    tline = fgetl(fid);
+    cruise = tline(7:end);
+    fclose(fid);
+catch
+    cruise = 'unkown';
+end
 
 
 %% get meta data from dat file
@@ -105,9 +127,7 @@ for seq_nb = 1:seq_nb_max
     pixelsize_list(seq_nb) = pixel;
     
     % read data from dat file
-    T = readtable(seq_dat_file,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-    data = table2array(T(:,2));
-    meta = table2array(T(:,1));
+    [data, meta] = Uvp6DatafileToArray(seq_dat_file);
     [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
     black_nb = [depth_data time_data black_nb];
     I = isnan(black_nb(:,3));
@@ -153,114 +173,11 @@ disp('---------------------------------------------------------------')
 
 
 %% get lat-lon from vector meta data
-% seaeplorer dependant
+% seaeplorer/seaglider dependant
 % go through meta files and look for start time of sequences
 % assume that sequences AND meta files are chronologicaly ordered
 disp('Process the vector meta data....')
-% get list of raw.gz meta files
-list_of_vector_meta = dir(fullfile(meta_data_folder, 'ccu', 'logs', '*raw*'));
-% reorder the list of file to have ...8,9,10,11... and not ...1,100,101,...
-[~, idx] = sort( str2double( regexp( {list_of_vector_meta.name}, '\d+(?=\.gz)', 'match', 'once' )));
-list_of_vector_meta = list_of_vector_meta(idx);
-% prepare the for
-meta_folder_ccu = list_of_vector_meta(1).folder;
-lon_list = zeros(1, seq_nb_max);
-lat_list = zeros(1, seq_nb_max);
-yo_list = zeros(1, seq_nb_max);
-% sequence number with found meta data
-seq_nb = 1;
-
-% find lat-lon with interpolation between two surfacing
-% out of use since udpate of sea002 15/02/2021
-% the glider makes its own interpolation
-%{
-for meta_nb = 1:length(list_of_vector_meta)
-    % read metadata from file
-    % need the file where the seq ends and the next file (for start and end
-    % coordinates)
-    meta_1 = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
-    meta_2 = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb+1).name));
-    right_meta = 1;
-    % while it is a useful meta data file compared to the datetime of the
-    % sequence
-    while right_meta == 1 && seq_nb <= seq_nb_max
-        time_to_find = start_time_list(seq_nb);
-        % check that the datetime of the sequence IS in the file
-        % if not, go to the next meta data file
-        if (time_to_find >= meta_1(1,1)) && (time_to_find <= meta_1(end,1))
-           disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
-           % look for the datetime of first image in the meta data file
-           aa =  find(meta_1(:,1) <= time_to_find);
-           lon_start = meta_1(aa(end),3);
-           lat_start = meta_1(aa(end),4);
-           % find the first meta data line with the same lat-lon
-           aa_start_lon = find(meta_1(:,3) == lon_start);
-           aa_start_lat = find(meta_1(:,4) == lat_start);
-           time_start = meta_1(max(aa_start_lon(1), aa_start_lat(1)), 1);
-           
-           % find the last meta data line with the same lat-lon
-           if (meta_1(end,3) ~= lon_start) || (meta_1(end,4) ~= lat_start)
-               % in same file if latlon(end) is different:
-               time_end_index = min(aa_start_lon(end), aa_start_lat(end)) + 1;
-               time_end = meta_1(time_end_index, 1);
-               lon_end = meta_1(time_end_index, 3);
-               lat_end = meta_1(time_end_index, 4);
-           else
-               % in next file if latlon(end) is the same
-               aa_end_lon = find(meta_2(:,3) == lon_start);
-               aa_end_lat = find(meta_2(:,4) == lat_start);
-               time_end_index = min(aa_end_lon(end), aa_end_lat(end)) + 1;
-               time_end = meta_2(time_end_index, 1);
-               lon_end = meta_2(time_end_index, 3);
-               lat_end = meta_2(time_end_index, 4);
-           end
-           
-           % interp lat and lon between start time and end time
-           lon_start = ConvertLatLonSeaexplorer(lon_start);
-           lat_start = ConvertLatLonSeaexplorer(lat_start);
-           lon_end = ConvertLatLonSeaexplorer(lon_end);
-           lat_end = ConvertLatLonSeaexplorer(lat_end);
-           lon_list(seq_nb) = interp1([time_start,time_end], [lon_start, lon_end], time_to_find);
-           lat_list(seq_nb) = interp1([time_start,time_end], [lat_start, lat_end], time_to_find);
-           yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
-           seq_nb = seq_nb + 1;
-        else
-            right_meta = 0;
-        end
-    end
-    if seq_nb > seq_nb_max
-        break
-    end
-end
-%}
-
-% find lat-lon directly with time first image
-% assume lat-lon is interpolated by the glider
-for meta_nb = 1:length(list_of_vector_meta)
-    % read metadata from file
-    meta = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
-    right_meta = 1;
-    % while it is a useful meta data file compared to the datetime of the
-    % sequence
-    while right_meta == 1 && seq_nb <= seq_nb_max
-        time_to_find = start_time_list(seq_nb);
-        % check that the datetime of the sequence IS in the file
-        % if not, go to the next meta data file
-        if (time_to_find >= meta(1,1)) && (time_to_find <= meta(end,1))
-           aa =  find(meta(:,1) <= time_to_find);
-           disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
-           lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
-           lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
-           yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
-           seq_nb = seq_nb + 1;
-        else
-            right_meta = 0;
-        end
-    end
-    if seq_nb > seq_nb_max
-        break
-    end
-end
+[lon_list, lat_list, yo_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences);
 disp('---------------------------------------------------------------')
 
 
@@ -270,7 +187,7 @@ disp('Creating the sample file...')
 samples_filename = regexp(project_folder, filesep, 'split');
 samples_filename = [samples_filename{1,end}(1:5) 'header' samples_filename{1,end}(5:end)];
 sample_filename = fullfile(project_folder, 'meta', [samples_filename, '.txt']);
-sample_file = fopen(sample_filename,'w');
+sample_file = fopen(sample_filename,'w','n','windows-1252');
     
 % add header
 line = ['cruise;ship;filename;profileid;'...
@@ -296,7 +213,7 @@ for seq_nb = 1:seq_nb_max
     lon_sec = rem(rem(lon_list(seq_nb),1)*60,1)*60;
     lon = [num2str(lon_deg) '°' num2str(lon_min) ' ' num2str(lon_sec, '%02.f')];
     % line to write
-    seq_line = [cruise ';' ['Seaeplorer_' seaexplorer_sn] ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
+    seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
         '' ';' num2str(yo_list(seq_nb)) ';' lat ';' lon ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' '' ';' '' ';' '' ';'...

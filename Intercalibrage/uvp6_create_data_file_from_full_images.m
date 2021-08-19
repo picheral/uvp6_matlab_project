@@ -75,20 +75,14 @@ for i = 1 : N_seq
         disp(['Sequence : ',seq(i).name])
         % Ouverture des fichiers data pour lecture des trames HW et ACQ
         path = [raw_folder,'\', seq(i).name,'\',seq(i).name, '_data.txt'];
-        fid = fopen(path);
         % ----------------- Ligne HW and ACQ -----------------
-        HWline = fgetl(fid);
-        line = fgetl(fid);
-        ACQline = fgetl(fid);
-        fclose(fid);
+        [HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
         
         %% Boucle sur les lignes du fichier DATA
         disp('----------------- Reading DATA file --------------------------')
         
         % Table des metadata et data
-        T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-        data = table2array(T(:,2));
-        meta = table2array(T(:,1));
+        [data, meta] = Uvp6DatafileToArray(path);
         [n,m]=size(data);        
         
         % détection h pour zmin et zmax
