@@ -1,10 +1,10 @@
-%% Mise en matrice des donnÃ©es des objets d'images UVP6 acquises en Livecamera
-% Fonctionne dans l'architecture projet aprÃ¨s selection du threshold (cf
+%% Mise en matrice des données des objets d'images UVP6 acquises en Livecamera
+% Fonctionne dans l'architecture projet après selection du threshold (cf
 % protocole)
-% objets, leur coordonnÃ©es x et y dans l'image, l'aire en pixel et le niveau
+% objets, leur coordonnées x et y dans l'image, l'aire en pixel et le niveau
 % de gris moyen des pixels
-% Toutes les sÃ©quences ont Ã©tÃ© acquises/traitÃ©es avec le mÃªme threshold
-% Les images *.png sont Ã  la racine de la sÃ©quence
+% Toutes les séquences ont été acquises/traitées avec le même threshold
+% Les images *.png sont à la racine de la séquence
 % Date : 16/04/2020
 
 close all
@@ -24,10 +24,10 @@ results_folder = [folder,'\results\'];
 doc_folder = [folder,'\doc\'];
 filename = folder(4:end);
 
-% ------------------- Liste des rÃ©pertoires ----------------
+% ------------------- Liste des répertoires ----------------
 list_seq = dir(raw_folder);
 
-% --------------------- Verification "propretÃ©" des noms --------
+% --------------------- Verification "propreté" des noms --------
 index = 0;
 for k = 3:numel(list_seq)
     if list_seq(k).isdir == 1 && ~isempty(find(list_seq(k).name == '_', 1))
@@ -61,7 +61,7 @@ pixel = 0.073;
 % pas d'objets de plus de 300 pixels
 pixsize= [1:300];
 
-% ----------------- ParamÃ©trages ------------------------
+% ----------------- Paramétrages ------------------------
 disp('The analysis will be done only in the square zones, excluding the top, bottom and right remaining pixels')
 nb_zones_v = input('Input number of vertical analyzed zones in the image, must be even (CR = 10) ');
 if isempty(nb_zones_v);nb_zones_v = 10; end
@@ -88,7 +88,7 @@ else
 end
 
 
-%% -------------- Creation matrice Ã  partir images -------------------
+%% -------------- Creation matrice à partir images -------------------
 if option == 'c'
     %------------- Boucle sur sequences ---------------
     data_final = [];
@@ -100,7 +100,7 @@ if option == 'c'
             
             % ------------- Lecture du threshold dans le fichier data ---------
             path = [list_seq(k).folder,'\',list_seq(k).name,'\',list_seq(k).name,'_data.txt'];
-            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromDatafile(folder,path);
+            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = uvp6_read_metadata_from_datafile(folder,path);
             
             % ------------- correction threshold Matlab/uvp6
             threshold = threshold + 1;
@@ -136,11 +136,7 @@ if option == 'c'
                     end
                     
                     % ------------ Matrice image ------------------------------
-                    try
-                        date_num = datenum(datetime(im_list(i).name(1:19),'InputFormat','yyyyMMdd-HHmmss-SSS'));
-                    catch
-                        date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
-                    end
+                    date_num = datenum(datetime(im_list(i).name(1:15),'InputFormat','yyyyMMdd-HHmmss'));
                     data_img = [i*ones(numel(area),1) centroids area mean_px date_num*ones(numel(area),1)];
                     
                     % ------------ Objets supÃ©rieurs Ã  2 pixels ---------------
