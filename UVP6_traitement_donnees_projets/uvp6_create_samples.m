@@ -203,15 +203,33 @@ fprintf(sample_file,'%s\n',line);
 % one sample by sequence
 for seq_nb = 1:seq_nb_max
     % lat format
-    lat_deg = fix(lat_list(seq_nb));
-    lat_min = fix(rem(lat_list(seq_nb),1)*60);
-    lat_sec = rem(rem(lat_list(seq_nb),1)*60,1)*60;
-    lat = [num2str(lat_deg) '°' num2str(lat_min) ' ' num2str(lat_sec, '%02.f')];
+    signe = sign(lat_list(seq_nb));
+    lat_deg = fix(lat_list(seq_nb) * signe);
+    lat_min = fix(rem(lat_list(seq_nb) * signe,1)*60);
+    lat_sec = round(rem(rem(lat_list(seq_nb) * signe,1)*60,1)*60);
+    if lat_sec == 60
+        lat_sec = 0;
+        lat_min = lat_min + 1;
+    end
+    if lat_min == 60
+        lat_min = 0;
+        lat_deg = lat_deg + 1;
+    end
+    lat = [num2str(lat_deg * signe) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
     % lon format
-    lon_deg = fix(lon_list(seq_nb));
-    lon_min = fix(rem(lon_list(seq_nb),1)*60);
-    lon_sec = rem(rem(lon_list(seq_nb),1)*60,1)*60;
-    lon = [num2str(lon_deg) '°' num2str(lon_min) ' ' num2str(lon_sec, '%02.f')];
+    signe = sign(lon_list(seq_nb));
+    lon_deg = fix(lon_list(seq_nb) * signe);
+    lon_min = fix(rem(lon_list(seq_nb) * signe,1)*60);
+    lon_sec = round(rem(rem(lon_list(seq_nb) * signe,1)*60,1)*60);
+    if lon_sec == 60
+        lon_sec = 0;
+        lon_min = lon_min + 1;
+    end
+    if lon_min == 60
+        lon_min = 0;
+        lon_deg = lon_deg + 1;
+    end
+    lon = [num2str(lon_deg * signe) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
     % line to write
     seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
         '' ';' num2str(yo_list(seq_nb)) ';' lat ';' lon ';'...
