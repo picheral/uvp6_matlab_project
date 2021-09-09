@@ -1,4 +1,4 @@
-function [lon_list, lat_list, yo_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences)
+function [lon_list, lat_list, yo_list, samples_names_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list)
 %GetMetaFromVectorMetaFile get latitude, longitude and yo number
 %corresponding to the sequences
 %
@@ -8,11 +8,14 @@ function [lon_list, lat_list, yo_list] = GetMetaFromVectorMetaFile(vector_type, 
 %   meta_data_folder : full path to vector meta folder
 %   start_time_list : list of sequences start time
 %   list_of_sequences : dir of sequences folder
+%   profile_type_list : 'd' or 'a', descent or ascent, array of string on
+%   samples length
 %
 % output :
 %   lon_list : vector of longitude
 %   lat_list : vector of latitude
 %   yo_list : list of yo nb
+%   samples_names_list : list of samples names
 %
 
 % get list of meta files
@@ -33,6 +36,7 @@ seq_nb_max = length(list_of_sequences);
 lon_list = zeros(1, seq_nb_max);
 lat_list = zeros(1, seq_nb_max);
 yo_list = zeros(1, seq_nb_max);
+samples_names_list = strings(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
 
@@ -41,7 +45,7 @@ seq_nb = 1;
 for meta_nb = 1:length(list_of_vector_meta)
     % read metadata from file
     if strcmp(vector_type, 'SeaExplorer')
-        meta = ReadMetaSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
+        [meta, data] = ReadDataSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
     elseif strcmp(vector_type, 'SeaGlider')
         meta = ReadMetaSeaglider(fullfile(meta_folder_sg, list_of_vector_meta(meta_nb).name));
     end
@@ -59,10 +63,13 @@ for meta_nb = 1:length(list_of_vector_meta)
                lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
                lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
+               samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
+               pathfilename = CreateCTDfileSeaexplorer(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'));
            elseif strcmp(vector_type, 'SeaGlider')
                lat_list(seq_nb) = meta(aa(end), 3);
                lon_list(seq_nb) = meta(aa(end), 4);
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(5:8));
+               samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
            end
            seq_nb = seq_nb + 1;
         elseif (time_to_find < meta(1,1))
