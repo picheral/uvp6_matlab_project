@@ -39,6 +39,7 @@ yo_list = zeros(1, seq_nb_max);
 samples_names_list = strings(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
+yo_nb = 1;
 
 % find lat-lon directly with time first image
 % assume lat-lon is interpolated by the glider
@@ -55,21 +56,32 @@ for meta_nb = 1:length(list_of_vector_meta)
     while right_meta == 1 && seq_nb <= seq_nb_max
         time_to_find = start_time_list(seq_nb);
         % check that the datetime of the sequence IS in the file
+        % of the datetime+10s (in case of non synchro)
         % if not, go to the next meta data file
-        if (time_to_find >= meta(1,1)) && (time_to_find <= meta(end,1))
+        if ((time_to_find >= meta(1,1)) || (time_to_find + datenum(duration('00:00:10')) >= meta(1,1))) && (time_to_find <= meta(end,1))
            aa =  find(meta(:,1) <= time_to_find);
+           if isempty(aa)
+               aa =  find(meta(:,1) <= (time_to_find + datenum(duration('00:00:10'))));
+           end
            disp(['Vector meta data for ' list_of_sequences(seq_nb).name ' found'])
            if strcmp(vector_type, 'SeaExplorer')
                lat_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 3));
                lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
                samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
-               pathfilename = CreateCTDfileSeaexplorer(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'));
+               [~] = CreateCTDfileSeaexplorer(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'));
            elseif strcmp(vector_type, 'SeaGlider')
                lat_list(seq_nb) = meta(aa(end), 3);
                lon_list(seq_nb) = meta(aa(end), 4);
-               yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(5:8));
-               samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
+               if (seq_nb>1) && strcmp(profile_type_list(seq_nb), 'd') && strcmp(profile_type_list(seq_nb-1), 'a')
+                   yo_nb = yo_nb + 1;
+               end
+               yo_list(seq_nb) = yo_nb;
+               if (seq_nb>1) && strcmp(samples_names_list(seq_nb-1), ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))])
+                   samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb)) '2'];
+               else
+                   samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
+               end
            end
            seq_nb = seq_nb + 1;
         elseif (time_to_find < meta(1,1))
