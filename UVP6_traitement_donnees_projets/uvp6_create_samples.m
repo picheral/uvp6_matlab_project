@@ -177,7 +177,7 @@ disp('---------------------------------------------------------------')
 % go through meta files and look for start time of sequences
 % assume that sequences AND meta files are chronologicaly ordered
 disp('Process the vector meta data....')
-[lon_list, lat_list, yo_list, samples_names_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list);
+[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list);
 disp('---------------------------------------------------------------')
 
 
@@ -236,7 +236,7 @@ for seq_nb = 1:seq_nb_max
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' '' ';' '' ';' '' ';'...
         '' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
-        char(samples_names_list(seq_nb)) ';' 'P' ';' '' ';' '' ';'...
+        '' ';' 'P' ';' '' ';' char(glider_filenames_list(seq_nb)) ';'...
         num2str(pixelsize_list(seq_nb)) ';' datestr(start_time_list(seq_nb), 'yyyymmdd-HHMMss')];
     fprintf(sample_file, '%s\n', seq_line);
 end

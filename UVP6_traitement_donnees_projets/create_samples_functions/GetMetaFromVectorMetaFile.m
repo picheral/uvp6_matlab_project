@@ -1,4 +1,4 @@
-function [lon_list, lat_list, yo_list, samples_names_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list)
+function [lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list)
 %GetMetaFromVectorMetaFile get latitude, longitude and yo number
 %corresponding to the sequences
 %
@@ -16,6 +16,7 @@ function [lon_list, lat_list, yo_list, samples_names_list] = GetMetaFromVectorMe
 %   lat_list : vector of latitude
 %   yo_list : list of yo nb
 %   samples_names_list : list of samples names
+%   glider_filenames_list : list of name of glider nc file
 %
 
 % get list of meta files
@@ -37,6 +38,7 @@ lon_list = zeros(1, seq_nb_max);
 lat_list = zeros(1, seq_nb_max);
 yo_list = zeros(1, seq_nb_max);
 samples_names_list = strings(1, seq_nb_max);
+glider_filenames_list = strings(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
 yo_nb = 1;
@@ -83,6 +85,7 @@ for meta_nb = 1:length(list_of_vector_meta)
                    samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))];
                end
            end
+           glider_filenames_list(seq_nb) = list_of_vector_meta(meta_nb).name;
            seq_nb = seq_nb + 1;
         elseif (time_to_find < meta(1,1))
             seq_nb = seq_nb + 1;
