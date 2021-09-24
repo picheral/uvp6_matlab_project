@@ -386,7 +386,7 @@ while other_cast == 1
         selectprojet = 0;
         while (selectprojet == 0)
             project_folder_adj = uigetdir('', 'Select UVP project directory');
-            if if contains(project_folder_adj,'uvp6_sn') || contains(project_folder_adj,'uvp5_sn')
+            if contains(project_folder_adj,'uvp6_sn') || contains(project_folder_adj,'uvp5_sn')
                 selectprojet = 1;
             else
                 disp(['Selected project ' project_folder_adj ' is not correct. It does not contain uvp5_sn or uvp6_sn.']);
