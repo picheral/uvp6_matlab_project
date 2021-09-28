@@ -100,7 +100,7 @@ if option == 'c'
             
             % ------------- Lecture du threshold dans le fichier data ---------
             path = [list_seq(k).folder,'\',list_seq(k).name,'\',list_seq(k).name,'_data.txt'];
-            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = uvp6_read_metadata_from_datafile(folder,path);
+            [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromDatafile(folder,path);
             
             % ------------- correction threshold Matlab/uvp6
             threshold = threshold + 1;

@@ -96,7 +96,7 @@ while j < N_seq+1
     path = [raw_folder, seq(j).name, '\', txt.name];
     
     %% ----------- A REMPLACER PAR FONCTION ------------------------
-    % [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,xp] = uvp6_read_metadata_from_datafile(folder,path);
+    % [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,xp] = Uvp6ReadMetadataFromDatafile(folder,path);
     
     fid = fopen(path);
     
