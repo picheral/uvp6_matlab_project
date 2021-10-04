@@ -41,7 +41,7 @@ samples_names_list = strings(1, seq_nb_max);
 glider_filenames_list = strings(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
-yo_nb = 1;
+yo_nb = 0;
 
 % find lat-lon directly with time first image
 % assume lat-lon is interpolated by the glider
@@ -75,14 +75,16 @@ for meta_nb = 1:length(list_of_vector_meta)
            elseif strcmp(vector_type, 'SeaGlider')
                lat_list(seq_nb) = meta(aa(end), 3);
                lon_list(seq_nb) = meta(aa(end), 4);
-               if (seq_nb>1) && strcmp(profile_type_list(seq_nb), 'd') && strcmp(profile_type_list(seq_nb-1), 'a')
+               %if (seq_nb>1) && strcmp(profile_type_list(seq_nb), 'd') && strcmp(profile_type_list(seq_nb-1), 'a')
+               % Was to avoid problem before merge sequences -> depreciated
+               if not( (seq_nb>1) && strcmp(profile_type_list(seq_nb), 'a') && strcmp(profile_type_list(seq_nb-1), 'd') )
                    yo_nb = yo_nb + 1;
                end
                yo_list(seq_nb) = yo_nb;
                if (seq_nb>1) && strcmp(samples_names_list(seq_nb-1), ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))])
                    samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb)) '2'];
                else
-                   samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb, '%04.f')) char(profile_type_list(seq_nb))];
+                   samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb))];
                end
            end
            glider_filenames_list(seq_nb) = list_of_vector_meta(meta_nb).name;
