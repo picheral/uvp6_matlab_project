@@ -23,7 +23,7 @@ Lors de l'ouverture du projet, le path est automatiquement actualisé pour l'uti
   
 - **UVP5_mise_base**
 
-  Mise en base des données UVP5.
+  Mise en base des données UVP5 et ressources de filtrage des data issues des problèmes d'éclairage
   
 - **UVP6_correction_zonale**
 
