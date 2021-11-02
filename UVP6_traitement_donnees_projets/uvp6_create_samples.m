@@ -236,7 +236,7 @@ for seq_nb = 1:seq_nb_max
     lon = [num2str(lon_deg * signe) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
     % ctd files names
     if strcmp(vector_type, 'SeaExplorer')
-        ctd_filesnames = char(samples_names_list(seq_nb));
+        ctd_filesnames = [char(samples_names_list(seq_nb)) '.ctd'];
     else
         ctd_filesnames = '';
     end
