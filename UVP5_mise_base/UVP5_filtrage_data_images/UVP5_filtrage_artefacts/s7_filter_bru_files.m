@@ -42,7 +42,7 @@ mtx_mask = 1 - mtx_mask;
 % imagesc(mtx_mask)
 
 %% process mat files
-for i = 1:length(  xls_profName)
+for i = 1:length(xls_profName)
         matpath = [inputMat '/' xls_profName{i} '.mat'];
         fprintf('[%d of %d] Processing file >> %s\n', i,nMat, xls_profName{i});
         load(matpath)
