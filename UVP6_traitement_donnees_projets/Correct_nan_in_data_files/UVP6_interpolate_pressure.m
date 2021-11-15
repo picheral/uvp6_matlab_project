@@ -24,10 +24,10 @@ backup_data_filename = ['backup_',data_filename];
 eval(['copyfile ' data_filename ' ' backup_data_filename]);
 
 %% read HW and ACQ lines from data file
-[HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
+[HWline, line, ACQline, Taxoline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
 
 %% read data lines from data file
-[data, meta] = Uvp6DatafileToArray([data_folder, data_filename]);
+[data, meta, taxo] = Uvp6DatafileToArray([data_folder, data_filename]);
 meta = split(meta, ',');
 
 %% read data lines from ref file

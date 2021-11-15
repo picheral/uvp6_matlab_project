@@ -6,6 +6,7 @@ function [hw_line, empty_line, acq_line, taxo_line] = Uvp6ReadMetalinesFromDataf
 
 % open files
 data_file = fopen(file_path);
+taxo_line = [];
 
 % read HW and ACQ lines from data file
 for i = 1:5
