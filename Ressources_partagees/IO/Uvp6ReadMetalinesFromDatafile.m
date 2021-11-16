@@ -5,12 +5,14 @@ function [hw_line, empty_line, acq_line, taxo_line] = Uvp6ReadMetalinesFromDataf
 % Catalano, 2021/06/08, Picheral 2021/11/15
 
 % open files
-data_file = fopen(file_path);
-taxo_line = [];
+data_file = fopen(file_path,'r');
+taxo_line = '';
+
+disp(file_path);
 
 % read HW and ACQ lines from data file
-for i = 1:5
-    tline = fgetl(data_file);
+for j = 1:5
+    tline = char(fgetl(data_file));
     if contains(tline,'HW_CONF')
         index_of_hwconf = strfind(tline,'HW_CONF');
         hw_line = tline(index_of_hwconf:end);

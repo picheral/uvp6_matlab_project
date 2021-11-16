@@ -17,31 +17,47 @@ disp('---------------------------------------------------------------')
 %% Liste des sequences
 raw_folder = [folder,'\raw\'];
 cd(raw_folder)
-seq = dir([raw_folder '\2*']);
+seq = dir([raw_folder ]);%'\20211101-045640']);
+% seq = dir([raw_folder '\20211114-230530']);
 
 %% Boucle sur les sequences
-for i=1:size(seq,1)
-    seq_folder = [raw_folder,seq(i).name];
-    cd(seq_folder)
+for i=3:size(seq,1)
+%     data_folder = [raw_folder,'20211101-045640\'];
+%     data_folder = [raw_folder,'20211114-230530\'];
+    data_folder = [raw_folder,seq(i).name,'\'];
+    
+    cd(data_folder)
+%     data_filename = ['20211101-045640_data.txt'];
+%     data_filename = ['20211114-230530_data.txt'];
     data_filename = [seq(i).name '_data.txt'];
     disp(data_filename)
     
-    % Copie de sauvegarde
-    backup_data_filename = ['backup_',data_filename];
-    eval(['copyfile ' data_filename ' ' backup_data_filename]);
+    %% read data lines from data file
+    [data, meta, taxo] = Uvp6DatafileToArray([data_folder, data_filename]);
     
-    % Ouverture fichiers
-    source_file = fopen(data_filename,'r');
-    corrected_file = fopen('cor_','w');
-    
-    % Ecriture dans fichier sans les lignes taxo
-    tline = fgetl(source_file);
-    if strncmp(tline,'HW_CONF',7)
-        fprintf(fid,'%s\n','[PID]');
-    
-    % Fermeture des fichiers et renommage
-    
+    if ~isempty(meta)
+        %% read HW and ACQ lines from data file
+        [HWline, Empty_line, ACQline, Taxoline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
+        
+        % Copie de sauvegarde
+        backup_data_filename = ['backup_',data_filename];
+        eval(['copyfile ' data_filename ' ' backup_data_filename]);
+        
+        % Ecriture dans fichier sans les lignes taxo
+        corr_data_file = fopen([data_filename],'w');
+        fprintf(corr_data_file,'%s\n',char(HWline));
+        fprintf(corr_data_file,'%s\n',char(Empty_line));
+        fprintf(corr_data_file,'%s\n',char(ACQline));
+        fprintf(corr_data_file,'%s\n',char(Empty_line));
+        
+        for k = 1 : size(data,1)
+            fprintf(corr_data_file,'%s\n',[char(meta(k)),':',char(data(k))]);
+        end
+        
+        % Fermeture des fichiers et renommage
+        fclose(corr_data_file);
+    end
     disp('---------------------------------------------------------------')
-
+    
 end
 disp('------------------------------------------------------')
