@@ -38,7 +38,7 @@ disp('-------------------------------------------------------------------------'
 
 % parameters goals
 if contains(adj_cast.uvp,'uvp6')
-    if process_params.Score_set > 0.04 & strcmp(process_params.set_aa_exp, 'y')
+    if process_params.Score_set > 0.04 && strcmp(process_params.set_aa_exp, 'y')
         %disp('WARNING ! the score for the set Aa and Exp is out of range')
         fprintf(2, 'WARNING ! the score for the set Aa and Exp is out of range\n');
         disp('-------------------------------------------------------------------------');
