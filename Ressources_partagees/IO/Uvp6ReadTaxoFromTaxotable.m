@@ -1,4 +1,4 @@
-function [taxo_table] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
+function [taxo_ab taxo_size taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
 % read data (prof, time, taxo,...) from table from uvp6 dat file
 % Picheral 2021
 %
@@ -14,14 +14,18 @@ function [taxo_table] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
 %       data : LPM data cell array
 %       taxo : TAXO data cell array
 %   outputs:
-%       taxo_table : [depth,time, flach_tag,ab,... size,.... grey] (50 cat)
+%       taxo_ab = [depth,time, flash_tag,ab....];(N cat)
+%       taxo_size = [depth,time, flash_tag,size....];(N cat)
+%       taxo_grey = [depth,time, flash_tag,grey....];(N cat)
 
 %% read data of the sequence
-taxo_table_process = [];
+taxo_ab_temp = [];
+taxo_size_temp = [];
+taxo_grey_temp = [];
 cat_number = 50;         % MAX 50 categories
 
 % -------- Boucle sur les lignes (images) --------------
-for h=1:n
+for h=1: numel(data)
     %   Affichage progression
     if h/500==floor(h/500)
         disp(num2str(h))
@@ -43,11 +47,10 @@ for h=1:n
     grey_line = nan*zeros(1,50);
     
     % --------- VECTEURS DATA -------------
-    if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1)
+    if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1
         % -------- DATA ------------
         % cast the data line in nb_classx4 numerical matrix
         data_matrix = str2num(data{h}); %#ok<ST2NM>
-        
         
         % --------- VECTEUR TAXO --------------
         % if 'TAXO:0;' no object to be identified in the image
@@ -60,26 +63,29 @@ for h=1:n
             % -------- Contains identified objects -----------
             object_number = taxo_matrix(1);
             taxo_matrix_data = taxo_matrix(2:end);
-            taxo = reshape(taxo_matrix_data,[3,object_number]);
+            taxo_reshaped = reshape(taxo_matrix_data,[3,object_number]);
             % ------------ Loop sur categories ---------------
             for i = 1:cat_number
-                aa = find(taxo(1,:) == i);
+                aa = find(taxo_reshaped(1,:) == i);
                 if ~isempty(aa)
                     ab_line(i) = numel(aa);
-                    size_line(i) = mean(taxo(2,aa));
-                    grey_line(i) = mean(taxo(3,aa));
+                    size_line(i) = mean(taxo_reshaped(2,aa));
+                    grey_line(i) = mean(taxo_reshaped(3,aa));
                 end
             end
         end
-        
-        % -------------- Concatenation -------------------
-        taxo_table_process(h) = [depth_data, time_data, flash_flag, ab_line, size_line, grey_line];
     end
+    % -------------- Concatenation -------------------
+    taxo_ab_temp(h,:) = [depth_data, time_data, flash_flag, ab_line];
+    taxo_size_temp(h,:) = [depth_data, time_data, flash_flag, size_line];
+    taxo_grey_temp(h,:) = [depth_data, time_data, flash_flag, grey_line];
 end
 
-%% ----------- Remove "BLACK" images ---------------
-aa = taxo_table_process(:,3) == 1;
-taxo_table = taxo_table_process(aa,:);
+%% ----------- Remove "BLACK" images (flag = 0) ---------------
+aa = taxo_ab_temp(:,3) == 1;
+taxo_ab = taxo_ab_temp(aa,:);
+taxo_size = taxo_size_temp(aa,:);
+taxo_grey = taxo_grey_temp(aa,:);
 
 
 
