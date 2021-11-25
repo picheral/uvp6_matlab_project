@@ -2,21 +2,18 @@ function [taxo_ab taxo_size taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, t
 % read data (prof, time, taxo,...) from table from uvp6 dat file
 % Picheral 2021
 %
-% time_data is in num format
-%
-% meta and taxo must be cell array with each cell is a line
-% T = readtable(path,'Filetype','text','ReadVariableNames',0,'Delimiter',':');
-% data = table2array(T(:,2));
-% meta = table2array(T(:,1));
+% meta data and taxo must be cell array with each cell is a line
+% Issued from Uvp6DatafileToArray function
 %
 %   input:
 %       meta : meta cell array
 %       data : LPM data cell array
 %       taxo : TAXO data cell array
 %   outputs:
-%       taxo_ab = [depth,time, flash_tag,ab....];(N cat)
-%       taxo_size = [depth,time, flash_tag,size....];(N cat)
-%       taxo_grey = [depth,time, flash_tag,grey....];(N cat)
+%       taxo_ab = [depth,time, flash_tag,ab....];(N cat_number)
+%       taxo_size = [depth,time, flash_tag,size....];(N cat_number)
+%       taxo_grey = [depth,time, flash_tag,grey....];(N cat_number)
+%       time_data is in num format
 
 %% read data of the sequence
 taxo_ab_temp = [];
