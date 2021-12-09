@@ -12,8 +12,8 @@ segmentation = 50;
 angle_limit = 2;
 figure_plot = 0;     % Figure de contrôle pour chaque image
 index = 3;
-% volt_list = [10 12 15 18 21 24 27]; % 202104 VE+v1
-volt_list = [15]; % 202112 VZ+v2
+volt_list = [10 12 15 18 21 24 27]; % 202104 VE+v1
+% volt_list = [10:2:28]; % 20211206 VZ+v2
 
 % Size calibration (voir protocole tomographie)
 long = input('Enter the number of pixels for 280mm ');
@@ -109,9 +109,11 @@ for i = 1 : numel(light_list)
     end
     xlabel('Temperature [°C]');
     ylabel('Intensity mean [0-255]');
-    legend('15 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+%     legend('10 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    legend('10 volts' ,'12 volt','14 volt','16 volt', '18 volt', '20 volt', '22 volt','24 volt','26 volt','28 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-    ylim([25 35]);
+    ylim([25 40]);
+%         ylim([50 65]);
     
     % Plot I = f(T) %
     subplot(2,2,3)
@@ -119,16 +121,17 @@ for i = 1 : numel(light_list)
     for j = 1 : numel(volt_list)
         bb = find(data_ver(:,3) == volt_list(j));
         mean_int_plot = mean([data_ver(bb,10) data_ver(bb,11)],2);
-        minimum = min(mean_int_plot);
-        mean_int_plot_pcent = 100*(mean_int_plot-minimum)/minimum;        
+        moyenne = mean(mean_int_plot);
+        mean_int_plot_pcent = 100*(mean_int_plot)/moyenne;        
         plot(temp_list,mean_int_plot_pcent);
         hold on
     end
     xlabel('Temperature [°C]');
-    ylabel('Intensity mean increase [%]');
-    legend('15 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    ylabel('Intensity mean [%]');
+%     legend('10 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    legend('10 volts' ,'12 volt','14 volt','16 volt', '18 volt', '20 volt', '22 volt','24 volt','26 volt','28 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-    ylim([0 15]);
+    ylim([90 110]);
     
     
     % Plot Thickness = f(T)
@@ -142,26 +145,29 @@ for i = 1 : numel(light_list)
     end
     xlabel('Temperature [°C]');
     ylabel('Thickness mean [mm]');
-    legend('15 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+%     legend('10 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    legend('10 volts' ,'12 volt','14 volt','16 volt', '18 volt', '20 volt', '22 volt','24 volt','26 volt','28 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-   ylim([20 25]);
-   
+   ylim([23 28]);
+%       ylim([19 24]);
+      
        % Plot Thickness = f(T)
     subplot(2,2,4)
     % Boucle sur les voltages
     for j = 1 : numel(volt_list)
         bb = find(data_ver(:,3) == volt_list(j));
         mean_int_plot = mean([data_ver(bb,8) data_ver(bb,9)],2);
-        minimum = min(mean_int_plot);
-        mean_int_plot_pcent = 100*(mean_int_plot-minimum)/minimum;
+        moyenne = mean(mean_int_plot);
+        mean_int_plot_pcent = 100*(mean_int_plot)/moyenne;
         plot(temp_list,mean_int_plot_pcent);
         hold on
     end
     xlabel('Temperature [°C]');
-    ylabel('Thickness mean increase [%]');
-    legend('15 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    ylabel('Thickness mean [%]');
+%     legend('10 volts' ,'12 volt','15 volt','18 volt', '21 volt', '24 volt', '27 volt','Location','northwest');
+    legend('10 volts' ,'12 volt','14 volt','16 volt', '18 volt', '20 volt', '22 volt','24 volt','26 volt','28 volt','Location','northwest');
     title(['Temperature stability light ',num2str(light_list(i)),'VE+']);
-   ylim([0 15]);
+   ylim([90 110]);
     
     % ---------------------- Save figure --------------------------------------
     orient tall
