@@ -30,9 +30,11 @@ for i=3:size(seq,1)
     data_filename = [seq(i).name '_data.txt'];
     disp(data_filename)
     
-    % Copie de sauvegarde
-    backup_data_filename = ['backup_',data_filename];
-    eval(['copyfile ' data_filename ' ' backup_data_filename]);
+    % Copie de sauvegarde si n'existe pas
+    if ~isfile([data_folder, 'backup_', data_filename])
+        backup_data_filename = ['backup_',data_filename];
+        eval(['copyfile ' data_filename ' ' backup_data_filename]);
+    end
     
     %% read data lines from data file
     [data, meta, taxo] = Uvp6DatafileToArray([data_folder, 'backup_', data_filename]);
@@ -40,7 +42,7 @@ for i=3:size(seq,1)
     if ~isempty(meta)
         %% read HW and ACQ lines from data file
         [HWline, Empty_line, ACQline, Taxoline] = Uvp6ReadMetalinesFromDatafile([data_folder, 'backup_', data_filename]);
-
+        
         % Ecriture dans fichier sans les lignes taxo
         corr_data_file = fopen([data_filename],'w');
         fprintf(corr_data_file,'%s\n',char(HWline));
@@ -49,7 +51,21 @@ for i=3:size(seq,1)
         
         for k = 1 : size(data,1) - 1
             fprintf(corr_data_file,'%s\n',char(Empty_line));
-            fprintf(corr_data_file,'%s\n',[char(meta(k)),':',char(data(k))]);
+            % retrait de l'index image dans l'heure (versions 2021)
+            source_text = char(meta(k));  
+            aa = strfind(source_text,"-");
+            if numel(aa)> 1
+                bb = strfind(source_text,",");
+                % cas pression négative
+                if aa(2) < bb(1)
+                    new_text = [source_text(1:aa(2)-1),source_text(bb(1):end)];
+                else
+                    new_text = source_text;
+                end
+            else
+                new_text = source_text;
+            end
+            fprintf(corr_data_file,'%s\n',[new_text,':',char(data(k))]);
         end
         
         % Fermeture des fichiers et renommage
