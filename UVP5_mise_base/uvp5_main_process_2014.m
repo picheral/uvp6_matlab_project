@@ -609,7 +609,7 @@ for bbb = 2 : numel(TXT_base);
     end
     
     if strcmp( sbecnv,'y')
-        ctd_norm_file = [zoo_list_dir,'ctd_uvp_normalisation_for_ecotaxa.xlsx'];
+        ctd_norm_file = [uvp5_root_folder,'ctd_uvp_normalisation_for_ecotaxa.xlsx'];
         disp(['Normailsation for Ecotaxa using : ',ctd_norm_file])
         for fichier=1:ligne
             waitbar(fichier / ligne);
@@ -618,10 +618,10 @@ for bbb = 2 : numel(TXT_base);
             [base num_cce txt_cce] = uvp5_main_process_2014_load_ctd(base,fichier,ctdcnv_dir,num_cce,txt_cce,base_all);
             % ----------------- NORMALISATION CTD -------------------------------
             if isfield(base(fichier),'ctdrosettedata')
-                base = uvp5_main_process_2014_ctd_norm(base,fichier,zoo_list_dir);
+                base = uvp5_main_process_2014_ctd_norm(base,fichier,uvp5_root_folder);
                 
                 % ---------------- NORMALISATION POUR ECOTAXA ----------
-                base = uvp5_main_process_2014_ctd_norm_ecotaxa(base,fichier,zoo_list_dir);
+                base = uvp5_main_process_2014_ctd_norm_ecotaxa(base,fichier,uvp5_root_folder);
                 
             end
             
@@ -675,7 +675,7 @@ for bbb = 2 : numel(TXT_base);
     tsv_to_dat1_uvp(validated_dir);
     
     % ---------------- Vérification que toutes les catégories de la liste sont bien dans la table de mapping ZOO -------------------
-    %     uvp5_main_process_2014_check_taxa(validated_dir,zoo_list_dir,'Noms_zoo_UVP5_matlab_generic_ecotaxa.xls');
+    %     uvp5_main_process_2014_check_taxa(validated_dir,uvp5_root_folder,'Noms_zoo_UVP5_matlab_generic_ecotaxa.xls');
     
     for fichier=1:ligne
         waitbar(fichier / ligne);
@@ -687,7 +687,7 @@ for bbb = 2 : numel(TXT_base);
         base = uvp5_main_process_2014_load_zoopk(base,fichier, zooerase,zoopuvp5,validated_dir,results_dir,depth_offset,load_more_recent,pixel_size);
         
         %% ---------------- Normalisation et abondance des identifications---------
-        base = uvp5_main_process_2014_norm_ab_zoopk(base,fichier,zoo_norm,processnor,volume_zoo,matvert,min_zoo_esd,config_dir,zoo_list_dir);
+        base = uvp5_main_process_2014_norm_ab_zoopk(base,fichier,zoo_norm,processnor,volume_zoo,matvert,min_zoo_esd,config_dir,uvp5_root_folder);
         
         %% ---------- Existence de données Zoo dans la base -------
         if isfield(base(fichier),'zoopuvp5')
