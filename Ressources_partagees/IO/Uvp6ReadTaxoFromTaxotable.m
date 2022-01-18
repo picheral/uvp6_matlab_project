@@ -1,9 +1,11 @@
-function [taxo_ab taxo_size taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
+function [taxo_ab, taxo_size, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
 % read data (prof, time, taxo,...) from table from uvp6 dat file
 % Picheral 2021
 %
 % meta data and taxo must be cell array with each cell is a line
 % Issued from Uvp6DatafileToArray function
+%
+% remove overexposed and black data
 %
 %   input:
 %       meta : meta cell array
@@ -19,7 +21,7 @@ function [taxo_ab taxo_size taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, t
 taxo_ab_temp = [];
 taxo_size_temp = [];
 taxo_grey_temp = [];
-cat_number = 50;         % MAX 50 categories
+cat_number = 40;         % MAX 50 categories
 
 % -------- Boucle sur les lignes (images) --------------
 for h=1: numel(data)
@@ -39,9 +41,9 @@ for h=1: numel(data)
     depth_data =  str2double(C{2});
     flash_flag = str2double(C{4}); % 1 : ON, 0 : OFF
     
-    ab_line = zeros(1,50);
-    size_line = nan*zeros(1,50);
-    grey_line = nan*zeros(1,50);
+    ab_line = zeros(1,cat_number);
+    size_line = nan*zeros(1,cat_number);
+    grey_line = nan*zeros(1,cat_number);
     
     % --------- VECTEURS DATA -------------
     if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1
@@ -63,7 +65,7 @@ for h=1: numel(data)
             taxo_reshaped = reshape(taxo_matrix_data,[3,object_number]);
             % ------------ Loop sur categories ---------------
             for i = 1:cat_number
-                aa = find(taxo_reshaped(1,:) == i);
+                aa = find(taxo_reshaped(1,:) == i-1);
                 if ~isempty(aa)
                     ab_line(i) = numel(aa);
                     size_line(i) = mean(taxo_reshaped(2,aa));
