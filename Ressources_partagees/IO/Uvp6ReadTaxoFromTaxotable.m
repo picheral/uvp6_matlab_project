@@ -1,4 +1,4 @@
-function [taxo_ab, taxo_size, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
+function [taxo_ab, taxo_vol, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo)
 % read data (prof, time, taxo,...) from table from uvp6 dat file
 % Picheral 2021
 %
@@ -13,13 +13,13 @@ function [taxo_ab, taxo_size, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data,
 %       taxo : TAXO data cell array
 %   outputs:
 %       taxo_ab = [depth,time, flash_tag,ab....];(N cat_number)
-%       taxo_size = [depth,time, flash_tag,size....];(N cat_number)
+%       taxo_vol = [depth,time, flash_tag,vol....];(N cat_number)
 %       taxo_grey = [depth,time, flash_tag,grey....];(N cat_number)
 %       time_data is in num format
 
 %% read data of the sequence
 taxo_ab_temp = [];
-taxo_size_temp = [];
+taxo_vol_temp = [];
 taxo_grey_temp = [];
 cat_number = 40;         % MAX 50 categories
 
@@ -42,8 +42,8 @@ for h=1: numel(data)
     flash_flag = str2double(C{4}); % 1 : ON, 0 : OFF
     
     ab_line = zeros(1,cat_number);
-    size_line = nan*zeros(1,cat_number);
-    grey_line = nan*zeros(1,cat_number);
+    vol_line = zeros(1,cat_number);
+    grey_line = zeros(1,cat_number);
     
     % --------- VECTEURS DATA -------------
     if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1
@@ -68,7 +68,7 @@ for h=1: numel(data)
                 aa = find(taxo_reshaped(1,:) == i-1);
                 if ~isempty(aa)
                     ab_line(i) = numel(aa);
-                    size_line(i) = mean(taxo_reshaped(2,aa));
+                    vol_line(i) = mean(taxo_reshaped(2,aa));
                     grey_line(i) = mean(taxo_reshaped(3,aa));
                 end
             end
@@ -76,14 +76,14 @@ for h=1: numel(data)
     end
     % -------------- Concatenation -------------------
     taxo_ab_temp(h,:) = [depth_data, time_data, flash_flag, ab_line];
-    taxo_size_temp(h,:) = [depth_data, time_data, flash_flag, size_line];
+    taxo_vol_temp(h,:) = [depth_data, time_data, flash_flag, vol_line];
     taxo_grey_temp(h,:) = [depth_data, time_data, flash_flag, grey_line];
 end
 
 %% ----------- Remove "BLACK" images (flag = 0) ---------------
 aa = taxo_ab_temp(:,3) == 1;
 taxo_ab = taxo_ab_temp(aa,:);
-taxo_size = taxo_size_temp(aa,:);
+taxo_vol = taxo_vol_temp(aa,:);
 taxo_grey = taxo_grey_temp(aa,:);
 
 
