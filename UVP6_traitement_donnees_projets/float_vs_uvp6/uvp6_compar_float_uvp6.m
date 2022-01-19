@@ -19,18 +19,17 @@ raw_folder = fullfile(project_folder,'\raw\');
 
 
 %% selection of float data
-%{
+
 disp("Selection of the LPM csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the LPM csv file from float');
-[park_lpm_table, ascent_lpm_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
+[park_lpm_table, ascent_lpm_table, surface_lpm_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
 float_lpm_table = ascent_lpm_table;
-%}
+[float_lpm_ab, float_lpm_grey] = Uvp6ReadLpmFromFloatLpm(float_lpm_table);
+
 disp("Selection of the TAXO csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
 [park_taxo_table, ascent_taxo_table] = Uvp6ReadTaxoFromFloatTaxoCSV(fullfile(float_folder, float_filename));
-%float_taxo_table = [park_taxo_table; ascent_taxo_table];
 float_taxo_table = ascent_taxo_table;
-%float_taxo_table = park_taxo_table;
 [float_taxo_ab, float_taxo_size, float_taxo_grey] = Uvp6ReadTaxoFromFloatTaxo(float_taxo_table);
 disp('---------------------------------------------------------------')
 
@@ -40,6 +39,10 @@ disp("Selection of the data file from uvp6")
 [uvp6_filename, uvp6_folder] = uigetfile('*.txt','Select the data file from uvp6');
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
 [uvp6_taxo_ab, uvp6_taxo_size, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
+[uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data); %%%%% remonter grey
+%%%% num arrays propres sans nan et par classe
+% uvp6_lpm_ab [pressure time raw_nb]
+% uvp6_lpm_grey [pressure time raw_grey]
 disp('------------------------------------------------------')
 
 
@@ -68,8 +71,19 @@ title('difference between uvp6 and float')
 saveas(gcf, fullfile(project_folder, 'results', 'TAXO_object_nb_tot.png'))
 
 
+%% plots total nb of lpm
+%%%% plots total nb of lpm
 
-%}
+
+
+%% depth slices
+%%%% slicer
+% uvp6_taxo_ab_red
+% uvp6_taxo_grey_red
+% uvp6_taxo_area_red
+% uvp6_lpm_ab_red
+% uvp6_lpm_grey_red
+
 %{
 %% plot depth slices nb of objects
 %concatenation of slices
@@ -107,3 +121,20 @@ for j=1:12
     close
 end
 %}
+
+%% plots profile per taxo class
+
+%% plots profile per lpm class
+
+%% Read rs232 log file from uvp and good num arrays
+
+%% profile plots
+
+
+
+
+
+
+
+
+

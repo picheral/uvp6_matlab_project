@@ -15,7 +15,6 @@ function [taxo_ab, taxo_size, taxo_grey] = Uvp6ReadTaxoFromFloatTaxo(taxo_table)
 %       taxo_grey = [depth,time,image_nb,grey....];(N cat_number)
 %       time_data is in num format
 
-cat_number = 40; 
 time = cellfun(@(x) datetime(x,'InputFormat', 'yyyy-MM-dd HH:mm:ss'), taxo_table(:,1));
 time = datenum(time);
 
