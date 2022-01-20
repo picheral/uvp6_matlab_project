@@ -5,6 +5,8 @@ function [taxo_ab, taxo_vol, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, 
 % meta data and taxo must be cell array with each cell is a line
 % Issued from Uvp6DatafileToArray function
 %
+% vol and grey are sum from all objects
+%
 % remove overexposed and black data
 %
 %   input:
@@ -21,7 +23,7 @@ function [taxo_ab, taxo_vol, taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, 
 taxo_ab_temp = [];
 taxo_vol_temp = [];
 taxo_grey_temp = [];
-cat_number = 40;         % MAX 50 categories
+cat_number = 40;         % MAX 40 categories
 
 % -------- Boucle sur les lignes (images) --------------
 for h=1: numel(data)
@@ -68,8 +70,8 @@ for h=1: numel(data)
                 aa = find(taxo_reshaped(1,:) == i-1);
                 if ~isempty(aa)
                     ab_line(i) = numel(aa);
-                    vol_line(i) = mean(taxo_reshaped(2,aa));
-                    grey_line(i) = mean(taxo_reshaped(3,aa));
+                    vol_line(i) = sum(taxo_reshaped(2,aa));
+                    grey_line(i) = sum(taxo_reshaped(3,aa));
                 end
             end
         end

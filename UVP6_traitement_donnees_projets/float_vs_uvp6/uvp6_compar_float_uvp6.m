@@ -25,6 +25,8 @@ disp("Selection of the LPM csv file from float")
 [park_lpm_table, ascent_lpm_table, surface_lpm_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
 float_lpm_table = ascent_lpm_table;
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
+float_lpm_ab(:,6) = [];
+float_lpm_grey(:,6) = [];
 
 disp("Selection of the TAXO csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
@@ -39,10 +41,12 @@ disp("Selection of the data file from uvp6")
 [uvp6_filename, uvp6_folder] = uigetfile('*.txt','Select the data file from uvp6');
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
-[uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data); %%%%% remonter grey
+[uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data); %%%%% remonter grey, attention dependency
 %%%% num arrays propres sans nan et par classe
-% uvp6_lpm_ab [pressure time image_nb raw_nb]
+% uvp6_lpm_ab [pressure time image_nb class_nb]
+uvp6_lpm_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_nb);
 % uvp6_lpm_grey [pressure time image_nb raw_grey]
+%uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_grey);
 disp('------------------------------------------------------')
 
 
@@ -143,6 +147,20 @@ end
 
 
 %% plots profile per lpm class
+uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab);
+for j=1:12
+    figure
+    j_str = num2str(j);
+    plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3), 'r')
+    hold on
+    plot(float_lpm_ab(:,1), float_lpm_ab(:,j+4), 'g')
+    xlabel('pressure')
+    ylabel(['nb of part of class ' j_str])
+    legend('uvp6', 'float')
+    title(['profile of particles ' j_str])
+    saveas(gcf, fullfile(project_folder, 'results', ['LPM_object_nb_' j_str '.png']))
+    close
+end
 
 %% Read rs232 log file from uvp and good num arrays
 % uvp6_tram_taxo = Uvp6ReadTramTaxoFromLog(filepath, meta);
