@@ -9,8 +9,8 @@ function [taxo_ab_rs232 ,taxo_vo_rs232,taxo_grey_rs232,lpm_ab_rs232,lpm_grey_rs2
 % time_end   : ending time (datenum)
 
 % outputs
-% taxo_rs232  :  taxo data
-% data_rs232  :  lpm data
+% taxo_rs232  :  taxo data (sum)
+% lpm_rs232   :  lpm data (sum)
 
 % settings
 cat_number = 40;         % MAX 40 categories
