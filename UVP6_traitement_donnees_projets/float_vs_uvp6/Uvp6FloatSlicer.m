@@ -14,7 +14,7 @@ function uvp6_slices = Uvp6FloatSlicer(uvp6_array)
 uvp6_slices = zeros(1,size(uvp6_array,2));
 uvp6_slices(1,:) = uvp6_array(1,:);
 slice_size = 20;
-for i=2:length(uvp6_array)
+for i=2:size(uvp6_array,1)
     if uvp6_array(i,1) > uvp6_slices(end,1) - slice_size
         uvp6_slices(end,3:end) = uvp6_slices(end,3:end) + uvp6_array(i,3:end);        
     else
