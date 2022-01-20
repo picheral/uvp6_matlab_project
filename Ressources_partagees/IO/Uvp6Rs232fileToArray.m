@@ -4,13 +4,11 @@ function [taxo_ab_rs232 ,taxo_vo_rs232,taxo_grey_rs232,lpm_ab_rs232,lpm_grey_rs2
 % The file has been restricted to the time range of the data.txt
 
 % inputs
-% uvp6_rs232_filename : path and filename
-% time_start : starting time (datenum)
-% time_end   : ending time (datenum)
+    % uvp6_rs232_filename : path and filename
 
 % outputs
-% taxo_rs232  :  taxo data (sum)
-% lpm_rs232   :  lpm data (sum)
+    % taxo_rs232  :  taxo data (sum)
+    % lpm_rs232   :  lpm data (sum)
 
 % settings
 cat_number = 40;         % MAX 40 categories
