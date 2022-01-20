@@ -1,4 +1,4 @@
-function [lpm_ab, lpm_grey] = Uvp6ReadLpmFromFloatLpm(lpm_table)
+function [lpm_ab, lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(lpm_table)
 % Convert float lpm data in num arrays : ab, grey
 % Catalano 2022
 %
