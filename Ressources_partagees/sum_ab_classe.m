@@ -16,3 +16,8 @@ for i=1:numel(esd_vect)-1
     aa = find(esd_x >= esd_vect(i) & esd_x < esd_vect(i+1));
     ab_vect_final(i) = sum(ab_vect_source(aa));
 end
+
+aa = find(esd_x >= esd_vect(i+1));
+ab_vect_final(i+1) = sum(ab_vect_source(aa));
+
+end

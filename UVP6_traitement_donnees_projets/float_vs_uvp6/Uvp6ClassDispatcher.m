@@ -1,4 +1,4 @@
-function uvp6_lpm_ab_cal = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab)
+function uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab)
 % Dispatch the lpm abundance into calibrated size classes
 % Catalano 2022
 %
@@ -8,7 +8,7 @@ function uvp6_lpm_ab_cal = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab)
 %       uvp6_lpm_ab : pix num array (depth, time, image_nb, value_i,...) 
 %
 %   outputs:
-%       uvp6_lpm_ab_cal : calibrated num array (depth, time, image_nb, value_i,...) 
+%       uvp6_lpm_ab_class : calibrated num array (depth, time, image_nb, value_i,...) 
 %
 
 hw_array = strsplit(hw_line, ',');
@@ -23,12 +23,12 @@ pixsize = [1:size(uvp6_lpm_ab(:,4:end),2)];
 esd_calib = 2*((Aa*(pixsize.^Exp)./pi).^0.5);
 
 % build calib class vector
-uvp6_lpm_ab_cal = zeros(size(uvp6_lpm_ab(:,4:end),1), size(esd_classes,2)-1);
+uvp6_lpm_ab_class = zeros(size(uvp6_lpm_ab(:,4:end),1), size(esd_classes,2));
 
 for i=1:size(uvp6_lpm_ab(:,4:end),1)
-    uvp6_lpm_ab_cal(i,:) = sum_ab_classe(esd_calib, esd_classes, uvp6_lpm_ab(i,4:end));
+    uvp6_lpm_ab_class(i,:) = sum_ab_classe(esd_calib, esd_classes, uvp6_lpm_ab(i,4:end));
 end
-uvp6_lpm_ab_cal = [uvp6_lpm_ab(:,1:3) uvp6_lpm_ab_cal];
+uvp6_lpm_ab_class = [uvp6_lpm_ab(:,1:3) uvp6_lpm_ab_class];
 
 
 end

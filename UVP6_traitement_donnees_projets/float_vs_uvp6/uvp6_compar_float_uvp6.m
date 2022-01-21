@@ -16,6 +16,12 @@ disp('---------------------------------------------------------------')
 
 results_folder = fullfile(project_folder,'\results\');
 raw_folder = fullfile(project_folder,'\raw\');
+[~] = mkdir(results_folder, 'lpm_ab');
+[~] = mkdir(results_folder, 'lpm_grey');
+[~] = mkdir(results_folder, 'taxo_ab');
+[~] = mkdir(results_folder, 'taxo_vol');
+[~] = mkdir(results_folder, 'taxo_grey');
+
 
 
 %% selection of float data
@@ -27,8 +33,6 @@ disp("Selection of the LPM csv file from float")
 float_lpm_table = ascent_lpm_table;
 % build num arrays
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
-float_lpm_ab(:,6) = [];
-float_lpm_grey(:,6) = [];
 
 disp("Selection of the TAXO csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
@@ -64,7 +68,7 @@ uvp6_lpm_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6
 
 % build the lpm class vector
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
-uvp6_lpm_ab_cal = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
+uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
 disp('------------------------------------------------------')
 
 
@@ -75,6 +79,7 @@ float_taxo_tot = sum(float_taxo_ab(:,4:end), 1);
 taxo_ab_rs232_tot = sum(taxo_ab_rs232(:,4:end), 1);
 
 %plots
+figure
 subplot(1,3,1)
 plot(uvp6_taxo_ab_tot, 'r')
 hold on
@@ -98,34 +103,43 @@ xlabel('nb of the object class')
 ylabel('nb of objects of this class')
 title('difference between uvp6 and rs232')
 
-saveas(gcf, fullfile(project_folder, 'results', 'TAXO_object_nb_tot.png'))
+saveas(gcf, fullfile(project_folder, 'results', 'taxo_ab', 'TAXO_object_nb_tot.png'))
 
 
 %% plots total nb of lpm
 %concatenation nb of part
-uvp6_lpm_ab_cal_tot = sum(uvp6_lpm_ab_cal(:,4:end), 1);
+uvp6_lpm_ab_class_tot = sum(uvp6_lpm_ab_class(:,4:end), 1);
 float_lpm_ab_tot = sum(float_lpm_ab(:,5:end), 1);
+lpm_ab_rs232_tot = sum(lpm_ab_rs232(:,4:end), 1);
 
 %plots
 figure
-subplot(1,2,1)
-plot(uvp6_lpm_ab_cal_tot, 'r')
+subplot(1,3,1)
+plot(uvp6_lpm_ab_class_tot, 'r')
 hold on
 plot(float_lpm_ab_tot, 'g')
+hold on
+plot(lpm_ab_rs232_tot, 'b')
 xlabel('nb of the part class')
 ylabel('nb of particles of this class')
-legend('uvp6', 'float')
+legend('uvp6', 'float', 'rs232')
 title('total nb of particles in the profile')
 
-subplot(1,2,2)
-plot(uvp6_lpm_ab_cal_tot - float_lpm_ab_tot)
+subplot(1,3,2)
+plot(uvp6_lpm_ab_class_tot - float_lpm_ab_tot)
 xlabel('nb of the part class')
 ylabel('nb of particles of this class')
 title('difference between uvp6 and float')
 
-saveas(gcf, fullfile(project_folder, 'results', 'LPM_object_nb_tot.png'))
+subplot(1,3,3)
+plot(uvp6_lpm_ab_class_tot - lpm_ab_rs232_tot)
+xlabel('nb of the part class')
+ylabel('nb of particles of this class')
+title('difference between uvp6 and rs232')
 
-%{
+saveas(gcf, fullfile(project_folder, 'results', 'lpm_ab', 'LPM_object_nb_tot.png'))
+
+
 %% concatenation of slices
 % ab
 uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab);
@@ -155,7 +169,7 @@ for j=1:12
     ylabel(['nb of objects of class ' j_str])
     legend('uvp6', 'float')
     title(['profile of class ' j_str])
-    saveas(gcf, fullfile(project_folder, 'results', ['TAXO_object_nb_' j_str '.png']))
+    saveas(gcf, fullfile(project_folder, 'results', 'taxo_ab', ['TAXO_object_nb_' j_str '.png']))
     close
 end
 
@@ -171,7 +185,7 @@ for j=1:11
     ylabel(['volume of objects of class ' j_str])
     legend('uvp6', 'float')
     title(['profile of class ' j_str])
-    saveas(gcf, fullfile(project_folder, 'results', ['TAXO_object_vol_' j_str '.png']))
+    saveas(gcf, fullfile(project_folder, 'results', 'taxo_vol', ['TAXO_object_vol_' j_str '.png']))
     close
 end
 
@@ -186,7 +200,7 @@ for j=1:11
     ylabel(['grey of objects of class ' j_str])
     legend('uvp6', 'float')
     title(['profile of class ' j_str])
-    saveas(gcf, fullfile(project_folder, 'results', ['TAXO_object_grey_' j_str '.png']))
+    saveas(gcf, fullfile(project_folder, 'results', 'taxo_grey', ['TAXO_object_grey_' j_str '.png']))
     close
 end
 
@@ -194,7 +208,7 @@ end
 
 %% plots profile per lpm class
 % concatenation of slices
-uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab);
+uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class);
 for j=1:12
     figure
     j_str = num2str(j);
@@ -205,7 +219,7 @@ for j=1:12
     ylabel(['nb of part of class ' j_str])
     legend('uvp6', 'float')
     title(['profile of particles ' j_str])
-    saveas(gcf, fullfile(project_folder, 'results', ['LPM_object_nb_' j_str '.png']))
+    saveas(gcf, fullfile(project_folder, 'results', 'lpm_ab', ['LPM_object_nb_' j_str '.png']))
     close
 end
 
