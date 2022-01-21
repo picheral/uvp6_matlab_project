@@ -134,7 +134,7 @@ for seq_nb = 1:seq_nb_max
     
     % read data from dat file
     [data, meta] = Uvp6DatafileToArray(seq_dat_file);
-    [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
+    [time_data, depth_data, raw_nb, black_nb, ~, image_status] = Uvp6ReadDataFromDattable(meta, data);
     black_nb = [depth_data time_data black_nb];
     I = isnan(black_nb(:,3));
     black_nb(I,:) = [];

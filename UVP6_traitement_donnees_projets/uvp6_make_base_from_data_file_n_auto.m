@@ -167,7 +167,7 @@ while j < N_seq+1
     
     
     disp('----------------- Reading loop ----------------------')
-    [time_data, prof_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
+    [time_data, prof_data, raw_nb, black_nb, ~, image_status] = Uvp6ReadDataFromDattable(meta, data);
     disp('----------------- end of loop ----------------------')
     
     
