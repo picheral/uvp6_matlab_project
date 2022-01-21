@@ -57,7 +57,7 @@ for h = 1 : a - 1
             
             % ------------ Loop sur categories ---------------
             for i = 1:cat_number
-                aa = find(taxo_reshaped(1,:) == i);
+                aa = find(taxo_reshaped(1,:) == i-1);
                 if ~isempty(aa)
                     ab_line(i) = numel(aa);
                     vo_line(i) = sum(taxo_reshaped(2,aa));

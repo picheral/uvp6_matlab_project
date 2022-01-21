@@ -40,6 +40,15 @@ float_taxo_table = ascent_taxo_table;
 disp('---------------------------------------------------------------')
 
 
+%% selection of the rs232 data from uvp6
+disp("Selection of the rs232 data from uvp6")
+[uvp6_rs232_filename, uvp6_rs232_folder] = uigetfile('*.txt','Select the rs232 data file from uvp6');
+% read the file
+[taxo_ab_rs232, taxo_vo_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
+disp('---------------------------------------------------------------')
+
+
+
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
 [uvp6_filename, uvp6_folder] = uigetfile('*.txt','Select the data file from uvp6');
@@ -59,27 +68,35 @@ uvp6_lpm_ab_cal = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
 disp('------------------------------------------------------')
 
 
-
 %% plots total nb of objects
 %concatenation nb of object
 uvp6_taxo_ab_tot = sum(uvp6_taxo_ab(:,4:end), 1);
 float_taxo_tot = sum(float_taxo_ab(:,4:end), 1);
+taxo_ab_rs232_tot = sum(taxo_ab_rs232(:,4:end), 1);
 
 %plots
-subplot(1,2,1)
+subplot(1,3,1)
 plot(uvp6_taxo_ab_tot, 'r')
 hold on
 plot(float_taxo_tot, 'g')
+hold on
+plot(taxo_ab_rs232_tot, 'b')
 xlabel('nb of the object class')
 ylabel('nb of objects of this class')
-legend('uvp6', 'float')
+legend('uvp6', 'float', 'rs232')
 title('total nb of object in the profile')
 
-subplot(1,2,2)
+subplot(1,3,2)
 plot(uvp6_taxo_ab_tot - float_taxo_tot)
 xlabel('nb of the object class')
 ylabel('nb of objects of this class')
 title('difference between uvp6 and float')
+
+subplot(1,3,3)
+plot(uvp6_taxo_ab_tot - taxo_ab_rs232_tot)
+xlabel('nb of the object class')
+ylabel('nb of objects of this class')
+title('difference between uvp6 and rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'TAXO_object_nb_tot.png'))
 
@@ -108,7 +125,7 @@ title('difference between uvp6 and float')
 
 saveas(gcf, fullfile(project_folder, 'results', 'LPM_object_nb_tot.png'))
 
-%}
+%{
 %% concatenation of slices
 % ab
 uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab);
@@ -192,13 +209,11 @@ for j=1:12
     close
 end
 
-%% Read rs232 log file from uvp and good num arrays
-% uvp6_tram_taxo = Uvp6ReadTramTaxoFromLog(filepath, meta);
 
 %% profile plots
 
 
-
+%}
 
 
 
