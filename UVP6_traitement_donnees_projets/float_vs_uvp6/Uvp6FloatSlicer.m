@@ -18,7 +18,7 @@ for i=2:size(uvp6_array,1)
     if uvp6_array(i,1) > uvp6_slices(end,1) - slice_size
         uvp6_slices(end,3:end) = uvp6_slices(end,3:end) + uvp6_array(i,3:end);        
     else
-        uvp6_slices(end,1) = uvp6_slices(end,1) - slice_size/2;
+        %uvp6_slices(end,1) = uvp6_slices(end,1) - slice_size/2;
         uvp6_slices = [uvp6_slices; uvp6_array(i,:)];
     end
     if uvp6_slices(end,1) < 100
