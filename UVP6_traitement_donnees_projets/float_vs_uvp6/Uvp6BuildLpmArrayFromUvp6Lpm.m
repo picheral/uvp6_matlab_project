@@ -20,8 +20,6 @@ time_array(aa) = [];
 depth_array(aa) = [];
 data_array(aa,:) = [];
 
-%%%% class repartition
-
 uvp6_lpm_array = [depth_array time_array time_array.*0+1 data_array];
 
 end

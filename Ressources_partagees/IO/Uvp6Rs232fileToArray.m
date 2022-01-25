@@ -37,7 +37,7 @@ for h = 1 : a - 1
         % construction des vecteurs
         ab_line = zeros(1,cat_number);
         vo_line = zeros(1,cat_number);
-        grey_line = nan *  zeros(1,cat_number);
+        grey_line = zeros(1,cat_number);
         
         % TAXO
         ff = strfind(taxo_txt,',');        if numel(ff) > 1
