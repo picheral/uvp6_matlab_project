@@ -60,6 +60,7 @@ disp("Selection of the data file from uvp6")
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
 % build taxo num array
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
+[uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey);
 % read data
 [uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_raw_grey, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data);
 % build num arrays
@@ -81,13 +82,13 @@ disp('------------------------------------------------------')
 
 %% uvp6 concatenation of slices
 % taxo ab
-uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab);
+uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block);
 % taxo vol
-uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol);
+uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block);
 uvp6_taxo_vol_slices(:,4:end) = uvp6_taxo_vol_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of volume, per object
 uvp6_taxo_vol_slices(isnan(uvp6_taxo_vol_slices)) = 0;
 % taxo grey
-uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey);
+uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok);
 uvp6_taxo_grey_slices(:,4:end) = uvp6_taxo_grey_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of grey, per object
 uvp6_taxo_grey_slices(isnan(uvp6_taxo_grey_slices)) = 0;
 
@@ -126,7 +127,7 @@ lpm_grey_rs232_slices(isnan(lpm_grey_rs232_slices)) = 0;
 
 %% concatenation of total data for control
 %concatenation nb of object
-uvp6_taxo_ab_tot = sum(uvp6_taxo_ab(:,4:end), 1);
+uvp6_taxo_ab_tot = sum(uvp6_taxo_ab_block(:,4:end), 1);
 float_taxo_tot = sum(float_taxo_ab(:,4:end), 1);
 taxo_ab_rs232_tot = sum(taxo_ab_rs232(:,4:end), 1);
 %concatenation vol taxo
@@ -392,7 +393,6 @@ for j=1:12
     saveas(gcf, fullfile(project_folder, 'results', 'lpm_grey', ['LPM_grey_' j_str '.png']))
     close
 end
-
 
 
 
