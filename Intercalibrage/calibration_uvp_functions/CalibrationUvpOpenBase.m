@@ -28,11 +28,11 @@ if isfolder(results_dir)
     base_nofile = isempty(base_list);
     if base_nofile == 0
         if size(base_list) > 0
-%             disp('------------------------------------------------------');
-            %             disp('----------- Base list --------------------------------');
-            %             disp([num2str(size(base_list,1)),' database in ', results_dir]);
+            disp('------------------------------------------------------');
+                        disp('----------- Base list --------------------------------');
+                        disp([num2str(size(base_list,1)),' database in ', results_dir]);
             for i = 1:size(base_list)
-%                 disp(['N°= ',num2str(i),' : ',base_list(i).name]);
+                disp(['N°= ',num2str(i),' : ',base_list(i).name]);
             end
         end
     else
@@ -59,7 +59,7 @@ catch
 end
 ligne_ref = size(base,2);
 for i = 1 : ligne_ref
-    %     disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+       disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
 end
 record = input('Enter Number of the profile for the UVP (default = 1) ');
 if isempty(record); record = 1; end
