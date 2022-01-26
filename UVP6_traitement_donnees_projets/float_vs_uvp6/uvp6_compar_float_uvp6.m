@@ -71,7 +71,8 @@ uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uv
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
 uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
-uvp6_lpm_grey_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_grey);
+%uvp6_lpm_grey_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_grey);
+%uvp6_lpm_grey_class(:,4:end) = uvp6_lpm_grey_class(:,4:end) / uvp6_lpm_ab_class(:,4:end);
 % grey : class dispatcher avec moyenne pondérée sur l'aire des objets pour
 % coller à la version 01/2022 du firmware
 % a supprimer pour la nouvelle version

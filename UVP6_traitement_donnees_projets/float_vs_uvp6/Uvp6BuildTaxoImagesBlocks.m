@@ -26,7 +26,7 @@ taxo_ab_block = [];
 taxo_vol_block = [];
 taxo_grey_block = [];
 
-for i=1:size(images_nb_blocks) % go throught the different config
+for i=1:size(images_nb_blocks,2) % go throught the different config
     aa = find(taxo_ab(:,1) < pressure_limits(i) & taxo_ab(:,1) >= pressure_limits(i+1)); % select data from pressure of this config
     if isempty(aa)
         continue
@@ -39,12 +39,12 @@ for i=1:size(images_nb_blocks) % go throught the different config
         taxo_vol_block = [taxo_vol_block taxo_vol_tmp];
         taxo_grey_block = [taxo_grey_block taxo_grey_tmp];
     else % if more than one image
-        for j=1:images_nb_blocks(i):size(taxo_ab_tmp) % go through first line of each block
+        for j=1:images_nb_blocks(i):size(taxo_ab_tmp,1) % go through first line of each block
             taxo_ab_block(end+1,:) = taxo_ab_tmp(j,:); % first line is taken
             taxo_vol_block(end+1,:) = taxo_vol_tmp(j,:);
             taxo_grey_block(end+1,:) = taxo_grey_tmp(j,:);
             objects_nb = sum(taxo_ab_block(end,4:end)); % nb of objects in first line
-            for t=1:images_nb_blocks(i)
+            for t=1:images_nb_blocks(i)-1
                 objects_nb = objects_nb + sum(taxo_ab_tmp(j+t,4:end)); % nb of objects for lines
                 if objects_nb > objects_nb_max % test if too much objects
                     break
