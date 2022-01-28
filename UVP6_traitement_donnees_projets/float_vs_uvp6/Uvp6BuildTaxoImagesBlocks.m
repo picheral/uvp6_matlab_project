@@ -49,9 +49,9 @@ for i=1:size(images_nb_blocks,2) % go throught the different config
                 if objects_nb > objects_nb_max % test if too much objects
                     break
                 else
-                    taxo_ab_block(end,4:end) = taxo_ab_block(end,4:end) + taxo_ab_tmp(j+t,4:end); % adding the line
-                    taxo_vol_block(end,4:end) = taxo_vol_block(end,4:end) + taxo_vol_tmp(j+t,4:end);
-                    taxo_grey_block(end,4:end) = taxo_grey_block(end,4:end) + taxo_grey_tmp(j+t,4:end);
+                    taxo_ab_block(end,3:end) = taxo_ab_block(end,3:end) + taxo_ab_tmp(j+t,3:end); % adding the line
+                    taxo_vol_block(end,3:end) = taxo_vol_block(end,3:end) + taxo_vol_tmp(j+t,3:end);
+                    taxo_grey_block(end,3:end) = taxo_grey_block(end,3:end) + taxo_grey_tmp(j+t,3:end);
                 end
             end
         end

@@ -84,46 +84,63 @@ disp('------------------------------------------------------')
 %% uvp6 concatenation of slices
 % taxo ab
 uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block);
+images_uvp6_taxo_ab_slices = sum(uvp6_taxo_ab_slices(:,3));
 % taxo vol
 uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block);
 uvp6_taxo_vol_slices(:,4:end) = uvp6_taxo_vol_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of volume, per object
 uvp6_taxo_vol_slices(isnan(uvp6_taxo_vol_slices)) = 0;
+images_uvp6_taxo_vol_slices = sum(uvp6_taxo_vol_slices(:,3));
 % taxo grey
 uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok);
 uvp6_taxo_grey_slices(:,4:end) = uvp6_taxo_grey_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of grey, per object
 uvp6_taxo_grey_slices(isnan(uvp6_taxo_grey_slices)) = 0;
+images_uvp6_taxo_grey_slices = sum(uvp6_taxo_grey_slices(:,3));
 
 % lpm ab
 uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class);
+images_uvp6_lpm_ab_slices = sum(uvp6_lpm_ab_slices(:,3));
 % lpm grey
 uvp6_lpm_grey_class_temp = uvp6_lpm_grey_class;
 uvp6_lpm_grey_class_temp(:,4:end) = uvp6_lpm_grey_class_temp(:,4:end) .* uvp6_lpm_ab_class(:,4:end);
 uvp6_lpm_grey_slices = Uvp6FloatSlicer(uvp6_lpm_grey_class_temp);
 uvp6_lpm_grey_slices(:,4:end) = round(uvp6_lpm_grey_slices(:,4:end) ./ uvp6_lpm_ab_slices(:,4:end));% average of grey, per object
 uvp6_lpm_grey_slices(isnan(uvp6_lpm_grey_slices)) = 0;
+images_uvp6_lpm_grey_slices = sum(uvp6_lpm_grey_slices(:,3));
 
 
 %% RS232 concatenation of slices
 % taxo ab
 taxo_ab_rs232_slices = Uvp6FloatSlicer(taxo_ab_rs232);
+images_taxo_ab_rs232_slices = sum(taxo_ab_rs232_slices(:,3));
 % taxo vol
 taxo_vol_rs232_slices = Uvp6FloatSlicer(taxo_vol_rs232);
 taxo_vol_rs232_slices(:,4:end) = taxo_vol_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end);
 taxo_vol_rs232_slices(isnan(taxo_vol_rs232_slices)) = 0;
+images_taxo_vol_rs232_slices = sum(taxo_vol_rs232_slices(:,3));
 % taxo grey
 taxo_grey_rs232_slices = Uvp6FloatSlicer(taxo_grey_rs232);
 taxo_grey_rs232_slices(:, 4:end) = taxo_grey_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end);
 taxo_grey_rs232_slices(isnan(taxo_grey_rs232_slices)) = 0;
+images_taxo_grey_rs232_slices = sum(taxo_grey_rs232_slices(:,3));
 
 % lpm ab
 lpm_ab_rs232_slices = Uvp6FloatSlicer(lpm_ab_rs232);
+images_lpm_ab_rs232_slices = sum(lpm_ab_rs232_slices(:,3));
 % lpm grey
 lpm_grey_rs232_temp = lpm_grey_rs232;
 lpm_grey_rs232_temp(:,4:end) = lpm_grey_rs232_temp(:,4:end) .* lpm_ab_rs232(:,4:end);
 lpm_grey_rs232_slices = Uvp6FloatSlicer(lpm_grey_rs232_temp);
 lpm_grey_rs232_slices(:,4:end) = round(lpm_grey_rs232_slices(:,4:end) ./ lpm_ab_rs232_slices(:,4:end));% average of grey, per object
 lpm_grey_rs232_slices(isnan(lpm_grey_rs232_slices)) = 0;
+images_lpm_grey_rs232_slices = sum(lpm_grey_rs232_slices(:,3));
 
+
+%% Float nb of images
+images_float_lpm_ab = sum(float_lpm_ab(:,3));
+images_float_lpm_grey = sum(float_lpm_grey(:,3));
+images_float_taxo_ab = sum(float_taxo_ab(:,3));
+images_float_taxo_grey = sum(float_taxo_grey(:,3));
+images_float_taxo_vol = sum(float_taxo_vol(:,3));
 
 
 %% concatenation of total data for control
@@ -166,19 +183,19 @@ plot(taxo_ab_rs232_tot, 'b:')
 xlabel('nb of the object class')
 ylabel('nb of objects of this class')
 legend('uvp6', 'float', 'rs232')
-title('total nb of object in the profile')
+title('total nb of objects')
 
 subplot(1,3,2)
 plot(uvp6_taxo_ab_tot - float_taxo_tot)
 xlabel('nb of the object class')
 ylabel('nb of objects of this class')
-title('difference between uvp6 and float')
+title('uvp6 - float')
 
 subplot(1,3,3)
 plot(uvp6_taxo_ab_tot - taxo_ab_rs232_tot)
 xlabel('nb of the object class')
 ylabel('nb of objects of this class')
-title('difference between uvp6 and rs232')
+title('uvp6 - rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'taxo_ab', 'TAXO_object_nb_tot.png'))
 
@@ -196,19 +213,19 @@ plot(taxo_vol_rs232_tot, 'b:')
 xlabel('nb of the object class')
 ylabel('vol of objects of this class')
 legend('uvp6', 'float', 'rs232')
-title('total vol of object in the profile')
+title('total vol of objects')
 
 subplot(1,3,2)
 plot(uvp6_taxo_vol_tot - float_taxo_vol_tot)
 xlabel('nb of the object class')
 ylabel('vol of objects of this class')
-title('difference between uvp6 and float')
+title('uvp6 - float')
 
 subplot(1,3,3)
 plot(uvp6_taxo_vol_tot - taxo_vol_rs232_tot)
 xlabel('nb of the object class')
 ylabel('vol of objects of this class')
-title('difference between uvp6 and rs232')
+title('uvp6 - rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'taxo_vol', 'TAXO_vol_tot.png'))
 
@@ -226,19 +243,19 @@ plot(taxo_grey_rs232_tot, 'b:')
 xlabel('nb of the object class')
 ylabel('grey of objects of this class')
 legend('uvp6', 'float', 'rs232')
-title('total grey of object in the profile')
+title('total grey of objects')
 
 subplot(1,3,2)
 plot(uvp6_taxo_grey_tot - float_taxo_grey_tot)
 xlabel('nb of the object class')
 ylabel('grey of objects of this class')
-title('difference between uvp6 and float')
+title('uvp6 - float')
 
 subplot(1,3,3)
 plot(uvp6_taxo_grey_tot - taxo_grey_rs232_tot)
 xlabel('nb of the object class')
 ylabel('grey of objects of this class')
-title('difference between uvp6 and rs232')
+title('uvp6 - rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'taxo_grey', 'TAXO_object_grey_tot.png'))
 
@@ -256,19 +273,19 @@ plot(lpm_ab_rs232_tot, 'b:')
 xlabel('nb of the part class')
 ylabel('nb of particles of this class')
 legend('uvp6', 'float', 'rs232')
-title('total nb of particles in the profile')
+title('total nb of particles')
 
 subplot(1,3,2)
 plot(uvp6_lpm_ab_class_tot(1:end-1) - float_lpm_ab_tot(1:end-1))
 xlabel('nb of the part class')
 ylabel('nb of particles of this class')
-title('difference between uvp6 and float')
+title('uvp6 - float')
 
 subplot(1,3,3)
 plot(uvp6_lpm_ab_class_tot(1:end-1) - lpm_ab_rs232_tot(1:end-1))
 xlabel('nb of the part class')
 ylabel('nb of particles of this class')
-title('difference between uvp6 and rs232')
+title('uvp6 - rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'lpm_ab', 'LPM_part_nb_tot.png'))
 
@@ -286,19 +303,19 @@ plot(lpm_grey_rs232_tot, 'b:')
 xlabel('nb of the part class')
 ylabel('grey of particles of this class')
 legend('uvp6', 'float', 'rs232')
-title('total grey of particles in the profile')
+title('total grey of particles')
 
 subplot(1,3,2)
 plot(uvp6_lpm_grey_class_tot(1:end-1) - float_lpm_grey_tot(1:end-1))
 xlabel('nb of the part class')
 ylabel('grey of particles of this class')
-title('difference between uvp6 and float')
+title('uvp6 - float')
 
 subplot(1,3,3)
 plot(uvp6_lpm_grey_class_tot(1:end-1) - lpm_grey_rs232_tot(1:end-1))
 xlabel('nb of the part class')
 ylabel('grey of particles of this class')
-title('difference between uvp6 and rs232')
+title('uvp6 - rs232')
 
 saveas(gcf, fullfile(project_folder, 'results', 'lpm_grey', 'LPM_grey_tot.png'))
 
@@ -396,5 +413,24 @@ for j=1:12
 end
 
 
-
+%% file images nb
+fid = fopen(fullfile(results_folder, 'caract_uvp6_float.txt'), 'w');
+fprintf(fid, ['uvp6 lpm ab images number     : ' num2str(images_uvp6_lpm_ab_slices) '\n']);
+fprintf(fid, ['uvp6 lpm grey images number   : ' num2str(images_uvp6_lpm_grey_slices) '\n']);
+fprintf(fid, ['uvp6 taxo ab images number    : ' num2str(images_uvp6_taxo_ab_slices) '\n']);
+fprintf(fid, ['uvp6 taxo grey images number  : ' num2str(images_uvp6_taxo_grey_slices) '\n']);
+fprintf(fid, ['uvp6 taxo vol images number   : ' num2str(images_uvp6_taxo_vol_slices) '\n']);
+fprintf(fid, '\n');
+fprintf(fid, ['rs232 lpm ab images number    : ' num2str(images_lpm_ab_rs232_slices) '\n']);
+fprintf(fid, ['rs232 lpm grey images number  : ' num2str(images_lpm_grey_rs232_slices) '\n']);
+fprintf(fid, ['rs232 taxo ab images number   : ' num2str(images_taxo_ab_rs232_slices) '\n']);
+fprintf(fid, ['rs232 taxo grey images number : ' num2str(images_taxo_grey_rs232_slices) '\n']);
+fprintf(fid, ['rs232 taxo vol images number  : ' num2str(images_taxo_vol_rs232_slices) '\n']);
+fprintf(fid, '\n');
+fprintf(fid, ['float lpm ab images number    : ' num2str(images_float_lpm_ab) '\n']);
+fprintf(fid, ['float lpm grey images number  : ' num2str(images_float_lpm_grey) '\n']);
+fprintf(fid, ['float taxo ab images number   : ' num2str(images_float_taxo_ab) '\n']);
+fprintf(fid, ['float taxo grey images number : ' num2str(images_float_taxo_grey) '\n']);
+fprintf(fid, ['float taxo vol images number  : ' num2str(images_float_taxo_vol) '\n']);
+fclose(fid);
 
