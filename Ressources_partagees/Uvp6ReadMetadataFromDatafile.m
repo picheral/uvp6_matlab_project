@@ -36,3 +36,4 @@ gain = str2double(hw_line{18+X});
 pixel = str2double(hw_line{22+X})/1000;
 Aa = str2double(hw_line{20});
 Exp = str2double(hw_line{21});
+fclose(fid);
