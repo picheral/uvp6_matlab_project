@@ -30,7 +30,7 @@ ctd_table.("chloro fluo [mg chl m-3]") = data_table.FLBBCD_CHL_SCALED; %%%%% µg
 ctd_table.("fcdom [ppb qse]") = data_table.FLBBCD_CDOM_SCALED; %%%%%%%%%%%%% ppb ok
 try
     oxy = 0.001 * data_table.AROD_FT_DO' / sw_dens(data_table.LEGATO_SALINITY', data_table.LEGATO_TEMPERATURE', data_table.LEGATO_PRESSURE');
-    ctd_table.("oxygen [umol kg-1]") =  oxy'; %%%%%%%%%% AROD_FT_DO in µmol/L conversion faite, mais correction à faire !!!!
+    %ctd_table.("oxygen [umol kg-1]") =  oxy'; %%%%%%%%%% AROD_FT_DO in µmol/L conversion faite, mais correction à faire !!!!
     ctd_table.("conductivity [ms cm-1]") = data_table.LEGATO_CONDUCTIVITY; %%%%%%%% mS/cm ok
     ctd_table.("temperature [degc]") = data_table.LEGATO_TEMPERATURE; %%%%%%%%% °C ok
     ctd_table.("pressure [db]") = data_table.LEGATO_PRESSURE; %%%%%%%%%%%%%%% db ok

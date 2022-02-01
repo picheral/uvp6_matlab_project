@@ -69,14 +69,20 @@ end
 [meta_data_folder, vector_sn] = DetectionVectorMetaFile(project_folder, vector_type);
 
 % detection if sample file already exist
+samples_filename = regexp(project_folder, filesep, 'split');
+samples_filename = [samples_filename{1,end}(1:5) 'header' samples_filename{1,end}(5:end) '.txt'];
+sample_filename = fullfile(project_folder, 'meta', samples_filename);
 list_in_meta = dir(fullfile(project_folder, 'meta', '*.txt'));
-if ~isempty(list_in_meta)
-    warning('There is already a meta data file in \meta. IT WILL BE ERASED')
-    erased_old_meta = input('Continue ? ([n]/y) ','s');
-    if isempty(erased_old_meta) || erased_old_meta == 'n'
+idx = find(strcmp({list_in_meta.name}, samples_filename) ==1);
+if ~isempty(idx)
+    warning('There is already a meta data file in \meta. IT WILL BE ARCHIVED')
+    archived_old_meta = input('Continue ? ([n]/y) ','s');
+    if isempty(archived_old_meta) || archived_old_meta == 'n'
         error('ERROR : Process has been aborted')
     end
-    delete(fullfile(project_folder, 'meta', '*'));
+    old_name = fullfile(list_in_meta(idx).folder, list_in_meta(idx).name);
+    new_name = [old_name(1:end-4) '_' datestr(now, 'YYYYmmDD-hhMMss') old_name(end-3:end)];
+    movefile(old_name, new_name);
 end
 disp('---------------------------------------------------------------')
 
@@ -128,7 +134,7 @@ for seq_nb = 1:seq_nb_max
     
     % read data from dat file
     [data, meta] = Uvp6DatafileToArray(seq_dat_file);
-    [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
+    [time_data, depth_data, raw_nb, black_nb, ~, image_status] = Uvp6ReadDataFromDattable(meta, data);
     black_nb = [depth_data time_data black_nb];
     I = isnan(black_nb(:,3));
     black_nb(I,:) = [];
@@ -177,17 +183,14 @@ disp('---------------------------------------------------------------')
 % go through meta files and look for start time of sequences
 % assume that sequences AND meta files are chronologicaly ordered
 disp('Process the vector meta data....')
-[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list);
-samples_names_list = samples_names_list + '_' + cruise;
+[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list, cruise);
 disp('---------------------------------------------------------------')
 
 
 %% sample file writing
 disp('Creating the sample file...')
 % file creation
-samples_filename = regexp(project_folder, filesep, 'split');
-samples_filename = [samples_filename{1,end}(1:5) 'header' samples_filename{1,end}(5:end)];
-sample_filename = fullfile(project_folder, 'meta', [samples_filename, '.txt']);
+
 sample_file = fopen(sample_filename,'w','n','windows-1252');
     
 % add header
@@ -231,17 +234,24 @@ for seq_nb = 1:seq_nb_max
         lon_deg = lon_deg + 1;
     end
     lon = [num2str(lon_deg * signe) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
+    % ctd files names
+    if strcmp(vector_type, 'SeaExplorer')
+        ctd_filesnames = [char(samples_names_list(seq_nb)) '.ctd'];
+    else
+        ctd_filesnames = '';
+    end
     % line to write
     seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' char(samples_names_list(seq_nb)) ';'...
-        '' ';' char(samples_names_list(seq_nb)) ';' lat ';' lon ';'...
+        'nan' ';' ctd_filesnames ';' lat ';' lon ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
-        '' ';' '' ';' '' ';' '' ';'...
-        '' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' num2str(yo_list(seq_nb)) ';' ...
-        '' ';' 'P' ';' '' ';' char(glider_filenames_list(seq_nb)) ';'...
+        '' ';' 'nan' ';' 'nan' ';' 'nan' ';'...
+        'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' num2str(yo_list(seq_nb)) ';' ...
+        '' ';' 'P' ';' 'nan' ';' char(glider_filenames_list(seq_nb)) ';'...
         num2str(pixelsize_list(seq_nb)) ';' datestr(start_time_list(seq_nb), 'yyyymmdd-HHMMss')];
     fprintf(sample_file, '%s\n', seq_line);
 end
 fclose(sample_file);
+
 disp(['Sample file created : ' sample_filename])
 disp('------------------------------------------------------')
 disp('end of process')

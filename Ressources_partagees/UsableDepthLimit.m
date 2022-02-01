@@ -25,7 +25,7 @@ function [Zusable] = UsableDepthLimit(depth, noise, optional_method)
 %
 
 %% parameters
-Zlim = 100;
+Zlim = 80;
 
 aa = find(depth <= Zlim);
 if isempty(aa)
@@ -37,7 +37,7 @@ mean_noise_surf = mean(noise(aa));
 
 aa = find(depth > Zlim);
 if isempty(aa) || length(aa)<2
-    warning('WARNING : no data under 100m ! Zlim can not be computed');
+    warning('WARNING : no data under 80m ! Zlim can not be computed');
     Zusable = nan;
     return;
 end

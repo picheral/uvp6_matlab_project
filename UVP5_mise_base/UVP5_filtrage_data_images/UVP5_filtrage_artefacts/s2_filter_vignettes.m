@@ -1,20 +1,19 @@
-function s2_filter_vignettes(project_name)
+function s2_filter_vignettes(project_name,xlsfile,th_area)
 
 % clear;
 % close all; clc
 
 %% input variables
-
 root_projectsPath = [project_name,'\raw'];   % projects start with HDR
 meta_projectsPath = [project_name,'\meta'];   % projects start with HDR
-[NN, TT] = xlsread([meta_projectsPath,'\uvp5_header_',project_name,'.xls']);
+[NN, TT] = xlsread([meta_projectsPath,'\',xlsfile]);
+cd(project_name);
 
-th_area = 79;
-inputMat = 'm1';        % mat files
+inputMat = 'filtering/m1';        % mat files
 flag_moveFiles = 1;     % 1 for moving files, -- 0 for skipping
 
 %% output variables
-outDir = 'logDir';
+outDir = 'filtering/logDir';
 mkdir(outDir);
 
 ignoredDir = 'ignored';

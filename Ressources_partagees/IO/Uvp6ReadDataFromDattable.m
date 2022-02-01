@@ -1,4 +1,4 @@
-function [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta_table, data_table)
+function [time_data, depth_data, raw_nb, black_nb, raw_grey, image_status] = Uvp6ReadDataFromDattable(meta_table, data_table)
 % read data (prof, time, black, raw,...) from table from uvp6 dat file
 %
 % time_data is in num format
@@ -14,7 +14,7 @@ function [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataF
 %
 %   outputs:
 %       time_data, prof_data, image_status as num vectors
-%       black_nb, raw_nb as vectorsx900
+%       black_nb, raw_nb, raw_grey as vectorsx900
 %
 
 %% read data of the sequence    
@@ -25,6 +25,7 @@ depth_data =     NaN*zeros(n,1);
 time_data =     NaN*zeros(n,1);
 black_nb =      NaN*zeros(n,900);
 raw_nb =        NaN*zeros(n,900);
+raw_grey =        NaN*zeros(n,900);
 image_status =  NaN*zeros(n,1);
 
 % -------- Boucle sur les lignes (images) --------------
@@ -59,10 +60,12 @@ for h=1:n
         % limit to class of 900 pixels wide objects
         % ------------ Ligne de zeros -----------------------
         line = zeros(1,900);
+        line_grey = zeros(1,900);
         [o,p]=size(temp_matrix);
         for k=1:o
             if temp_matrix(k,1)<=900
                 line(temp_matrix(k,1)) = temp_matrix(k,2);
+                line_grey(temp_matrix(k,1)) = temp_matrix(k,3);
             end
         end
         seen_classes_nb = length(line);
@@ -70,6 +73,8 @@ for h=1:n
         if Flag == 1
             raw_nb(h,:) = 0;
             raw_nb(h,1:seen_classes_nb) = line;
+            raw_grey(h,:) = 0;
+            raw_grey(h,1:seen_classes_nb) = line_grey;
             image_status(h) = 3;
         else
             black_nb(h,:) = 0;
@@ -82,6 +87,7 @@ for h=1:n
     elseif ~isempty(strfind(data_table{h},'EMPTY'))
         if Flag == 1
             raw_nb(h,:) = 0;
+            raw_grey(h,:) = 0;
             image_status(h) = 3;
         else
             black_nb(h,:) = 0;

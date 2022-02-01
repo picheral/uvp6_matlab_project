@@ -13,7 +13,8 @@ function[uvp_base, uvp_cast] = CalibrationUvpGetConfig(uvp_base, uvp_cast, type)
 %       uvp_cast : struct storing cast variables
 %
 
-if (strcmp(uvp_cast.project_folder(4:7),'uvp5'))
+if contains(uvp_cast.project_folder,'uvp5')
+
     % Reading uvp5_configuration_data.txt REF
     uvp_cast.histfile = uvp_base.histfile;
 
