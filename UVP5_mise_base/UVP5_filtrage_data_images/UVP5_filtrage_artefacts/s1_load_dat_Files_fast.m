@@ -1,4 +1,8 @@
+%% code leandro.ticlia
+% Ajout des metadata image à partir du DAT
+
 function s1_load_dat_Files_fast(project_name)
+cd(project_name);
 
 % clear; close all; clc
 
@@ -7,13 +11,13 @@ indir = [project_name,'\results'];      % edit here
 dat_list = dir([indir '/*_datfile.txt']);
 nB = length(dat_list);
 
-%% code leandro.ticlia
-inputMat = 'm0';        % reusing the old mat files
-
-outMat = 'm1';
+inputMat = 'filtering\m0';        % reusing the old mat files
+outMat = 'filtering\m1';
 mkdir(outMat);
 
-fprintf('Loading DAT file... \n');
+fprintf('----------------------------------------------------------- \n');
+fprintf('Loading DAT files and association with BRU files... \n');
+fprintf('----------------------------------------------------------- \n');
 for i = 1:nB
     nm = dat_list(i).name;
     infile = [indir '/' nm];

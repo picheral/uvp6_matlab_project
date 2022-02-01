@@ -1,7 +1,24 @@
 %% Create the sample file of a project
 % Create the sample file for all sequences
-% the meta data are extracted from the sequence and a nav file located in
-% the doc folder of the project
+% For SeaExplorer and for SeaGlider
+%
+% ----- SeaExplorer project -----
+% The project must contain "sea" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the doc folder of the project.
+% The meta data folder must start with "SEA" and the sn of the glider,
+% "SEA###*".
+% The files must be located directly in ccu/logs/*raw*.#.gz, with # the nb of the
+% yo.
+%
+% ----- SeaGlider project -----
+% The project must contain "SG" in the name.
+% The meta data are extracted from the sequence and a nav file located in
+% the CTD folder of the project.
+% The meta data folder must be called "SG###_nc_files", with ### the sn of
+% the glider.
+% The files in it are called "p[sn]####.nc", with #### the nb of the yo.
+% 
 % 
 % use Mapping Toolbox 
 %
@@ -15,7 +32,8 @@ disp('------------------------------------------------------')
 disp('------------- uvp6 sample creator --------------------')
 disp('------------------------------------------------------')
 disp('')
-disp('WARNING : Work only for seaexplorer project')
+disp('WARNING : Work only for seaexplorer project and seaglider project')
+disp('Read the help of the script for information about the needed project structure')
 disp('')
 
 
@@ -31,32 +49,45 @@ disp('---------------------------------------------------------------')
 if contains(project_folder, 'sea')
     disp('SeaExplorer project')
     vector_type = 'SeaExplorer';
-elseif contains(project_folder, 'arctos')
+elseif contains(project_folder, 'SG')
     disp('SeaGlider project')
     vector_type = 'SeaGlider';
 else
-    warning('Only seaexplorer project are supported')
-    error('ERROR : the project is not a seaexplorer project')
+    warning('Only seaexplorer or seaglider project are supported')
+    vector_type = input('Is it a SeaExplorer (se) or a SeaGlider (sg) project ? ([se]/sg) ','s');
+    if isempty(vector_type) || strcmp(vector_type,'se')
+        vector_type = 'SeaExplorer';
+    elseif strcmp(vector_type, 'sg')
+        vector_type = 'SeaGlider';
+    else
+        error('ERROR : the project is not a seaexplorer or seaglider project')
+    end
+    
 end
 
 % detection meta in doc
 [meta_data_folder, vector_sn] = DetectionVectorMetaFile(project_folder, vector_type);
 
 % detection if sample file already exist
+samples_filename = regexp(project_folder, filesep, 'split');
+samples_filename = [samples_filename{1,end}(1:5) 'header' samples_filename{1,end}(5:end) '.txt'];
+sample_filename = fullfile(project_folder, 'meta', samples_filename);
 list_in_meta = dir(fullfile(project_folder, 'meta', '*.txt'));
-if ~isempty(list_in_meta)
-    warning('There is already a meta data file in \meta. IT WILL BE ERASED')
-    erased_old_meta = input('Continue ? ([n]/y) ','s');
-    if isempty(erased_old_meta) || erased_old_meta == 'n'
+idx = find(strcmp({list_in_meta.name}, samples_filename) ==1);
+if ~isempty(idx)
+    warning('There is already a meta data file in \meta. IT WILL BE ARCHIVED')
+    archived_old_meta = input('Continue ? ([n]/y) ','s');
+    if isempty(archived_old_meta) || archived_old_meta == 'n'
         error('ERROR : Process has been aborted')
     end
-    delete(fullfile(project_folder, 'meta', '*'));
+    old_name = fullfile(list_in_meta(idx).folder, list_in_meta(idx).name);
+    new_name = [old_name(1:end-4) '_' datestr(now, 'YYYYmmDD-hhMMss') old_name(end-3:end)];
+    movefile(old_name, new_name);
 end
 disp('---------------------------------------------------------------')
 
 
 %% get cruise info
-% seaexplorer dependant
 try
     cruise_file = fullfile(project_folder, 'config', 'cruise_info.txt');
     fid = fopen(cruise_file);
@@ -103,7 +134,7 @@ for seq_nb = 1:seq_nb_max
     
     % read data from dat file
     [data, meta] = Uvp6DatafileToArray(seq_dat_file);
-    [time_data, depth_data, raw_nb, black_nb, image_status] = Uvp6ReadDataFromDattable(meta, data);
+    [time_data, depth_data, raw_nb, black_nb, ~, image_status] = Uvp6ReadDataFromDattable(meta, data);
     black_nb = [depth_data time_data black_nb];
     I = isnan(black_nb(:,3));
     black_nb(I,:) = [];
@@ -152,16 +183,14 @@ disp('---------------------------------------------------------------')
 % go through meta files and look for start time of sequences
 % assume that sequences AND meta files are chronologicaly ordered
 disp('Process the vector meta data....')
-[lon_list, lat_list, yo_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences);
+[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list, cruise);
 disp('---------------------------------------------------------------')
 
 
 %% sample file writing
 disp('Creating the sample file...')
 % file creation
-samples_filename = regexp(project_folder, filesep, 'split');
-samples_filename = [samples_filename{1,end}(1:5) 'header' samples_filename{1,end}(5:end)];
-sample_filename = fullfile(project_folder, 'meta', [samples_filename, '.txt']);
+
 sample_file = fopen(sample_filename,'w','n','windows-1252');
     
 % add header
@@ -178,26 +207,51 @@ fprintf(sample_file,'%s\n',line);
 % one sample by sequence
 for seq_nb = 1:seq_nb_max
     % lat format
-    lat_deg = fix(lat_list(seq_nb));
-    lat_min = fix(rem(lat_list(seq_nb),1)*60);
-    lat_sec = rem(rem(lat_list(seq_nb),1)*60,1)*60;
-    lat = [num2str(lat_deg) '°' num2str(lat_min) ' ' num2str(lat_sec, '%02.f')];
+    signe = sign(lat_list(seq_nb));
+    lat_deg = fix(lat_list(seq_nb) * signe);
+    lat_min = fix(rem(lat_list(seq_nb) * signe,1)*60);
+    lat_sec = round(rem(rem(lat_list(seq_nb) * signe,1)*60,1)*60);
+    if lat_sec == 60
+        lat_sec = 0;
+        lat_min = lat_min + 1;
+    end
+    if lat_min == 60
+        lat_min = 0;
+        lat_deg = lat_deg + 1;
+    end
+    lat = [num2str(lat_deg * signe) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
     % lon format
-    lon_deg = fix(lon_list(seq_nb));
-    lon_min = fix(rem(lon_list(seq_nb),1)*60);
-    lon_sec = rem(rem(lon_list(seq_nb),1)*60,1)*60;
-    lon = [num2str(lon_deg) '°' num2str(lon_min) ' ' num2str(lon_sec, '%02.f')];
+    signe = sign(lon_list(seq_nb));
+    lon_deg = fix(lon_list(seq_nb) * signe);
+    lon_min = fix(rem(lon_list(seq_nb) * signe,1)*60);
+    lon_sec = round(rem(rem(lon_list(seq_nb) * signe,1)*60,1)*60);
+    if lon_sec == 60
+        lon_sec = 0;
+        lon_min = lon_min + 1;
+    end
+    if lon_min == 60
+        lon_min = 0;
+        lon_deg = lon_deg + 1;
+    end
+    lon = [num2str(lon_deg * signe) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
+    % ctd files names
+    if strcmp(vector_type, 'SeaExplorer')
+        ctd_filesnames = [char(samples_names_list(seq_nb)) '.ctd'];
+    else
+        ctd_filesnames = '';
+    end
     % line to write
-    seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';'...
-        '' ';' num2str(yo_list(seq_nb)) ';' lat ';' lon ';'...
+    seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' char(samples_names_list(seq_nb)) ';'...
+        'nan' ';' ctd_filesnames ';' lat ';' lon ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
-        '' ';' '' ';' '' ';' '' ';'...
-        '' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
-        ['Yo_' num2str(yo_list(seq_nb)) char(profile_type_list(seq_nb))] ';' 'P' ';' '' ';' '' ';'...
+        '' ';' 'nan' ';' 'nan' ';' 'nan' ';'...
+        'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' num2str(yo_list(seq_nb)) ';' ...
+        '' ';' 'P' ';' 'nan' ';' char(glider_filenames_list(seq_nb)) ';'...
         num2str(pixelsize_list(seq_nb)) ';' datestr(start_time_list(seq_nb), 'yyyymmdd-HHMMss')];
     fprintf(sample_file, '%s\n', seq_line);
 end
 fclose(sample_file);
+
 disp(['Sample file created : ' sample_filename])
 disp('------------------------------------------------------')
 disp('end of process')

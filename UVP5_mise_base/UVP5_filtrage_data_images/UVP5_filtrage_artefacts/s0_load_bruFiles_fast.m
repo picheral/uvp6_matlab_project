@@ -1,15 +1,22 @@
+%% code -- leandro.ticlia
+% chargement des BRU et création de matrices matlab dans le répertoire m0
+
 function s0_load_bruFiles_fast(project_name)
+
+cd(project_name);
 
 %% input variable
 indir = [project_name,'\results'];               % define the full path of the filtered BRU file location.
 bru_list = dir([indir '/*.bru']);
 nB = length(bru_list);
 
-%% code -- leandro.ticlia
-dout = 'm0';
+dout = 'filtering\m0';
 mkdir(dout);
 
-fprintf('Loading BRU files ... \n');
+fprintf('----------------------------------------------------------- \n');
+fprintf('Loading BRU files into mat files... \n');
+fprintf('----------------------------------------------------------- \n');
+
 for i = 1:nB
     nm = bru_list(i).name;
     infile = [indir '/' nm];

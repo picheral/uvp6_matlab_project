@@ -16,13 +16,13 @@ if strcmp(vector_type, 'SeaExplorer')
     if isempty(list_in_doc)
         error('ERROR : No metadata folder found in \doc')
     end
-    vector = 'Seaeplorer_';
+    vector_sn = ['Seaeplorer_' list_in_doc(1).name(4:6)];
 elseif strcmp(vector_type, 'SeaGlider')
-    list_in_doc = dir(fullfile(project_folder, 'CTDdata', 'SG*'));
+    list_in_doc = dir(fullfile(project_folder, 'doc', 'SG*'));
     if isempty(list_in_doc)
-        error('ERROR : No metadata folder found in \CTDdata')
+        error('ERROR : No metadata folder found in \doc')
     end
-    vector = 'SeaGlider_';
+    vector_sn = ['SeaGlider_' list_in_doc(1).name(3:5)];
 end
 
 
@@ -34,7 +34,5 @@ if ~list_in_doc(1).isdir
 end
 
 disp(['Vector meta data folder : ', list_in_doc(1).name])
-
-vector_sn = [vector list_in_doc(1).name(4:6)];
 
 end

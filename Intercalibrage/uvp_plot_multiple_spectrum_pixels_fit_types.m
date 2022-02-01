@@ -72,10 +72,10 @@ while another_ref == 'y'
         disp('>> Select UVP REFERENCE project directory');
         project_folder_ref = uigetdir('', 'Select UVP REFERENCE project directory');
         project_folder_ref_list = [project_folder_ref_list; project_folder_ref];
-        if strcmp(project_folder_ref(4:6),'uvp')
+        if contains(project_folder_ref,'uvp6_sn') || contains(project_folder_ref,'uvp5_sn')
             selectprojet = 1;
         else
-            disp(['Selected project ' project_folder_ref ' is not correct. It must be on the root of a drive.']);
+            disp(['Selected project ' project_folder_ref ' is not correct. It does not contains uvp6_sn or uvp5_sn.']);
         end
     end
     cd(project_folder_ref);
@@ -144,7 +144,7 @@ if nb_of_ref >1 && type_plot == 'c'
         base_ref = base_ref_list(ref_nb);
         project_folder_ref = project_folder_ref_list(ref_nb,:);
         % Reading uvp5_configuration_data.txt REF
-        if (strcmp(project_folder_ref(4:7),'uvp5'))
+        if contains(project_folder_ref,'uvp5_sn')
             filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
             [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
         else
@@ -154,7 +154,7 @@ if nb_of_ref >1 && type_plot == 'c'
             pix_ref = base_ref.pixel_size;
         end
         % Reading *.hdr REF
-        if (strcmp(project_folder_ref(4:7),'uvp5'))
+        if contains(project_folder_ref,'uvp5_sn')
             filename=[project_folder_ref,'\raw\HDR',char(base_ref.histfile),'\HDR',...
                 char(base_ref.histfile),'.hdr'];
             [ a, b, c, d, l1, l2, gain_ref, Thres_ref, Exposure_ref, ShutterSpeed_ref, SMBase_ref] = ...
@@ -263,7 +263,7 @@ else
     else
         base_ref = base_ref(rec_ref);
         % Reading uvp5_configuration_data.txt REF
-        if (strcmp(project_folder_ref(4:7),'uvp5'))
+        if contains(project_folder_ref,'uvp5_sn')
             filename=[project_folder_ref,'\config\uvp5_settings\uvp5_configuration_data.txt'];
             [ aa_ref_from_base, expo_ref_from_base, img_vol_data_ref, pix_ref, light1_ref, light2_ref] = read_uvp5_configuration_data( filename ,'data' );
         else
@@ -273,7 +273,7 @@ else
             pix_ref = base_ref.pixel_size;
         end
         % Reading *.hdr REF
-        if (strcmp(project_folder_ref(4:7),'uvp5'))
+        if contains(project_folder_ref,'uvp5_sn')
             filename=[project_folder_ref,'\raw\HDR',char(base_ref.histfile),'\HDR',...
                 char(base_ref.histfile),'.hdr'];
             [ a, b, c, d, l1, l2, gain_ref, Thres_ref, Exposure_ref, ShutterSpeed_ref, SMBase_ref] = ...
@@ -386,10 +386,10 @@ while other_cast == 1
         selectprojet = 0;
         while (selectprojet == 0)
             project_folder_adj = uigetdir('', 'Select UVP project directory');
-            if strcmp(project_folder_adj(4:6),'uvp')
+            if contains(project_folder_adj,'uvp6_sn') || contains(project_folder_adj,'uvp5_sn')
                 selectprojet = 1;
             else
-                disp(['Selected project ' project_folder_adj ' is not correct. It must be on the root of a drive.']);
+                disp(['Selected project ' project_folder_adj ' is not correct. It does not contain uvp5_sn or uvp6_sn.']);
                 continue
             end
         end
@@ -460,7 +460,7 @@ while other_cast == 1
     uvp_adj(ee) = '-';
     
     %% Reading configuration
-    if (strcmp(project_folder_adj(4:7),'uvp5'))
+    if contains(project_folder_adj,'uvp5_sn')
         % Reading uvp5_configuration_data.txt ADJ
         filename=[project_folder_adj,'\config\uvp5_settings\uvp5_configuration_data.txt'];
         [ aa_adj_from_base, expo_adj_from_base, img_vol_data_adj, pix_adj, light1_adj, light2_adj] = read_uvp5_configuration_data( filename , 'data');
@@ -472,7 +472,7 @@ while other_cast == 1
     end
     
     %% Reading instru conf
-    if (strcmp(project_folder_adj(4:7),'uvp5'))
+    if contains(project_folder_adj,'uvp5_sn')
         % Reading *.hdr ADJ
         filename=[project_folder_adj,'\raw\HDR',char(base_adj(adj_record).histfile),'\HDR',...
             char(base_adj(adj_record).histfile),'.hdr'];

@@ -2,7 +2,7 @@ function [meta_data] = ReadMetaSeaglider(filepathnc)
 %ReadMetaSeaglider read the metadata in the seaglider netcdf file
 %
 % meta_data array is an num array (careful for <missing> values
-% time, depth, longitude, latitude
+% time, depth, latitude, longitude
 % time is in num format
 %
 % inputs :
@@ -13,6 +13,7 @@ function [meta_data] = ReadMetaSeaglider(filepathnc)
 %
 
 time = ncread(filepathnc, 'time');
+time = datenum(datetime(time, 'ConvertFrom', 'posixtime'));
 depth = ncread(filepathnc, 'depth');
 try
     latitude = ncread(filepathnc, 'latitude');
