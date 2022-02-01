@@ -76,7 +76,7 @@ for i = 1 : N_seq
         % Ouverture des fichiers data pour lecture des trames HW et ACQ
         path = [raw_folder,'\', seq(i).name,'\',seq(i).name, '_data.txt'];
         % ----------------- Ligne HW and ACQ -----------------
-        [HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile([data_folder, data_filename]);
+        [HWline, line, ACQline] = Uvp6ReadMetalinesFromDatafile(path);
         
         %% Boucle sur les lignes du fichier DATA
         disp('----------------- Reading DATA file --------------------------')
