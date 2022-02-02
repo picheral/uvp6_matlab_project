@@ -22,7 +22,7 @@ for j = 1:5
     elseif contains(tline,'TAXO_CONF')
         index_of_taxoconf = strfind(tline,'TAXO_CONF');
         taxo_line = tline(index_of_taxoconf:end);
-    elseif size(data_file,2) < 2
+    elseif isempty(tline)
         empty_line = tline;
     end
 end
