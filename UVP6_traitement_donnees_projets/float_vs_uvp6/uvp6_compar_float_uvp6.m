@@ -23,42 +23,27 @@ raw_folder = fullfile(project_folder,'\raw\');
 [~] = mkdir(results_folder, 'taxo_grey');
 
 
-
-%% selection of float data
-
-disp("Selection of the LPM csv file from float")
-[float_filename, float_folder] = uigetfile('*.csv','Select the LPM csv file from float');
-% read CSV
-[park_lpm_table, ascent_lpm_table, surface_lpm_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
-float_lpm_table = ascent_lpm_table;
-% build num arrays
-[float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
-
-disp("Selection of the TAXO csv file from float")
-[float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
-% read csv
-[park_taxo_table, ascent_taxo_table] = Uvp6ReadTaxoFromFloatTaxoCSV(fullfile(float_folder, float_filename));
-float_taxo_table = ascent_taxo_table;
-% build num array
-[float_taxo_ab, float_taxo_vol, float_taxo_grey] = Uvp6BuildTaxoArrayFromFloatTaxo(float_taxo_table);
-disp('---------------------------------------------------------------')
-
-
-%% selection of the rs232 data from uvp6
-disp("Selection of the rs232 data from uvp6")
-[uvp6_rs232_filename, uvp6_rs232_folder] = uigetfile('*.txt','Select the rs232 data file from uvp6');
-% read the file
-[taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
-disp('---------------------------------------------------------------')
-
-
-
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
+disp("A parking data set must contain 'parking' in the name");
 [uvp6_filename, uvp6_folder] = uigetfile('*.txt','Select the data file from uvp6');
+% is it a parking data set or ascent data set
+if contains(uvp6_filename, 'parking')
+    park_flag = 1;
+else
+    park_flag = 0;
+end
+if contains(uvp6_filename, 'FAKE')
+    fake_flag = 1;
+else
+    fake_flag = 0;
+end
+
+
 % read lpm data
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
 % build taxo num array
+%%%%%% ATTENTION au taxo black
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
 [uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey);
 % read data
@@ -81,28 +66,68 @@ uvp6_lpm_grey_class(isnan(uvp6_lpm_grey_class)) = 0;
 disp('------------------------------------------------------')
 
 
+%% selection of the rs232 data from uvp6
+disp("Selection of the rs232 data from uvp6")
+[uvp6_rs232_filename, uvp6_rs232_folder] = uigetfile('*.txt','Select the rs232 data file from uvp6');
+% read the file
+[taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
+disp('---------------------------------------------------------------')
+
+
+%% selection of float data
+
+disp("Selection of the LPM csv file from float")
+[float_filename, float_folder] = uigetfile('*.csv','Select the LPM csv file from float');
+% read CSV
+[park_lpm_table, ascent_lpm_table, surface_lpm_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
+if park_flag
+    float_lpm_table = park_lpm_table;
+else
+    float_lpm_table = ascent_lpm_table;
+end
+% build num arrays
+[float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
+
+disp("Selection of the TAXO csv file from float")
+[float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
+% read csv
+[park_taxo_table, ascent_taxo_table] = Uvp6ReadTaxoFromFloatTaxoCSV(fullfile(float_folder, float_filename));
+if park_flag
+    float_taxo_table = park_taxo_table;
+else
+    float_taxo_table = ascent_taxo_table;
+end
+% build num array
+[float_taxo_ab, float_taxo_vol, float_taxo_grey] = Uvp6BuildTaxoArrayFromFloatTaxo(float_taxo_table);
+disp('---------------------------------------------------------------')
+
+
+
+
 %% uvp6 concatenation of slices
 % taxo ab
-uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block);
+uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block, park_flag, fake_flag);
 images_uvp6_taxo_ab_slices = sum(uvp6_taxo_ab_slices(:,3));
 % taxo vol
-uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block);
-uvp6_taxo_vol_slices(:,4:end) = uvp6_taxo_vol_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of volume, per object
+uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block, park_flag, fake_flag);
+uvp6_taxo_vol_slices(:,4:end) = round(uvp6_taxo_vol_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end));% average of volume, per object
 uvp6_taxo_vol_slices(isnan(uvp6_taxo_vol_slices)) = 0;
 images_uvp6_taxo_vol_slices = sum(uvp6_taxo_vol_slices(:,3));
 % taxo grey
-uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok);
-uvp6_taxo_grey_slices(:,4:end) = uvp6_taxo_grey_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end);% average of grey, per object
+uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok, park_flag, fake_flag);
+uvp6_taxo_grey_slices(:,4:end) = round(uvp6_taxo_grey_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end));% average of grey, per object
 uvp6_taxo_grey_slices(isnan(uvp6_taxo_grey_slices)) = 0;
 images_uvp6_taxo_grey_slices = sum(uvp6_taxo_grey_slices(:,3));
 
 % lpm ab
-uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class);
+uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class, park_flag, fake_flag);
 images_uvp6_lpm_ab_slices = sum(uvp6_lpm_ab_slices(:,3));
 % lpm grey
 uvp6_lpm_grey_class_temp = uvp6_lpm_grey_class;
 uvp6_lpm_grey_class_temp(:,4:end) = uvp6_lpm_grey_class_temp(:,4:end) .* uvp6_lpm_ab_class(:,4:end);
-uvp6_lpm_grey_slices = Uvp6FloatSlicer(uvp6_lpm_grey_class_temp);
+uvp6_lpm_grey_slices = Uvp6FloatSlicer(uvp6_lpm_grey_class_temp, park_flag, fake_flag);
+%%%%%% attention
+%uvp6_lpm_grey_slices(:,4:end) = bsxfun(@times,uvp6_lpm_grey_slices(:,3),uvp6_lpm_grey_slices(:,4:end));
 uvp6_lpm_grey_slices(:,4:end) = round(uvp6_lpm_grey_slices(:,4:end) ./ uvp6_lpm_ab_slices(:,4:end));% average of grey, per object
 uvp6_lpm_grey_slices(isnan(uvp6_lpm_grey_slices)) = 0;
 images_uvp6_lpm_grey_slices = sum(uvp6_lpm_grey_slices(:,3));
@@ -110,26 +135,26 @@ images_uvp6_lpm_grey_slices = sum(uvp6_lpm_grey_slices(:,3));
 
 %% RS232 concatenation of slices
 % taxo ab
-taxo_ab_rs232_slices = Uvp6FloatSlicer(taxo_ab_rs232);
+taxo_ab_rs232_slices = Uvp6FloatSlicer(taxo_ab_rs232, park_flag, fake_flag);
 images_taxo_ab_rs232_slices = sum(taxo_ab_rs232_slices(:,3));
 % taxo vol
-taxo_vol_rs232_slices = Uvp6FloatSlicer(taxo_vol_rs232);
-taxo_vol_rs232_slices(:,4:end) = taxo_vol_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end);
+taxo_vol_rs232_slices = Uvp6FloatSlicer(taxo_vol_rs232, park_flag, fake_flag);
+taxo_vol_rs232_slices(:,4:end) = round(taxo_vol_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end));
 taxo_vol_rs232_slices(isnan(taxo_vol_rs232_slices)) = 0;
 images_taxo_vol_rs232_slices = sum(taxo_vol_rs232_slices(:,3));
 % taxo grey
-taxo_grey_rs232_slices = Uvp6FloatSlicer(taxo_grey_rs232);
-taxo_grey_rs232_slices(:, 4:end) = taxo_grey_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end);
+taxo_grey_rs232_slices = Uvp6FloatSlicer(taxo_grey_rs232, park_flag, fake_flag);
+taxo_grey_rs232_slices(:, 4:end) = round(taxo_grey_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end));
 taxo_grey_rs232_slices(isnan(taxo_grey_rs232_slices)) = 0;
 images_taxo_grey_rs232_slices = sum(taxo_grey_rs232_slices(:,3));
 
 % lpm ab
-lpm_ab_rs232_slices = Uvp6FloatSlicer(lpm_ab_rs232);
+lpm_ab_rs232_slices = Uvp6FloatSlicer(lpm_ab_rs232, park_flag, fake_flag);
 images_lpm_ab_rs232_slices = sum(lpm_ab_rs232_slices(:,3));
 % lpm grey
 lpm_grey_rs232_temp = lpm_grey_rs232;
 lpm_grey_rs232_temp(:,4:end) = lpm_grey_rs232_temp(:,4:end) .* lpm_ab_rs232(:,4:end);
-lpm_grey_rs232_slices = Uvp6FloatSlicer(lpm_grey_rs232_temp);
+lpm_grey_rs232_slices = Uvp6FloatSlicer(lpm_grey_rs232_temp, park_flag, fake_flag);
 lpm_grey_rs232_slices(:,4:end) = round(lpm_grey_rs232_slices(:,4:end) ./ lpm_ab_rs232_slices(:,4:end));% average of grey, per object
 lpm_grey_rs232_slices(isnan(lpm_grey_rs232_slices)) = 0;
 images_lpm_grey_rs232_slices = sum(lpm_grey_rs232_slices(:,3));
