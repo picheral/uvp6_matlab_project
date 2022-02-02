@@ -48,6 +48,8 @@ for h=1: numel(data)
     grey_line = zeros(1,cat_number);
     
     % --------- VECTEURS DATA -------------
+    %%%%%% Flash tag a remettre
+    %%%%%% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1
         % -------- DATA ------------
         % cast the data line in nb_classx4 numerical matrix
@@ -77,6 +79,7 @@ for h=1: numel(data)
         end
     end
     % -------------- Concatenation -------------------
+    %flash_flag=1; %%%%%%% A enlever!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     taxo_ab_temp(h,:) = [depth_data, time_data, flash_flag, ab_line];
     taxo_vol_temp(h,:) = [depth_data, time_data, flash_flag, vol_line];
     taxo_grey_temp(h,:) = [depth_data, time_data, flash_flag, grey_line];
