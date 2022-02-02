@@ -133,7 +133,9 @@ while j < N_seq+1
     
     % ------------ Ligne ACQ ----------------------------------
     tline = fgetl(fid);
-    tline = fgetl(fid);
+    if isempty(tline)
+        tline = fgetl(fid);
+    end
     acq_line = strsplit(tline,{','});
     black_ratio = str2double(acq_line{15+X});
     
