@@ -87,6 +87,7 @@ else
 end
 % build num arrays
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
+disp('---------------------------------------------------------------')
 
 disp("Selection of the TAXO csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
@@ -103,7 +104,7 @@ disp('---------------------------------------------------------------')
 
 
 
-
+disp("Concatenation of slices")
 %% uvp6 concatenation of slices
 % taxo ab
 uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block, park_flag, fake_flag);
@@ -159,6 +160,7 @@ lpm_grey_rs232_slices(:,4:end) = round(lpm_grey_rs232_slices(:,4:end) ./ lpm_ab_
 lpm_grey_rs232_slices(isnan(lpm_grey_rs232_slices)) = 0;
 images_lpm_grey_rs232_slices = sum(lpm_grey_rs232_slices(:,3));
 
+disp('---------------------------------------------------------------')
 
 %% Float nb of images
 images_float_lpm_ab = sum(float_lpm_ab(:,3));
@@ -168,6 +170,7 @@ images_float_taxo_grey = sum(float_taxo_grey(:,3));
 images_float_taxo_vol = sum(float_taxo_vol(:,3));
 
 
+disp("Plot total nb of variables")
 %% concatenation of total data for control
 %concatenation nb of object
 uvp6_taxo_ab_tot = sum(uvp6_taxo_ab_block(:,4:end), 1);
@@ -345,8 +348,9 @@ title('uvp6 - rs232')
 saveas(gcf, fullfile(project_folder, 'results', 'lpm_grey', 'LPM_grey_tot.png'))
 
 
+disp('---------------------------------------------------------------')
 
-
+disp("Profile plots")
 %% plot depth slices taxo nb of objects
 for j=1:12
     figure
@@ -437,9 +441,11 @@ for j=1:12
     close
 end
 
+disp('---------------------------------------------------------------')
 
 %% file images nb
 fid = fopen(fullfile(results_folder, 'caract_uvp6_float.txt'), 'w');
+disp(['Write nb of images in ' fullfile(results_folder, 'caract_uvp6_float.txt')])
 fprintf(fid, ['uvp6 lpm ab images number     : ' num2str(images_uvp6_lpm_ab_slices) '\n']);
 fprintf(fid, ['uvp6 lpm grey images number   : ' num2str(images_uvp6_lpm_grey_slices) '\n']);
 fprintf(fid, ['uvp6 taxo ab images number    : ' num2str(images_uvp6_taxo_ab_slices) '\n']);
@@ -459,3 +465,7 @@ fprintf(fid, ['float taxo grey images number : ' num2str(images_float_taxo_grey)
 fprintf(fid, ['float taxo vol images number  : ' num2str(images_float_taxo_vol) '\n']);
 fclose(fid);
 
+disp('---------------------------------------------------------------')
+disp('----------------------- End of process ------------------------')
+disp('---------------------------------------------------------------')
+disp('---------------------------------------------------------------')
