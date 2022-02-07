@@ -44,6 +44,11 @@ end
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
 % build taxo num array
 %%%%%% ATTENTION au taxo black
+% if no taxo, build a fake taxo data
+if isempty(taxo)
+    taxo = cell(size(meta));
+    taxo(:) = {'0,0,0,0;'};
+end
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
 [uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey);
 % read data
@@ -51,7 +56,9 @@ end
 % build num arrays
 uvp6_lpm_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_nb);
 uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_grey);
-
+% because the float miss the last rs232tram
+% uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
+% uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
 
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
@@ -71,6 +78,9 @@ disp("Selection of the rs232 data from uvp6")
 [uvp6_rs232_filename, uvp6_rs232_folder] = uigetfile('*.txt','Select the rs232 data file from uvp6');
 % read the file
 [taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
+% because the float miss the last rs232tram
+% lpm_ab_rs232 = lpm_ab_rs232(1:end-1,:);
+% lpm_grey_rs232 = lpm_grey_rs232(1:end-1,:);
 disp('---------------------------------------------------------------')
 
 
@@ -83,7 +93,7 @@ disp("Selection of the LPM csv file from float")
 if park_flag
     float_lpm_table = park_lpm_table;
 else
-    float_lpm_table = ascent_lpm_table;
+    float_lpm_table = [ascent_lpm_table; surface_lpm_table];
 end
 % build num arrays
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
@@ -91,15 +101,23 @@ disp('---------------------------------------------------------------')
 
 disp("Selection of the TAXO csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the TAXO csv file from float');
-% read csv
-[park_taxo_table, ascent_taxo_table] = Uvp6ReadTaxoFromFloatTaxoCSV(fullfile(float_folder, float_filename));
-if park_flag
-    float_taxo_table = park_taxo_table;
+% if no RE csv, build fake RE arrays
+if float_filename == 0
+    float_taxo_ab = zeros(size(float_lpm_ab,1), 43);
+    float_taxo_ab(:,1:2) = float_lpm_ab(:,1:2);
+    float_taxo_grey = float_taxo_ab;
+    float_taxo_vol = float_taxo_ab;
 else
-    float_taxo_table = ascent_taxo_table;
+    % read csv
+    [park_taxo_table, ascent_taxo_table] = Uvp6ReadTaxoFromFloatTaxoCSV(fullfile(float_folder, float_filename));
+    if park_flag
+        float_taxo_table = park_taxo_table;
+    else
+        float_taxo_table = ascent_taxo_table;
+    end
+    % build num array
+    [float_taxo_ab, float_taxo_vol, float_taxo_grey] = Uvp6BuildTaxoArrayFromFloatTaxo(float_taxo_table);
 end
-% build num array
-[float_taxo_ab, float_taxo_vol, float_taxo_grey] = Uvp6BuildTaxoArrayFromFloatTaxo(float_taxo_table);
 disp('---------------------------------------------------------------')
 
 

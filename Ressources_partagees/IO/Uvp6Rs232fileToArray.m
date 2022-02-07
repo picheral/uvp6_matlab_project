@@ -31,8 +31,13 @@ for h = 1 : a - 1
     taxo_txt = char(data(h));
     lpm_txt = char(data(h+1));
     
+    % if rs232 file noRE, build fake RE
+    if ~contains(taxo_txt, 'TAXO_DATA') && contains(lpm_txt, 'LPM_DATA')
+        taxo_txt = 'TAXO_DATA,0;';
+    end
+    
     % detection ligne taxo hors black
-    if contains(taxo_txt,'TAXO_DATA') && contains(lpm_txt,'LPM_DATA') 
+    if contains(lpm_txt,'LPM_DATA') 
                 
         % construction des vecteurs
         ab_line = zeros(1,cat_number);
@@ -40,14 +45,15 @@ for h = 1 : a - 1
         grey_line = zeros(1,cat_number);
         
         % TAXO
-        ff = strfind(taxo_txt,',');        if numel(ff) > 1
+        ff = strfind(taxo_txt,',');        
+        if numel(ff) > 1
             % au moins un objet classé
             nb_img_taxo = str2num(taxo_txt(ff(1)+1:ff(2)-1));
             taxo = taxo_txt(ff(2)+1:end-1);
             taxo_num = str2num(taxo);
         else
             % pas d'objet classé
-            nb_img = str2num(taxo_txt(ff(1)+1:end-1));
+            nb_img_taxo = str2num(taxo_txt(ff(1)+1:end-1));
             taxo_num = [];
         end
         
