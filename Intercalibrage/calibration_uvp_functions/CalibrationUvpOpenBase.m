@@ -13,7 +13,7 @@ function[uvp_base, uvp_cast] = CalibrationUvpOpenBase(type)
 
 selectprojet = 0;
 while (selectprojet == 0)
-%    disp(['>> Select UVP ',char(type),' project directory']);
+    %    disp(['>> Select UVP ',char(type),' project directory']);
     project_folder_ref = uigetdir('',['Select UVP ',char(type),' project directory']);
     if contains(project_folder_ref,'uvp5_sn') || contains(project_folder_ref,'uvp6_sn')
         selectprojet = 1;
@@ -29,8 +29,8 @@ if isfolder(results_dir)
     if base_nofile == 0
         if size(base_list) > 0
             disp('------------------------------------------------------');
-                        disp('----------- Base list --------------------------------');
-                        disp([num2str(size(base_list,1)),' database in ', results_dir]);
+            disp('----------- Base list --------------------------------');
+            disp([num2str(size(base_list,1)),' database in ', results_dir]);
             for i = 1:size(base_list)
                 disp(['N°= ',num2str(i),' : ',base_list(i).name]);
             end
@@ -57,9 +57,11 @@ try
 catch
     base = base;
 end
-ligne_ref = size(base,2);
-for i = 1 : ligne_ref
-       disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+if contains(project_folder_ref,'uvp6_sn')
+    ligne_ref = size(base,2);
+    for i = 1 : ligne_ref
+        disp(['Number : ',num2str(i),'   >  Profile : ',char(base(i).profilename)]);
+    end
 end
 record = input('Enter Number of the profile for the UVP (default = 1) ');
 if isempty(record); record = 1; end
