@@ -50,15 +50,18 @@ if isempty(taxo)
     taxo(:) = {'0,0,0,0;'};
 end
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
-[uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey);
+pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
+images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
+images_nb_blocks = [1 1];
+[uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey, pressure_limits, images_nb_blocks);
 % read data
 [uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_raw_grey, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data);
 % build num arrays
 uvp6_lpm_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_nb);
 uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_grey);
 % because the float miss the last rs232tram
-% uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
-% uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
+uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
+uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
 
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
@@ -79,8 +82,8 @@ disp("Selection of the rs232 data from uvp6")
 % read the file
 [taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
 % because the float miss the last rs232tram
-% lpm_ab_rs232 = lpm_ab_rs232(1:end-1,:);
-% lpm_grey_rs232 = lpm_grey_rs232(1:end-1,:);
+lpm_ab_rs232 = lpm_ab_rs232(1:end-2,:);
+lpm_grey_rs232 = lpm_grey_rs232(1:end-2,:);
 disp('---------------------------------------------------------------')
 
 
@@ -93,7 +96,8 @@ disp("Selection of the LPM csv file from float")
 if park_flag
     float_lpm_table = park_lpm_table;
 else
-    float_lpm_table = [ascent_lpm_table; surface_lpm_table];
+    %float_lpm_table = [ascent_lpm_table; surface_lpm_table];
+    float_lpm_table = ascent_lpm_table;
 end
 % build num arrays
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
