@@ -21,7 +21,12 @@ raw_folder = fullfile(project_folder,'\raw\');
 [~] = mkdir(results_folder, 'taxo_ab');
 [~] = mkdir(results_folder, 'taxo_vol');
 [~] = mkdir(results_folder, 'taxo_grey');
+[~] = mkdir(results_folder, 'black_ab');
 
+full_flag = 1;
+pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
+images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
+images_nb_blocks = [1 1];
 
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
@@ -50,19 +55,19 @@ if isempty(taxo)
     taxo(:) = {'0,0,0,0;'};
 end
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
-pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
-images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
-images_nb_blocks = [1 1];
 [uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey, pressure_limits, images_nb_blocks);
 % read data
 [uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_raw_grey, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data);
 % build num arrays
 uvp6_lpm_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_nb);
 uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_raw_grey);
-% because the float miss the last rs232tram
-uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
-uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
-
+uvp6_blk_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_black_nb);
+% because the float miss the last rs232tram in ascent
+if ~full_flag && ~park_flag && ~fake_flag
+    uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
+    uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
+end
+    
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
 uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
@@ -73,6 +78,9 @@ uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
 % a supprimer pour la nouvelle version
 uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(hw_line, uvp6_lpm_grey);
 uvp6_lpm_grey_class(isnan(uvp6_lpm_grey_class)) = 0;
+% black class vectors
+uvp6_blk_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_blk_ab);
+images_uvp6_blk_ab_class = sum(uvp6_blk_ab_class(:,3));
 disp('------------------------------------------------------')
 
 
@@ -82,8 +90,10 @@ disp("Selection of the rs232 data from uvp6")
 % read the file
 [taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
 % because the float miss the last rs232tram
-lpm_ab_rs232 = lpm_ab_rs232(1:end-2,:);
-lpm_grey_rs232 = lpm_grey_rs232(1:end-2,:);
+if ~full_flag && ~park_flag && ~fake_flag
+    lpm_ab_rs232 = lpm_ab_rs232(1:end-2,:);
+    lpm_grey_rs232 = lpm_grey_rs232(1:end-2,:);
+end
 disp('---------------------------------------------------------------')
 
 
@@ -96,8 +106,11 @@ disp("Selection of the LPM csv file from float")
 if park_flag
     float_lpm_table = park_lpm_table;
 else
-    %float_lpm_table = [ascent_lpm_table; surface_lpm_table];
-    float_lpm_table = ascent_lpm_table;
+    if full_flag
+        float_lpm_table = [ascent_lpm_table; surface_lpm_table];
+    else
+        float_lpm_table = ascent_lpm_table;
+    end
 end
 % build num arrays
 [float_lpm_ab, float_lpm_grey] = Uvp6BuildLpmArrayFromFloatLpm(float_lpm_table);
@@ -124,6 +137,25 @@ else
 end
 disp('---------------------------------------------------------------')
 
+
+disp("Selection of the BLACK csv file from float")
+[float_filename, float_folder] = uigetfile('*.csv','Select the BLACK csv file from float');
+% if no black csv, build fake black arrays
+if float_filename == 0
+    float_black_ab = zeros(size(float_lpm_ab,1), 8);
+    float_black_ab(:,1:2) = float_lpm_ab(:,1:2);
+else
+    % read csv
+    [park_blk_table, ascent_blk_table, surface_blk_table] = Uvp6ReadLpmFromFloatLpmCSV(fullfile(float_folder, float_filename));
+    if park_flag
+        float_black_table = park_blk_table;
+    else
+        float_black_table = surface_blk_table;
+    end
+    % build num array
+    [float_black_ab] = Uvp6BuildBlackArrayFromFloatBlk(float_black_table);
+end
+disp('---------------------------------------------------------------')
 
 
 disp("Concatenation of slices")
@@ -190,6 +222,7 @@ images_float_lpm_grey = sum(float_lpm_grey(:,3));
 images_float_taxo_ab = sum(float_taxo_ab(:,3));
 images_float_taxo_grey = sum(float_taxo_grey(:,3));
 images_float_taxo_vol = sum(float_taxo_vol(:,3));
+images_float_black_ab = sum(float_black_ab(:,3));
 
 
 disp("Plot total nb of variables")
@@ -214,7 +247,10 @@ lpm_ab_rs232_tot = sum(lpm_ab_rs232(:,4:end), 1);
 uvp6_lpm_grey_class_tot = sum(uvp6_lpm_grey_slices(:,4:end), 1);
 float_lpm_grey_tot = sum(float_lpm_grey(:,5:end), 1);
 lpm_grey_rs232_tot = sum(lpm_grey_rs232_slices(:,4:end), 1);
-
+%concatenation nb of black
+uvp6_blk_ab_class_tot = sum(uvp6_blk_ab_class(:,4:end), 1);
+float_black_ab_tot = sum(float_black_ab(:,5:end), 1);
+blk_ab_rs232_tot = 0;
 
 
 
@@ -370,6 +406,37 @@ title('uvp6 - rs232')
 saveas(gcf, fullfile(project_folder, 'results', 'lpm_grey', 'LPM_grey_tot.png'))
 
 
+%% plots total nb of black
+
+%plots
+figure
+subplot(1,3,1)
+plot(uvp6_blk_ab_class_tot, 'r')
+hold on
+plot(float_black_ab_tot, 'g-.')
+hold on
+plot(blk_ab_rs232_tot, 'b:')
+xlabel('nb of the part class')
+ylabel('nb of particles of this class')
+legend('uvp6', 'float', 'rs232')
+title('total nb of blk particles')
+
+subplot(1,3,2)
+plot(uvp6_blk_ab_class_tot(1:5) - float_black_ab_tot(1:end))
+xlabel('nb of the part class')
+ylabel('nb of particles of this class')
+title('uvp6 - float')
+
+%subplot(1,3,3)
+%plot(uvp6_blk_ab_class_tot(1:end) - blk_ab_rs232_tot(1:end))
+%xlabel('nb of the part class')
+%ylabel('nb of particles of this class')
+%title('uvp6 - rs232')
+
+saveas(gcf, fullfile(project_folder, 'results', 'black_ab', 'BLK_part_nb_tot.png'))
+
+
+
 disp('---------------------------------------------------------------')
 
 disp("Profile plots")
@@ -463,16 +530,39 @@ for j=1:12
     close
 end
 
+
+%% plot depth slices blk abundance
+for j=1:5
+    figure
+    j_str = num2str(j);
+    plot(uvp6_blk_ab_class(:,1), uvp6_blk_ab_class(:,j+3), 'r')
+    hold on
+    plot(float_black_ab(:,1), float_black_ab(:,j+4), 'g-.')
+    %hold on
+    %plot(blk_ab_rs232(:,1), blk_ab_rs232(:,j+3), 'b:')
+    xlabel('pressure')
+    ylabel(['nb of part of class ' j_str])
+    %legend('uvp6', 'float', 'rs232')
+    title(['blk profile of particles ' j_str])
+    saveas(gcf, fullfile(project_folder, 'results', 'black_ab', ['BLK_part_nb_' j_str '.png']))
+    close
+end
+
+
+
 disp('---------------------------------------------------------------')
 
 %% file images nb
 fid = fopen(fullfile(results_folder, 'caract_uvp6_float.txt'), 'w');
 disp(['Write nb of images in ' fullfile(results_folder, 'caract_uvp6_float.txt')])
+fprintf(fid, ['uvp6 total number of images   : ' num2str(length(data)) '\n']);
+fprintf(fid, '\n');
 fprintf(fid, ['uvp6 lpm ab images number     : ' num2str(images_uvp6_lpm_ab_slices) '\n']);
 fprintf(fid, ['uvp6 lpm grey images number   : ' num2str(images_uvp6_lpm_grey_slices) '\n']);
 fprintf(fid, ['uvp6 taxo ab images number    : ' num2str(images_uvp6_taxo_ab_slices) '\n']);
 fprintf(fid, ['uvp6 taxo grey images number  : ' num2str(images_uvp6_taxo_grey_slices) '\n']);
 fprintf(fid, ['uvp6 taxo vol images number   : ' num2str(images_uvp6_taxo_vol_slices) '\n']);
+fprintf(fid, ['uvp6 black ab images number   : ' num2str(images_uvp6_blk_ab_class) '\n']);
 fprintf(fid, '\n');
 fprintf(fid, ['rs232 lpm ab images number    : ' num2str(images_lpm_ab_rs232_slices) '\n']);
 fprintf(fid, ['rs232 lpm grey images number  : ' num2str(images_lpm_grey_rs232_slices) '\n']);
@@ -485,6 +575,7 @@ fprintf(fid, ['float lpm grey images number  : ' num2str(images_float_lpm_grey) 
 fprintf(fid, ['float taxo ab images number   : ' num2str(images_float_taxo_ab) '\n']);
 fprintf(fid, ['float taxo grey images number : ' num2str(images_float_taxo_grey) '\n']);
 fprintf(fid, ['float taxo vol images number  : ' num2str(images_float_taxo_vol) '\n']);
+fprintf(fid, ['float black ab images number  : ' num2str(images_float_black_ab) '\n']);
 fclose(fid);
 
 disp('---------------------------------------------------------------')
