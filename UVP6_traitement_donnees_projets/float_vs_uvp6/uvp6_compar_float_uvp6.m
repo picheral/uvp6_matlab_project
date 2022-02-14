@@ -143,7 +143,7 @@ disp("Selection of the BLACK csv file from float")
 [float_filename, float_folder] = uigetfile('*.csv','Select the BLACK csv file from float');
 % if no black csv, build fake black arrays
 if float_filename == 0
-    float_black_ab = zeros(size(float_lpm_ab,1), 8);
+    float_black_ab = zeros(size(float_lpm_ab,1), 9);
     float_black_ab(:,1:2) = float_lpm_ab(:,1:2);
 else
     % read csv

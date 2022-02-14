@@ -1,19 +1,18 @@
-function [sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp,classes_limits] = Uvp6ReadMetadataFromhwline(splited_hwline)
+function [sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp,classes_limits] = Uvp6ReadMetadataFromhwline(hw_line)
 % read metadata from a hwline of a uvp6 data file
 % Picheral, 2020/04/17
 %
-% hwline entries must be splited before
-% fid = fopen(path);
-% tline = fgetl(fid);
-% splited_hwline = strsplit(tline,{',',';'}, 'CollapseDelimiters', false);
+% hw_line entries must be from Uvp6ReadMetalinesFromDatafile
 %
 %   input:
-%       splited_hwline : splited hw line from the uvp6 dat file
+%       hw_line : cell of string of the hw line
 %
 %   outputs:
 %       sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp,classes_limits
 %
 
+%% splited hw line
+splited_hwline = strsplit(hw_line,{',',';'}, 'CollapseDelimiters', false);
 
 %% ----- Check line length ----------
 if size(splited_hwline,2) == 45 || size(splited_hwline,2) == 44
@@ -23,12 +22,12 @@ else
 end
 
 %% check the hwline version (older than 2022 ?)
-if isdouble(splited_hwline(15))
-    % if double, it is not the IP adress (from version 2022)
-    Y = 1;
-else
-    % if not double, it is the IP adress (version older than 2022)
+if isnan(str2double(splited_hwline{15}))
+    % if nan, (=not double), it is the IP adress (version older than 2022)
     Y = 0;
+else
+    % if not nan, (= double), it is not the IP adress (from version 2022)
+    Y = 1;
 end
 
 %% ---- get all the metadata from the hardware line of the text file --
