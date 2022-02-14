@@ -14,12 +14,6 @@ function [sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp,classes_limits
 %% splited hw line
 splited_hwline = strsplit(hw_line,{',',';'}, 'CollapseDelimiters', false);
 
-%% ----- Check line length ----------
-if size(splited_hwline,2) == 45 || size(splited_hwline,2) == 44
-    X = 0;
-else
-    X = -1;
-end
 
 %% check the hwline version (older than 2022 ?)
 if isnan(str2double(splited_hwline{15}))
@@ -32,13 +26,13 @@ end
 
 %% ---- get all the metadata from the hardware line of the text file --
 sn = splited_hwline{2};
-day = splited_hwline{25+X-2*Y};
+day = splited_hwline{25-2*Y};
 light =  splited_hwline{6};
-shutter = str2double(splited_hwline{17+X-2*Y});
-threshold = str2double(splited_hwline{19+X-2*Y});
-volume = str2double(splited_hwline{23+X-2*Y});
-gain = str2double(splited_hwline{18+X-2*Y});
-pixel = str2double(splited_hwline{22+X-2*Y})/1000;
+shutter = str2double(splited_hwline{17-2*Y});
+threshold = str2double(splited_hwline{19-2*Y});
+volume = str2double(splited_hwline{23-2*Y});
+gain = str2double(splited_hwline{18-2*Y});
+pixel = str2double(splited_hwline{22-2*Y})/1000;
 Aa = str2double(splited_hwline{20-2*Y});
 Exp = str2double(splited_hwline{21-2*Y});
 classes_limits = str2double(splited_hwline(27-2*Y:end-1));

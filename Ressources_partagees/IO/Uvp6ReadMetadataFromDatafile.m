@@ -9,12 +9,6 @@ function [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,ga
 %hw_line is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
 hw_line = strsplit(hwline,{',',';'}, 'CollapseDelimiters', false);
 
-%----- Vérification longueur ligne ----------
-if size(hw_line,2) == 45 || size(hw_line,2) == 44
-    X = 0;
-else
-    X = -1;
-end
 
 % ---- get all the metadata from the hardware line of the text file --
 % ---- premiere sequence ---------
@@ -34,7 +28,7 @@ else
     % if not nan, (= double), it is not the IP adress (from version 2022)
     Y = 1;
 end
-black_ratio = str2double(acq_line{15+X-2*Y});
+black_ratio = str2double(acq_line{15-2*Y});
 
 
 end
