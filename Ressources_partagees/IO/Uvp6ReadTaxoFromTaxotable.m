@@ -32,6 +32,11 @@ for h=1: numel(data)
         disp(num2str(h))
     end
     
+    % test if nan in taxo
+    if strcmp(taxo(h), 'NaN')
+        continue
+    end
+    
     % -------- VECTEURS METADATA -------
     C = strsplit(meta{h},{','});
     date_time = char(C(1));
@@ -60,7 +65,7 @@ for h=1: numel(data)
         % nn : number of object classified in the image
         taxo_matrix = str2num(taxo{h}); %#ok<ST2NM>
         
-        if taxo_matrix(1) > 0
+        if taxo_matrix(1) > 0 && length(taxo_matrix)>1
             % -------- Contains identified objects -----------
             object_number = taxo_matrix(1);
             taxo_matrix_data = taxo_matrix(2:end);

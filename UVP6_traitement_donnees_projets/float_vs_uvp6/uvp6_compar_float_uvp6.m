@@ -23,7 +23,7 @@ raw_folder = fullfile(project_folder,'\raw\');
 [~] = mkdir(results_folder, 'taxo_grey');
 [~] = mkdir(results_folder, 'black_ab');
 
-full_flag = 1;
+full_flag = 0;
 pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
 images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
 images_nb_blocks = [1 1];
@@ -70,16 +70,17 @@ end
     
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
-uvp6_lpm_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_ab);
+[~,~,~,~,~,~,~,~,Aa,Exp,classes_limits] = Uvp6ReadMetadataFromhwline(hw_line);
+uvp6_lpm_ab_class = Uvp6ClassDispatcher(Aa, Exp, classes_limits, uvp6_lpm_ab);
 %uvp6_lpm_grey_class = Uvp6ClassDispatcher(hw_line, uvp6_lpm_grey);
 %uvp6_lpm_grey_class(:,4:end) = uvp6_lpm_grey_class(:,4:end) / uvp6_lpm_ab_class(:,4:end);
 % grey : class dispatcher avec moyenne pondérée sur l'aire des objets pour
 % coller à la version 01/2022 du firmware
 % a supprimer pour la nouvelle version
-uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(hw_line, uvp6_lpm_grey);
+uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(Aa, Exp, classes_limits, uvp6_lpm_grey);
 uvp6_lpm_grey_class(isnan(uvp6_lpm_grey_class)) = 0;
 % black class vectors
-uvp6_blk_ab_class = Uvp6ClassDispatcher(hw_line, uvp6_blk_ab);
+uvp6_blk_ab_class = Uvp6ClassDispatcher(Aa, Exp, classes_limits, uvp6_blk_ab);
 images_uvp6_blk_ab_class = sum(uvp6_blk_ab_class(:,3));
 disp('------------------------------------------------------')
 

@@ -95,52 +95,13 @@ while j < N_seq+1
     % path is the path for the text file stored in each sequence folder
     path = [raw_folder, seq(j).name, '\', txt.name];
     
-    %% ----------- A REMPLACER PAR FONCTION ------------------------
-    % [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,xp] = Uvp6ReadMetadataFromDatafile(folder,path);
-    
-    fid = fopen(path);
-    
-    % ----------------- Ligne HW -----------------
-    tline = fgetl(fid);
-    %tline is the first line of the text folder in which the parameters of the sequence are stored : shutter, threshold, gain, .....
-    hw_line = strsplit(tline,{','});
-    
-    %----- Vérification longueur ligne ----------
-    if size(hw_line,2) == 45 || size(hw_line,2) == 44
-        X = 0;
+    %% ----------- get HW conf metadata ------------------------
+    if j==1
+        [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp,balck_ratio] = Uvp6ReadMetadataFromDatafile(folder,path);
     else
-        X = -1;
+        [~,~,~,~,~,~,~,shutter,threshold,volume,gain,pixel,Aa,Exp,black_ratio] = Uvp6ReadMetadataFromDatafile(folder,path);
     end
     
-    % ---- get all the metadata from the hardware line of the text file --
-    % ---- premiere sequence ---------
-    if j == 1
-        sn = hw_line{2};
-        day = hw_line{25+X};
-        cruise = folder(4:end);
-        base_name = ['base',folder(4:end)];
-        pvmtype = ['uvp6_sn' sn];
-        soft = 'uvp6';
-        light =  hw_line{6};
-    end
-    shutter = str2double(hw_line{17+X});
-    threshold = str2double(hw_line{19+X});
-    volume = str2double(hw_line{23+X});
-    gain = str2double(hw_line{18+X});
-    pixel = str2double(hw_line{22+X})/1000;
-    Aa = str2double(hw_line{20});
-    Exp = str2double(hw_line{21});
-    
-    % ------------ Ligne ACQ ----------------------------------
-    tline = fgetl(fid);
-    if isempty(tline)
-        tline = fgetl(fid);
-    end
-    acq_line = strsplit(tline,{','});
-    black_ratio = str2double(acq_line{15+X});
-    
-    % ------------- Fermeture fichier -------------------------
-    fclose(fid);
     
     base(sample).cruise = {cruise};
     base(sample).raw_folder = {seq(j).name};

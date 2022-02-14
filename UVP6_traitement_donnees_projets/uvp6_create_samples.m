@@ -120,11 +120,8 @@ profile_type_list = strings(1, seq_nb_max);
 for seq_nb = 1:seq_nb_max
     % get hw conf data
     seq_dat_file = fullfile(list_of_sequences(seq_nb).folder, list_of_sequences(seq_nb).name, [list_of_sequences(seq_nb).name, '_data.txt']);
-    fid = fopen(seq_dat_file);
-    tline = fgetl(fid);
-    hw_line = strsplit(tline,{','});
+    [hw_line, ~, ~] = Uvp6ReadMetalinesFromDatafile(seq_dat_file);
     [sn,day,light,shutter,threshold,volume,gain,pixel,Aa,Exp] = Uvp6ReadMetadataFromhwline(hw_line);
-    fclose(fid);
     
     % volimage;aa;exp,pixelsize
     aa_list(seq_nb) = Aa/1000000;
