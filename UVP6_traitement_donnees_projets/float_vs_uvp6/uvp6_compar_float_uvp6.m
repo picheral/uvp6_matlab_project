@@ -23,10 +23,11 @@ raw_folder = fullfile(project_folder,'\raw\');
 [~] = mkdir(results_folder, 'taxo_grey');
 [~] = mkdir(results_folder, 'black_ab');
 
-full_flag = 0;
+full_flag = 0; % to take into account ascent AND parking. If 0, only ascent
 pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
 images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
 images_nb_blocks = [1 1];
+missing_images_nb = 3; % nb of missing images at the end of ascent in float data
 
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
@@ -64,9 +65,10 @@ uvp6_lpm_grey = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uv
 uvp6_blk_ab = Uvp6BuildLpmArrayFromUvp6Lpm(uvp6_time_data, uvp6_depth_data, uvp6_black_nb);
 % because the float miss the last rs232tram in ascent
 if ~full_flag && ~park_flag && ~fake_flag
-    uvp6_lpm_ab = uvp6_lpm_ab(1:end-2,:);
-    uvp6_lpm_grey = uvp6_lpm_grey(1:end-2,:);
+    uvp6_lpm_ab = uvp6_lpm_ab(1:end-missing_images_nb,:);
+    uvp6_lpm_grey = uvp6_lpm_grey(1:end-missing_images_nb,:);
 end
+images_uvp6 = sum(uvp6_lpm_ab(:,3));
     
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
@@ -92,8 +94,8 @@ disp("Selection of the rs232 data from uvp6")
 [taxo_ab_rs232, taxo_vol_rs232, taxo_grey_rs232, lpm_ab_rs232, lpm_grey_rs232] = Uvp6Rs232fileToArray(fullfile(uvp6_rs232_folder, uvp6_rs232_filename));
 % because the float miss the last rs232tram
 if ~full_flag && ~park_flag && ~fake_flag
-    lpm_ab_rs232 = lpm_ab_rs232(1:end-2,:);
-    lpm_grey_rs232 = lpm_grey_rs232(1:end-2,:);
+    lpm_ab_rs232 = lpm_ab_rs232(1:end-missing_images_nb,:);
+    lpm_grey_rs232 = lpm_grey_rs232(1:end-missing_images_nb,:);
 end
 disp('---------------------------------------------------------------')
 
@@ -556,7 +558,7 @@ disp('---------------------------------------------------------------')
 %% file images nb
 fid = fopen(fullfile(results_folder, 'caract_uvp6_float.txt'), 'w');
 disp(['Write nb of images in ' fullfile(results_folder, 'caract_uvp6_float.txt')])
-fprintf(fid, ['uvp6 total number of images   : ' num2str(length(data)) '\n']);
+fprintf(fid, ['uvp6 total number of images   : ' num2str(images_uvp6) '\n']);
 fprintf(fid, '\n');
 fprintf(fid, ['uvp6 lpm ab images number     : ' num2str(images_uvp6_lpm_ab_slices) '\n']);
 fprintf(fid, ['uvp6 lpm grey images number   : ' num2str(images_uvp6_lpm_grey_slices) '\n']);

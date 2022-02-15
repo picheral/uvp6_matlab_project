@@ -64,6 +64,7 @@ for h=1: numel(data)
         % Taxo:nn,id,size,grey,id,size,grey,id,size,grey,id,size,grey;
         % nn : number of object classified in the image
         taxo_matrix = str2num(taxo{h}); %#ok<ST2NM>
+        image_nb = flash_flag;
         
         if taxo_matrix(1) > 0 && length(taxo_matrix)>1
             % -------- Contains identified objects -----------
@@ -79,12 +80,17 @@ for h=1: numel(data)
                     grey_line(i) = sum(taxo_reshaped(3,aa));
                 end
             end
+        elseif taxo_matrix(1) > 0 && length(taxo_matrix) == 1
+            image_nb = 0;
+            if taxo_matrix(1) < 25
+                warning(['WARNING : may be a bugged taxo line : ' taxo{h}]);
+            end
         end
     end
     % -------------- Concatenation -------------------
-    taxo_ab_temp(h,:) = [depth_data, time_data, flash_flag, ab_line];
-    taxo_vol_temp(h,:) = [depth_data, time_data, flash_flag, vol_line];
-    taxo_grey_temp(h,:) = [depth_data, time_data, flash_flag, grey_line];
+    taxo_ab_temp(h,:) = [depth_data, time_data, image_nb, ab_line];
+    taxo_vol_temp(h,:) = [depth_data, time_data, image_nb, vol_line];
+    taxo_grey_temp(h,:) = [depth_data, time_data, image_nb, grey_line];
 end
 
 %% ----------- Remove "BLACK" images (flag = 0) ---------------
