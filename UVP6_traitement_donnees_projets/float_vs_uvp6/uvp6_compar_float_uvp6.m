@@ -48,6 +48,7 @@ end
 
 % read lpm data
 [data, meta, taxo] = Uvp6DatafileToArray(fullfile(uvp6_folder, uvp6_filename));
+images_uvp6 = length(data);
 % build taxo num array
 %%%%%% ATTENTION au taxo black
 % if no taxo, build a fake taxo data
@@ -68,7 +69,7 @@ if ~full_flag && ~park_flag && ~fake_flag
     uvp6_lpm_ab = uvp6_lpm_ab(1:end-missing_images_nb,:);
     uvp6_lpm_grey = uvp6_lpm_grey(1:end-missing_images_nb,:);
 end
-images_uvp6 = sum(uvp6_lpm_ab(:,3));
+
     
 % build the lpm class vectors
 [hw_line, ~, ~, ~] = Uvp6ReadMetalinesFromDatafile(fullfile(uvp6_folder, uvp6_filename));
@@ -78,8 +79,13 @@ uvp6_lpm_ab_class = Uvp6ClassDispatcher(Aa, Exp, classes_limits, uvp6_lpm_ab);
 %uvp6_lpm_grey_class(:,4:end) = uvp6_lpm_grey_class(:,4:end) / uvp6_lpm_ab_class(:,4:end);
 % grey : class dispatcher avec moyenne pondérée sur l'aire des objets pour
 % coller à la version 01/2022 du firmware
-% a supprimer pour la nouvelle version
-uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(Aa, Exp, classes_limits, uvp6_lpm_grey);
+%uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(Aa, Exp, classes_limits, uvp6_lpm_grey);
+%uvp6_lpm_grey_class(isnan(uvp6_lpm_grey_class)) = 0;
+% pour version 02/2022 du firmware
+uvp6_lpm_grey_class = uvp6_lpm_grey;
+uvp6_lpm_grey_class(:,4:end) = uvp6_lpm_grey_class(:,4:end) .* uvp6_lpm_ab(:,4:end) ;
+uvp6_lpm_grey_class = Uvp6ClassDispatcher(Aa, Exp, classes_limits, uvp6_lpm_grey_class);
+uvp6_lpm_grey_class(:,4:end) = uvp6_lpm_grey_class(:,4:end) ./ uvp6_lpm_ab_class(:,4:end);
 uvp6_lpm_grey_class(isnan(uvp6_lpm_grey_class)) = 0;
 % black class vectors
 uvp6_blk_ab_class = Uvp6ClassDispatcher(Aa, Exp, classes_limits, uvp6_blk_ab);
@@ -462,7 +468,7 @@ end
 
 
 %% plot depth slices taxo vol
-for j=1:11
+for j=1:12
     figure
     j_str = num2str(j);
     plot(uvp6_taxo_vol_slices(:,1), uvp6_taxo_vol_slices(:,j+3), 'r')
@@ -479,7 +485,7 @@ for j=1:11
 end
 
 %% plot depth slices taxo grey
-for j=1:11
+for j=1:12
     figure
     j_str = num2str(j);
     plot(uvp6_taxo_grey_slices(:,1), uvp6_taxo_grey_slices(:,j+3), 'r')
@@ -498,7 +504,7 @@ end
 
 
 %% plot depth slices lpm abundance
-for j=1:12
+for j=1:18
     figure
     j_str = num2str(j);
     plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3), 'r')
@@ -517,7 +523,7 @@ end
 
 
 %% plot depth slices lpm grey
-for j=1:12
+for j=1:18
     figure
     j_str = num2str(j);
     plot(uvp6_lpm_grey_slices(:,1), uvp6_lpm_grey_slices(:,j+3), 'r')
@@ -559,6 +565,7 @@ disp('---------------------------------------------------------------')
 fid = fopen(fullfile(results_folder, 'caract_uvp6_float.txt'), 'w');
 disp(['Write nb of images in ' fullfile(results_folder, 'caract_uvp6_float.txt')])
 fprintf(fid, ['uvp6 total number of images   : ' num2str(images_uvp6) '\n']);
+fprintf(fid, ['number of last deleted images : ' num2str(missing_images_nb) '\n']);
 fprintf(fid, '\n');
 fprintf(fid, ['uvp6 lpm ab images number     : ' num2str(images_uvp6_lpm_ab_slices) '\n']);
 fprintf(fid, ['uvp6 lpm grey images number   : ' num2str(images_uvp6_lpm_grey_slices) '\n']);
