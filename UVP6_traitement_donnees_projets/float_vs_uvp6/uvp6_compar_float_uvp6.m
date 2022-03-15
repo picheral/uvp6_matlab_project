@@ -25,11 +25,11 @@ raw_folder = fullfile(project_folder,'\raw\');
 
 full_flag = 0; % to take into account ascent AND parking. If 0, only ascent
 pressure_limits_blocks = [6000 501 -2]; % IMPORTANT : from depth to surface
-images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
-images_nb_blocks = [5 1];
+images_nb_blocks = [1 1]; % IMPORTANT : corresponding to pressure_limits
+%images_nb_blocks = [5 1];
 pressure_limits_slices = [1000 500 100]; % IMPORTANT : from depth to surface
 pressure_size_slices = [20 20 10 5]; % IMPORTANT : corresponding to pressure_limits
-pressure_size_slices = [10 10 5 5];
+%pressure_size_slices = [10 10 5 5];
 missing_images_nb = 0; % nb of missing images at the end of ascent in float data
 
 %% selection of uvp6 data
@@ -456,11 +456,11 @@ disp("Profile plots")
 for j=1:12
     figure
     j_str = num2str(j);
-    plot(uvp6_taxo_ab_slices(:,1), uvp6_taxo_ab_slices(:,j+3), 'r')
+    plot(uvp6_taxo_ab_slices(:,1), uvp6_taxo_ab_slices(:,j+3)./uvp6_taxo_ab_slices(:,3), 'r')
     hold on
-    plot(float_taxo_ab(:,1), float_taxo_ab(:,j+3), 'g-.')
+    plot(float_taxo_ab(:,1), float_taxo_ab(:,j+3)./float_taxo_ab(:,3), 'g-.')
     hold on
-    plot(taxo_ab_rs232_slices(:,1), taxo_ab_rs232_slices(:,j+3), 'b:')
+    plot(taxo_ab_rs232_slices(:,1), taxo_ab_rs232_slices(:,j+3)./taxo_ab_rs232_slices(:,3), 'b:')
     xlabel('pressure')
     ylabel(['nb of objects of class ' j_str])
     legend('uvp6', 'float', 'rs232')
@@ -510,11 +510,11 @@ end
 for j=1:18
     figure
     j_str = num2str(j);
-    plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3), 'r')
+    plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3)./uvp6_lpm_ab_slices(:,3), 'r')
     hold on
-    plot(float_lpm_ab(:,1), float_lpm_ab(:,j+4), 'g-.')
+    plot(float_lpm_ab(:,1), float_lpm_ab(:,j+4)./float_lpm_ab(:,3), 'g-.')
     hold on
-    plot(lpm_ab_rs232_slices(:,1), lpm_ab_rs232_slices(:,j+3), 'b:')
+    plot(lpm_ab_rs232_slices(:,1), lpm_ab_rs232_slices(:,j+3)./lpm_ab_rs232_slices(:,3), 'b:')
     xlabel('pressure')
     ylabel(['nb of part of class ' j_str])
     legend('uvp6', 'float', 'rs232')
