@@ -549,7 +549,7 @@ for j=1:5
     j_str = num2str(j);
     plot(uvp6_blk_ab_class(:,1), uvp6_blk_ab_class(:,j+3), 'r')
     hold on
-    plot(float_black_ab(:,1), float_black_ab(:,j+4), 'g-.')
+    plot(float_black_ab(:,1), float_black_ab(:,j+4)./float_black_ab(:,3), 'g-.')
     %hold on
     %plot(blk_ab_rs232(:,1), blk_ab_rs232(:,j+3), 'b:')
     xlabel('pressure')
