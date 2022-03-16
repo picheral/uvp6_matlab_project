@@ -135,7 +135,7 @@ Button2.BackgroundColor = 'r';
 %% INFINITE LOOP
 % While loop which stops when clicking on "settings ok"
 while fin == hh | last_image <= 10
-    base_grey = dir(img_folder);
+    base_grey = dir('*.png');
     pause(0.01)
     int_tot = 0;
     % We enter the if when a new image has been added in the livecamera
@@ -538,8 +538,8 @@ if cc == 2
     UVP_light = input('Enter LIGHT serial number (xxx) ','s');
     operator = input('Enter operator first and last name (default : Marc Picheral) ','s');
     if isempty(operator); operator = 'Marc Picheral'; end
-    shutter = input('Enter exposure setting of the livecamera acqusition (default : 80µs)','s');
-    if isempty(shutter); shutter = '80'; end
+    shutter = input('Enter exposure setting of the livecamera acqusition (default : 14µs)','s');
+    if isempty(shutter); shutter = '14'; end
     gain = input('Enter gain setting of the livecamera acquisition (default : 0)','s');
     if isempty(gain); gain = '0'; end
 %     suppl = input('Input supplement for the name of the text and graph file ','s');
