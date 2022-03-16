@@ -25,10 +25,12 @@ raw_folder = fullfile(project_folder,'\raw\');
 
 full_flag = 0; % to take into account ascent AND parking. If 0, only ascent
 pressure_limits_blocks = [6000 501 -2]; % IMPORTANT : from depth to surface
+pressure_limits_blocks = [6000 751 500 -2];
 images_nb_blocks = [1 1]; % IMPORTANT : corresponding to pressure_limits
 %images_nb_blocks = [5 1];
+images_nb_blocks = [10 5 1];
 pressure_limits_slices = [1000 500 100]; % IMPORTANT : from depth to surface
-pressure_size_slices = [20 20 10 5]; % IMPORTANT : corresponding to pressure_limits
+pressure_size_slices = [10 10 5 5]; % IMPORTANT : corresponding to pressure_limits
 %pressure_size_slices = [10 10 5 5];
 missing_images_nb = 0; % nb of missing images at the end of ascent in float data
 
