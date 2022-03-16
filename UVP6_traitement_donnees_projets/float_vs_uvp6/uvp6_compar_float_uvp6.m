@@ -24,10 +24,15 @@ raw_folder = fullfile(project_folder,'\raw\');
 [~] = mkdir(results_folder, 'black_ab');
 
 full_flag = 0; % to take into account ascent AND parking. If 0, only ascent
-pressure_limits = [6000 100 -2]; % IMPORTANT : from depth to surface
-images_nb_blocks = [1 2]; % IMPORTANT : corresponding to pressure_limits
-images_nb_blocks = [1 1];
-missing_images_nb = 3; % nb of missing images at the end of ascent in float data
+pressure_limits_blocks = [6000 501 -2]; % IMPORTANT : from depth to surface
+pressure_limits_blocks = [6000 751 500 -2];
+images_nb_blocks = [1 1]; % IMPORTANT : corresponding to pressure_limits
+%images_nb_blocks = [5 1];
+images_nb_blocks = [10 5 1];
+pressure_limits_slices = [1000 500 100]; % IMPORTANT : from depth to surface
+pressure_size_slices = [10 10 5 5]; % IMPORTANT : corresponding to pressure_limits
+%pressure_size_slices = [10 10 5 5];
+missing_images_nb = 0; % nb of missing images at the end of ascent in float data
 
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
@@ -57,7 +62,7 @@ if isempty(taxo)
     taxo(:) = {'0,0,0,0;'};
 end
 [uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey] = Uvp6ReadTaxoFromTaxotable(meta, data, taxo);
-[uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey, pressure_limits, images_nb_blocks);
+[uvp6_taxo_ab_block, uvp6_taxo_vol_block, uvp6_taxo_grey_blok] = Uvp6BuildTaxoImagesBlocks(uvp6_taxo_ab, uvp6_taxo_vol, uvp6_taxo_grey, pressure_limits_blocks, images_nb_blocks);
 % read data
 [uvp6_time_data, uvp6_depth_data, uvp6_raw_nb, uvp6_black_nb, uvp6_raw_grey, uvp6_image_status] = Uvp6ReadDataFromDattable(meta, data);
 % build num arrays
@@ -170,26 +175,26 @@ disp('---------------------------------------------------------------')
 disp("Concatenation of slices")
 %% uvp6 concatenation of slices
 % taxo ab
-uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block, park_flag, fake_flag);
+uvp6_taxo_ab_slices = Uvp6FloatSlicer(uvp6_taxo_ab_block, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 images_uvp6_taxo_ab_slices = sum(uvp6_taxo_ab_slices(:,3));
 % taxo vol
-uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block, park_flag, fake_flag);
+uvp6_taxo_vol_slices = Uvp6FloatSlicer(uvp6_taxo_vol_block, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 uvp6_taxo_vol_slices(:,4:end) = round(uvp6_taxo_vol_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end));% average of volume, per object
 uvp6_taxo_vol_slices(isnan(uvp6_taxo_vol_slices)) = 0;
 images_uvp6_taxo_vol_slices = sum(uvp6_taxo_vol_slices(:,3));
 % taxo grey
-uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok, park_flag, fake_flag);
+uvp6_taxo_grey_slices = Uvp6FloatSlicer(uvp6_taxo_grey_blok, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 uvp6_taxo_grey_slices(:,4:end) = round(uvp6_taxo_grey_slices(:,4:end) ./ uvp6_taxo_ab_slices(:,4:end));% average of grey, per object
 uvp6_taxo_grey_slices(isnan(uvp6_taxo_grey_slices)) = 0;
 images_uvp6_taxo_grey_slices = sum(uvp6_taxo_grey_slices(:,3));
 
 % lpm ab
-uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class, park_flag, fake_flag);
+uvp6_lpm_ab_slices = Uvp6FloatSlicer(uvp6_lpm_ab_class, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 images_uvp6_lpm_ab_slices = sum(uvp6_lpm_ab_slices(:,3));
 % lpm grey
 uvp6_lpm_grey_class_temp = uvp6_lpm_grey_class;
 uvp6_lpm_grey_class_temp(:,4:end) = uvp6_lpm_grey_class_temp(:,4:end) .* uvp6_lpm_ab_class(:,4:end);
-uvp6_lpm_grey_slices = Uvp6FloatSlicer(uvp6_lpm_grey_class_temp, park_flag, fake_flag);
+uvp6_lpm_grey_slices = Uvp6FloatSlicer(uvp6_lpm_grey_class_temp, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 %%%%%% attention
 %uvp6_lpm_grey_slices(:,4:end) = bsxfun(@times,uvp6_lpm_grey_slices(:,3),uvp6_lpm_grey_slices(:,4:end));
 uvp6_lpm_grey_slices(:,4:end) = round(uvp6_lpm_grey_slices(:,4:end) ./ uvp6_lpm_ab_slices(:,4:end));% average of grey, per object
@@ -199,26 +204,26 @@ images_uvp6_lpm_grey_slices = sum(uvp6_lpm_grey_slices(:,3));
 
 %% RS232 concatenation of slices
 % taxo ab
-taxo_ab_rs232_slices = Uvp6FloatSlicer(taxo_ab_rs232, park_flag, fake_flag);
+taxo_ab_rs232_slices = Uvp6FloatSlicer(taxo_ab_rs232, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 images_taxo_ab_rs232_slices = sum(taxo_ab_rs232_slices(:,3));
 % taxo vol
-taxo_vol_rs232_slices = Uvp6FloatSlicer(taxo_vol_rs232, park_flag, fake_flag);
+taxo_vol_rs232_slices = Uvp6FloatSlicer(taxo_vol_rs232, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 taxo_vol_rs232_slices(:,4:end) = round(taxo_vol_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end));
 taxo_vol_rs232_slices(isnan(taxo_vol_rs232_slices)) = 0;
 images_taxo_vol_rs232_slices = sum(taxo_vol_rs232_slices(:,3));
 % taxo grey
-taxo_grey_rs232_slices = Uvp6FloatSlicer(taxo_grey_rs232, park_flag, fake_flag);
+taxo_grey_rs232_slices = Uvp6FloatSlicer(taxo_grey_rs232, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 taxo_grey_rs232_slices(:, 4:end) = round(taxo_grey_rs232_slices(:,4:end) ./ taxo_ab_rs232_slices(:,4:end));
 taxo_grey_rs232_slices(isnan(taxo_grey_rs232_slices)) = 0;
 images_taxo_grey_rs232_slices = sum(taxo_grey_rs232_slices(:,3));
 
 % lpm ab
-lpm_ab_rs232_slices = Uvp6FloatSlicer(lpm_ab_rs232, park_flag, fake_flag);
+lpm_ab_rs232_slices = Uvp6FloatSlicer(lpm_ab_rs232, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 images_lpm_ab_rs232_slices = sum(lpm_ab_rs232_slices(:,3));
 % lpm grey
 lpm_grey_rs232_temp = lpm_grey_rs232;
 lpm_grey_rs232_temp(:,4:end) = lpm_grey_rs232_temp(:,4:end) .* lpm_ab_rs232(:,4:end);
-lpm_grey_rs232_slices = Uvp6FloatSlicer(lpm_grey_rs232_temp, park_flag, fake_flag);
+lpm_grey_rs232_slices = Uvp6FloatSlicer(lpm_grey_rs232_temp, park_flag, fake_flag, pressure_limits_slices, pressure_size_slices);
 lpm_grey_rs232_slices(:,4:end) = round(lpm_grey_rs232_slices(:,4:end) ./ lpm_ab_rs232_slices(:,4:end));% average of grey, per object
 lpm_grey_rs232_slices(isnan(lpm_grey_rs232_slices)) = 0;
 images_lpm_grey_rs232_slices = sum(lpm_grey_rs232_slices(:,3));
@@ -453,11 +458,11 @@ disp("Profile plots")
 for j=1:12
     figure
     j_str = num2str(j);
-    plot(uvp6_taxo_ab_slices(:,1), uvp6_taxo_ab_slices(:,j+3), 'r')
+    plot(uvp6_taxo_ab_slices(:,1), uvp6_taxo_ab_slices(:,j+3)./uvp6_taxo_ab_slices(:,3), 'r')
     hold on
-    plot(float_taxo_ab(:,1), float_taxo_ab(:,j+3), 'g-.')
+    plot(float_taxo_ab(:,1), float_taxo_ab(:,j+3)./float_taxo_ab(:,3), 'g-.')
     hold on
-    plot(taxo_ab_rs232_slices(:,1), taxo_ab_rs232_slices(:,j+3), 'b:')
+    plot(taxo_ab_rs232_slices(:,1), taxo_ab_rs232_slices(:,j+3)./taxo_ab_rs232_slices(:,3), 'b:')
     xlabel('pressure')
     ylabel(['nb of objects of class ' j_str])
     legend('uvp6', 'float', 'rs232')
@@ -507,11 +512,11 @@ end
 for j=1:18
     figure
     j_str = num2str(j);
-    plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3), 'r')
+    plot(uvp6_lpm_ab_slices(:,1), uvp6_lpm_ab_slices(:,j+3)./uvp6_lpm_ab_slices(:,3), 'r')
     hold on
-    plot(float_lpm_ab(:,1), float_lpm_ab(:,j+4), 'g-.')
+    plot(float_lpm_ab(:,1), float_lpm_ab(:,j+4)./float_lpm_ab(:,3), 'g-.')
     hold on
-    plot(lpm_ab_rs232_slices(:,1), lpm_ab_rs232_slices(:,j+3), 'b:')
+    plot(lpm_ab_rs232_slices(:,1), lpm_ab_rs232_slices(:,j+3)./lpm_ab_rs232_slices(:,3), 'b:')
     xlabel('pressure')
     ylabel(['nb of part of class ' j_str])
     legend('uvp6', 'float', 'rs232')
@@ -546,7 +551,7 @@ for j=1:5
     j_str = num2str(j);
     plot(uvp6_blk_ab_class(:,1), uvp6_blk_ab_class(:,j+3), 'r')
     hold on
-    plot(float_black_ab(:,1), float_black_ab(:,j+4), 'g-.')
+    plot(float_black_ab(:,1), float_black_ab(:,j+4)./float_black_ab(:,3), 'g-.')
     %hold on
     %plot(blk_ab_rs232(:,1), blk_ab_rs232(:,j+3), 'b:')
     xlabel('pressure')
