@@ -97,7 +97,7 @@ while j < N_seq+1
     
     %% ----------- get HW conf metadata ------------------------
     if j==1
-        [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp,balck_ratio] = Uvp6ReadMetadataFromDatafile(folder,path);
+        [sn,day,cruise,base_name,pvmtype,soft,light,shutter,threshold,volume,gain,pixel,Aa,Exp,black_ratio] = Uvp6ReadMetadataFromDatafile(folder,path);
     else
         [~,~,~,~,~,~,~,shutter,threshold,volume,gain,pixel,Aa,Exp,black_ratio] = Uvp6ReadMetadataFromDatafile(folder,path);
     end
