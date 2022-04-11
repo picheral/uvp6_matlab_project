@@ -32,7 +32,7 @@ images_nb_blocks = [10 5 1];
 pressure_limits_slices = [1000 500 100]; % IMPORTANT : from depth to surface
 pressure_size_slices = [10 10 5 5]; % IMPORTANT : corresponding to pressure_limits
 %pressure_size_slices = [10 10 5 5];
-missing_images_nb = 0; % nb of missing images at the end of ascent in float data
+missing_images_nb = 1; % nb of missing images at the end of ascent in float data
 
 %% selection of uvp6 data
 disp("Selection of the data file from uvp6")
