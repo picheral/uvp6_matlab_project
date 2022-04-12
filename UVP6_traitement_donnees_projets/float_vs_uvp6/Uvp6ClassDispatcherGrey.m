@@ -1,23 +1,18 @@
-function uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(hw_line, uvp6_lpm_grey)
+function uvp6_lpm_grey_class = Uvp6ClassDispatcherGrey(Aa, Exp, esd_classes, uvp6_lpm_grey)
 % Dispatch the lpm grey level into calibrated size classes
 % Catalano 2022
 %
 % grey level is an average modified by the area
 %
 %   input:
-%       hw_line : string of the hw line
+%       Aa : Aa in float
+%       Exp : Exp in float
+%       esd_classes : array of float (esd limits of classes)
 %       uvp6_lpm_grey : pix num array (depth, time, image_nb, value_i,...)
 %
 %   outputs:
 %       uvp6_lpm_grey_class : calibrated num array (depth, time, image_nb, value_i,...) 
 %
-
-hw_array = strsplit(hw_line, ',');
-hw_array(end) = {hw_array{end}(1:end-1)};
-
-esd_classes = str2double(hw_array(26:end));
-Aa = str2double(hw_array{19});
-Exp = str2double(hw_array{20});
 
 % build pixel class vector
 pixsize = [1:size(uvp6_lpm_grey(:,4:end),2)];

@@ -12,7 +12,17 @@ if b > 1
     meta_raw = table2array(data_table(:,1));
     
     % Correction if contains TAXO data
-    if strcmp(char(meta_raw(2)),'TAXO')
+    if any(strcmp(meta_raw,'TAXO'))
+        data_indice = find(~ismember(meta_raw, 'TAXO'));
+        data = data_raw(data_indice);
+        meta = meta_raw(data_indice);
+        taxo = data_raw;
+        taxo(data_indice) = {'NaN'};
+        taxo_indice = find(strcmp(meta_raw, 'TAXO'));
+        taxo(taxo_indice-1) = [];
+    %{
+    if any(strcmp(meta_raw,'TAXO'))
+        
         meta = cell(size(meta_raw,1)/2,1);
         data = cell(size(meta_raw,1)/2,1);
         taxo = cell(size(meta_raw,1)/2,1);
@@ -27,6 +37,7 @@ if b > 1
             taxo(index) = data_raw(i+1);
             index = index+1;
         end
+        %}
     else
         % no TAXO in data file
         data = data_raw;

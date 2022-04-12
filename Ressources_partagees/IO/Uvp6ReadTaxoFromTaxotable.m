@@ -32,6 +32,11 @@ for h=1: numel(data)
         disp(num2str(h))
     end
     
+    % test if nan in taxo
+    if strcmp(taxo(h), 'NaN')
+        continue
+    end
+    
     % -------- VECTEURS METADATA -------
     C = strsplit(meta{h},{','});
     date_time = char(C(1));
@@ -48,8 +53,6 @@ for h=1: numel(data)
     grey_line = zeros(1,cat_number);
     
     % --------- VECTEURS DATA -------------
-    %%%%%% Flash tag a remettre
-    %%%%%% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if isempty(strfind(data{h},'OVER')) && isempty(strfind(data{h},'EMPTY')) && flash_flag == 1
         % -------- DATA ------------
         % cast the data line in nb_classx4 numerical matrix
@@ -61,8 +64,9 @@ for h=1: numel(data)
         % Taxo:nn,id,size,grey,id,size,grey,id,size,grey,id,size,grey;
         % nn : number of object classified in the image
         taxo_matrix = str2num(taxo{h}); %#ok<ST2NM>
+        image_nb = flash_flag;
         
-        if taxo_matrix(1) > 0
+        if taxo_matrix(1) > 0 && length(taxo_matrix)>1
             % -------- Contains identified objects -----------
             object_number = taxo_matrix(1);
             taxo_matrix_data = taxo_matrix(2:end);
@@ -76,13 +80,17 @@ for h=1: numel(data)
                     grey_line(i) = sum(taxo_reshaped(3,aa));
                 end
             end
+        elseif taxo_matrix(1) > 0 && length(taxo_matrix) == 1
+            image_nb = 0;
+            if taxo_matrix(1) < 25
+                warning(['WARNING : may be a bugged taxo line : ' taxo{h}]);
+            end
         end
     end
     % -------------- Concatenation -------------------
-    %flash_flag=1; %%%%%%% A enlever!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    taxo_ab_temp(h,:) = [depth_data, time_data, flash_flag, ab_line];
-    taxo_vol_temp(h,:) = [depth_data, time_data, flash_flag, vol_line];
-    taxo_grey_temp(h,:) = [depth_data, time_data, flash_flag, grey_line];
+    taxo_ab_temp(h,:) = [depth_data, time_data, image_nb, ab_line];
+    taxo_vol_temp(h,:) = [depth_data, time_data, image_nb, vol_line];
+    taxo_grey_temp(h,:) = [depth_data, time_data, image_nb, grey_line];
 end
 
 %% ----------- Remove "BLACK" images (flag = 0) ---------------
