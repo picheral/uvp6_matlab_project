@@ -55,16 +55,30 @@ fprintf(clock_correct_file,'%s\n',ACQline);
 
 %% time correction in data file
 disp("time correction...")
-for line_nb = 1:size(meta,1)
-    try
-        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss-SSS');
-        date_format = 'yyyyMMdd-HHmmss-SSS';
-    catch
-        data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
-        date_format = 'yyyyMMdd-HHmmss';
+
+% detection of firmware version format
+try
+    data_datetime = datetime(cell2mat(meta(1,1)), 'InputFormat', 'yyyyMMdd-HHmmss-SSS');
+    date_format = 'yyyyMMdd-HHmmss-SSS';
+    if length(cell2mat(meta(1,1))) == 17
+        % special process for the last lp format(yyyyMMdd-HHmmss-S)
+        % image names are smaller than "-SSS" format ("-S")
+        length_date_format = 17;
+    else
+        length_date_format = length(date_format);
     end
+catch
+    data_datetime = datetime(cell2mat(meta(1,1)), 'InputFormat', 'yyyyMMdd-HHmmss');
+    date_format = 'yyyyMMdd-HHmmss';
+    length_date_format = length(date_format);
+end
+    
+
+for line_nb = 1:size(meta,1)
+    data_datetime = datetime(cell2mat(meta(line_nb,1)), 'InputFormat', date_format);
     new_data_datetime = data_datetime + seconds(time_offset);
-    meta(line_nb,1) = {char(new_data_datetime, date_format)};
+    new_meta_line = char(new_data_datetime, date_format);
+    meta(line_nb,1) = {new_meta_line(1:length_date_format)};
 end
     
 
@@ -92,7 +106,7 @@ if isempty(filelist)
     disp("WARNING: No image found in the directory or subdirectories") 
 else
     % test sign of time offset in order to not replace existing image
-    if time_offset > 0
+    if time_offset > 0        
         for i=length(filelist):-1:1
             new_name = filelist(i).name;
             data_datetime = datetime(new_name(1:length(date_format)-2), 'InputFormat', date_format);
@@ -103,9 +117,10 @@ else
     elseif time_offset < 0
         for i=1:length(filelist)
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
+            data_datetime = datetime(new_name(1:length_date_format), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
+            new_datetime = char(new_data_datetime, date_format);
+            new_name(1:length_date_format) = new_datetime(1:length_date_format);
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     end
