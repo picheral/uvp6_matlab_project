@@ -95,9 +95,9 @@ else
     if time_offset > 0
         for i=length(filelist):-1:1
             new_name = filelist(i).name;
-            data_datetime = datetime(new_name(1:length(date_format)), 'InputFormat', date_format);
+            data_datetime = datetime(new_name(1:length(date_format)-2), 'InputFormat', date_format);
             new_data_datetime = data_datetime + seconds(time_offset);
-            new_name(1:length(date_format)) = char(new_data_datetime, date_format);
+            new_name(1:length(date_format)-2) = char(new_data_datetime, date_format)-2;
             movefile([filelist(i).folder, '\', filelist(i).name], [filelist(i).folder, '\', new_name]);
         end
     elseif time_offset < 0
