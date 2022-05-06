@@ -1,5 +1,5 @@
-function [fitresult, gof] = createFit1(X, Y, poids)
-%CREATEFIT1(X,Y,POIDS)
+function [fitresult, gof] = fit_power(X, Y, poids)
+%fit_power(X,Y,POIDS)
 %  Create a fit.
 %
 %  Data for 'untitled fit 1' fit:
