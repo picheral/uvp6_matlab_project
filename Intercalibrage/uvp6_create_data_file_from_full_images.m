@@ -236,9 +236,17 @@ for i = 1 : N_seq
             fid_uvp = fopen([seq(i).name,'_',threstxt(j,:),'_data.txt'],'w');
             
             % update the threshold of the HW line
-            % the threshold is at the 19th position in the line
+            % detection rang du threshold dans HW line (avant/après firmware 2022)
             thres_HWline = split(HWline,',');
-            thres_HWline(19) = {num2str(mat_thres(j))};
+            %% check the hwline version (older than 2022 ?)
+            if isnan(str2double(thres_HWline{15}))
+                % if nan, (=not double), it is the IP adress (version older than 2022)
+                pos_thres = 19;
+            else
+                % if not nan, (= double), it is not the IP adress (from version 2022)
+                pos_thres = 17;
+            end
+            thres_HWline(pos_thres) = {num2str(mat_thres(j))};
             thres_HWline = string(join(thres_HWline,','));
             
             % Copie des lignes HW et ACQ dans ces fichiers DATA            
