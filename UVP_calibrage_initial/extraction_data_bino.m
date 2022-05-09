@@ -21,8 +21,13 @@ function data_bino = extraction_data_bino(filename);
 
 %%
  
+
 %lecture du fichier excel
- all_data = readtable(filename);
+all_data = readtable(filename);
+
+
 
  %conservation des colonnes 1 'folder' et 7 'aire en mm^2'
  data_bino = all_data(:,[1,7]);
+
+ 

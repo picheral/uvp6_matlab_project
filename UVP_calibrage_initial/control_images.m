@@ -7,7 +7,7 @@ function [presence_pipette] = control_images(pathname)
 %  Données pour 'control_images' :
 %       Input : 
 %           pathname : dossier de travail 
-%                   exemple : 'C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\HDR20160303091656'
+%                   exemple : 'Y:\_UVP5_projets_intercalibrage\uvp5_archives_calibrages_utiles\uvp5_sn203_aquarium_20160304\raw\HDR20160303091656'
 %            
 %               
 %       Output:
@@ -16,6 +16,7 @@ function [presence_pipette] = control_images(pathname)
 % inspiré de Image Analyst - https://fr.mathworks.com/matlabcentral/answers/178746-conversion-of-bmp-to-jpg-images
 %
 % Blandine JACOB - 04 mai 2022
+%
 %%
 
 % détermination du dossier où se trouve les images à contrôler
@@ -44,13 +45,15 @@ for k = 1 : length(bmpFiles)
     drawnow;
     
     %demande à l'utilisateur si la pipette est présente
-    answer = questdlg('La pipette est-elle présente?', 'Question','Oui', 'Non','Non');
+    answer = questdlg('La pipette est-elle présente?', 'Question','Oui', 'Non','Stop','Stop');
     switch answer
         case 'Oui'
             presence_pipette(k) = 1; 
         case 'Non'
+            presence_pipette(k) = 0 ;
+        case 'Stop'
             close
-            break;  %sortie de boucle si la pipette n'est plus visible sur les photos   
-    end
-
+            break;
+   end
 end
+

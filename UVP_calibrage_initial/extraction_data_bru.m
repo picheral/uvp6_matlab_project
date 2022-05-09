@@ -24,7 +24,7 @@ function data_of_interest = extraction_data_bru(filePattern)
 % concatenation du filePattern dont on a enlevé '*.bru' et du nom du fichier bru 
 filename = strcat(filePattern(1:end-5),dir(filePattern).name);
 
-% % Creation de l'objet opts contenant les proprietes pour le processus de création de la table 
+% Creation de l'objet opts contenant les proprietes pour le processus de création de la table 
 opts = delimitedTextImportOptions("NumVariables", 7);  % importation de 7 variables 
 
 % Lignes à lire, on enlève la premiere qui contient le titre de colonnes

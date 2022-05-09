@@ -10,9 +10,10 @@
 
 % Blandine JACOB - 05 mai 2022
 
-%% sélection du dossier de travail
-pathname = uigetdir()
+%% sélection du dossier de travail raw
 
+cd('Y:\_UVP5_projets_intercalibrage\uvp5_archives_calibrages_utiles')
+pathname = uigetdir();
 inputFolder = fullfile(pathname);
 
 %% extraction des données brutes à partir des fichiers bru
@@ -21,19 +22,25 @@ inputFolder = fullfile(pathname);
 % recherche du fichier 'bru' dans le dossier de travail
 filePattern = fullfile(inputFolder, '*.bru');
 
+%retour au dossier où se trouve les fonctions de traitement des données
+cd('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial')
 % fonction extraction_data_bru pour récupérer les variables d'intérêt
 table_brute = extraction_data_bru(filePattern);
 
-%%  contrôle des images pour déterminer si on voit ou non la pipette
+%%  chargement des vecteurs de booléen presence_pipette (obtenu par le script pipette)
 
-% fonction control_image
-
-pipette = control_images(pathname)
+% sélection du dossier où est stocké le vecteur booléen presence_pipette
+% correspondant au dossier raw
+cd('Z:\UVP_incertitudes\pipette\');
+cd(pathname(end-16:end));
+load('presence_pipette.mat');
 
 %% traitement de la table en vue de l'analyse
 
+%retour au dossier où se trouve les fonctions de traitement des données
+cd('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial')
 % fonction process_table 
-table_processed = process_table(table_brute,pipette);
+table_processed = process_table(table_brute,presence_pipette);
 
 %% suppression des lignes dans la table qui correspondent à du bruit - fonction remove_noise
 
@@ -46,10 +53,3 @@ graph_area(table_filtrees);
 
 graph_trajectories(table_filtrees);
 
-%% Analyse statistique des données
-
-% %if ~ exist('to_analyze')
-%     answer = questdlg('Sélectionner des données à analyser (outil brush)');
-%     results = ana_stat(to_analyze);
-%end
-  

@@ -1,4 +1,4 @@
-function [results] = ana_stat(to_analyze)
+function [results] = ana_stat(to_analyze,name_work_folder)
 
 % ana_stat(to_analyze)
 %
@@ -42,9 +42,8 @@ aire_mediane = median(area);
 ecart_type = std(area);
 aire_min=min(area);
 aire_max = max(area);
+folder = convertCharsToStrings(name_work_folder);
 
 %creation d'une table de resultat
-results = table(aire_moyenne,aire_mediane,ecart_type,aire_min,aire_max);
+results = table(folder, nombre_observations,aire_moyenne,aire_mediane,ecart_type,aire_min,aire_max);
 
-%ecriture de la table dans un fichier .dat
-writetable(results,'resultats.dat')
