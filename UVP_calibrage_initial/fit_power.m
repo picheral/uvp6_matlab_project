@@ -40,4 +40,3 @@ xlabel( 'X', 'Interpreter', 'none' );
 ylabel( 'Y', 'Interpreter', 'none' );
 grid on
 
-
