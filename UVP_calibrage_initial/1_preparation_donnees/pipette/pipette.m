@@ -17,7 +17,7 @@
 %
 % boucle while non terminé, à reprendre en commençant à i = 23
 %% 
-
+addpath('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\1_preparation_donnees\pipette\')
 
 %récupération du nom du fichier excel où sont inscrits les noms des dossiers de référence
 filename =  'Z:\UVP_incertitudes\calibrage_initial_2016\Original_data\calibrage_aquarium_sn203_20160322.xlsx' ;
@@ -37,11 +37,8 @@ while i <= nombre_objet_preleves
     %récupération nom de répertoire de travail (exemple 'HDR20160303091941')
     name_work_folder = table_bino.Folder(i);
     
-    
-    %retour dans le dossier de travail où se trouve la fonction presence_pipette
-    cd('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial')
-    
-    %les dossiers 'HDR2016030XHHMMSS' sont rangés dans deux dossiers
+      
+    %les dossiers 'HDR2016030 X HHMMSS' sont rangés dans deux dossiers
     %différents  X = 3 ou 4
     test_dossier = char(name_work_folder);
     

@@ -1,7 +1,13 @@
-% Script Matlab pour tester les fonctions suivantes :
+%% Script Matlab principal 
+% 
+% But:  préparer les données afin de tracer des graphiques d'aires et de
+%       trajectoires à partir desquels on sélectionne à la main les points
+%       correspondant à la particule d'intérêt
+%
+% 
+% Fonctions :
 %
 %   extraction_data_bru
-%   control_images
 %   process_table
 %   remove_noise
 %   graph_area
@@ -10,9 +16,13 @@
 
 % Blandine JACOB - 05 mai 2022
 
+%% ajout du chemin des fonctions 
+
+addpath('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\1_preparation_donnees');
+
 %% sélection du dossier de travail raw
 
-cd('Y:\_UVP5_projets_intercalibrage\uvp5_archives_calibrages_utiles')
+cd('Y:\_UVP5_projets_intercalibrage\uvp5_archives_calibrages_utiles\uvp5_sn203_aquarium_20160304')
 pathname = uigetdir();
 inputFolder = fullfile(pathname);
 
@@ -22,8 +32,6 @@ inputFolder = fullfile(pathname);
 % recherche du fichier 'bru' dans le dossier de travail
 filePattern = fullfile(inputFolder, '*.bru');
 
-%retour au dossier où se trouve les fonctions de traitement des données
-cd('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial')
 % fonction extraction_data_bru pour récupérer les variables d'intérêt
 table_brute = extraction_data_bru(filePattern);
 
@@ -38,7 +46,6 @@ load('presence_pipette.mat');
 %% traitement de la table en vue de l'analyse
 
 %retour au dossier où se trouve les fonctions de traitement des données
-cd('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial')
 % fonction process_table 
 table_processed = process_table(table_brute,presence_pipette);
 
