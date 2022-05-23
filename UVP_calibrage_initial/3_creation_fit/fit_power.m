@@ -16,6 +16,11 @@ function [fitresult, gof] = fit_power(X, Y, poids)
 
 %% Fit 
 
+% si pas de vecteur poids donné, la boucle suivante le met par défaut à un
+if nargin <3
+    poids = ones(length(Y),1);
+end
+
 [xData, yData, weights] = prepareCurveData( X, Y, poids );
 
 % Set up fittype and options.
@@ -29,12 +34,12 @@ opts.Weights = weights;
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
 
-% Plot fit with data.
-figure( 'Name', 'untitled fit 1' );
-h = plot( fitresult, xData, yData, 'predobs' );
-legend( h, 'Y vs. X with poids', 'Excluded Y vs. X with poids', 'untitled fit 1', 'Lower bounds (untitled fit 1)', 'Upper bounds (untitled fit 1)', 'Location', 'NorthEast', 'Interpreter', 'none' );
-% Label axes
-xlabel( 'X', 'Interpreter', 'none' );
-ylabel( 'Y', 'Interpreter', 'none' );
-grid on
-
+%Plot fit with data.
+% figure( 'Name', 'Courbe de calibrage' );
+% h = plot( fitresult, xData, yData, 'predobs' );
+% legend( h, 'area bino vs. area UVP with weight',  'UVP size calibration', 'Low bounds ', 'Upper bounds ', 'Location', 'NorthEast', 'Interpreter', 'none' );
+% % Label axes
+% xlabel( 'X - area UVP (px)', 'Interpreter', 'none' );
+% ylabel( 'Y - area bino (mm2)', 'Interpreter', 'none' );
+% grid on
+% 
