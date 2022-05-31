@@ -1,4 +1,4 @@
-function [fitresult, gof] = fit_power(X, Y, poids)
+function [fitresult, gof,output] = fit_power(X, Y, poids)
 %fit_power(X,Y,POIDS)
 %  Create a fit.
 %
@@ -32,7 +32,7 @@ opts.StartPoint = [0.0556302918341509 0.665659567483676];
 opts.Weights = weights;
 
 % Fit model to data.
-[fitresult, gof] = fit( xData, yData, ft, opts );
+[fitresult, gof, output] = fit( xData, yData, ft, opts );
 
 %Plot fit with data.
 % figure( 'Name', 'Courbe de calibrage' );

@@ -36,9 +36,10 @@ switch var
             case 'normale'
                 for i=1:N
                     r = rand(1,1);
-                    X(i) = sqrt(-2*log(r))*cos(2*pi*r) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
+                    u=rand(1,1);
+                    X(i) = sqrt(-2*log(r))*cos(2*pi*u) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
                     mu = donnees_bino.Area_bino_px(j);
-                    sigma = 1;
+                    sigma = (0.03*donnees_bino.Area_bino_px(j))/3 ;
                     X(i) = sigma*X(i) + mu ; %si la loi n'est pas centrée réduite
                 end
             
@@ -60,9 +61,10 @@ switch var
             case 'normale'
                 for i=1:N
                     r = rand(1,1);
-                    X(i) = sqrt(-2*log(r))*cos(2*pi*r) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
+                    u= rand(1,1);
+                    X(i) = sqrt(-2*log(r))*cos(2*pi*u) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
                     mu = donnees_bino.Lref(j);
-                    sigma = 1;
+                    sigma =  0.05/3 ;
                     X(i) = sigma*X(i) + mu ; %si la loi n'est pas centrée réduite
                 end
 
@@ -83,15 +85,16 @@ switch var
             case 'normale'
                 for i=1:N
                     r = rand(1,1);
-                    X(i) = sqrt(-2*log(r))*cos(2*pi*r) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
+                    u = rand(1,1);
+                    X(i) = sqrt(-2*log(r))*cos(2*pi*u) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
                     mu = donnees_bino.npx(j);
-                    sigma = 1;
+                    sigma = sqrt(10)/3;
                     X(i) = sigma*X(i) + mu ; %si la loi n'est pas centrée réduite
                 end
                 
             case 'uniforme'
-                a = donnees_bino.npx(j) - sqrt(2);
-                b = donnees_bino.npx(j) + sqrt(2);
+                a = donnees_bino.npx(j) - sqrt(10);
+                b = donnees_bino.npx(j) + sqrt(10);
                 for i=1:N
                     X(i) = a + (b-a)*rand(1,1); %rand : générateur de loi uniforme
                 end
@@ -101,12 +104,17 @@ switch var
      %génération d'un N-échantillon de la variable aléatoire uvp_px suivant
      %une loi normale
     case 'uvp_px'
+        
         for i=1:N
-            r = rand(1,1);
-            X(i) = sqrt(-2*log(r))*cos(2*pi*r) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
-            mu = donnees_uvp.Area_moy(j);
-            sigma = donnees_uvp.std(j);
-            X(i) = sigma*X(i) + mu ;
+            X(i)= -1 ;
+            while X(i)<=0;
+                r = rand(1,1);
+                u=rand(1,1);
+                X(i) = sqrt(-2*log(r))*cos(2*pi*u) ; % algorithme de Box-Muller pour simuler vecteur iid de loi centrée réduite
+                mu = donnees_uvp.Area_moy(j);
+                sigma = donnees_uvp.std(j);
+                X(i) = sigma*X(i) + mu ;
+            end 
         end
 
 end
