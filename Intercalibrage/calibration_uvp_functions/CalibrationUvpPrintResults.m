@@ -60,8 +60,14 @@ for i = 1:length(ref_cast_list)
     disp(['Reference UVP       : ',char(ref_cast_list(i).uvp)]);
     disp(['Light 1             : ',char(ref_cast_list(i).light1)]);
     disp(['Light 2             : ',char(ref_cast_list(i).light2)]);
-    disp(['Reference folder    : ',char(ref_cast_list(i).project_folder(4:end))]);
-    if (strcmp(ref_cast_list(i).project_folder(4:7),'uvp5'))
+    if contains(char(ref_cast_list(i).project_folder(4:end)),'\')
+        aa = split(char(ref_cast_list(i).project_folder(4:end)),'\');
+        folder = char(aa(end));
+    else
+        folder = char(ref_cast_list(i).project_folder(4:end));
+    end        
+    disp(['Reference folder    : ',folder]);
+    if (strcmp(folder(1:4),'uvp5'))
         disp(['Reference profile   : ',char(ref_cast_list(i).histfile)]);
     else
         disp(['Reference profile   : ',char(ref_cast_list(i).profilename)]);
@@ -81,13 +87,19 @@ for i = 1:length(ref_cast_list)
     disp('-------------------------------------------------------------------------');
 end
 
-% adj uvp   
+% adj uvp
 disp(['Adjusted UVP        : ',char(adj_cast.uvp)]);
 disp(['Light 1             : ',char(adj_cast.light1)]);
 disp(['Light 2             : ',char(adj_cast.light2)]);
-disp(['Adjusted folder     : ',char(adj_cast.project_folder(4:end))]);
-if (strcmp(adj_cast.project_folder(4:7),'uvp5'))
-disp(['Adjusted profile    : ',char(adj_cast.histfile)]);
+if contains(char(adj_cast.project_folder(4:end)),'\')
+    aa = split(char(adj_cast.project_folder(4:end)),'\');
+    folder = char(aa(end));
+else
+    folder = char(adj_cast.project_folder(4:end));
+end
+disp(['Adjusted folder     : ',folder]);
+if (strcmp(folder(1:4),'uvp5'))
+    disp(['Adjusted profile    : ',char(adj_cast.histfile)]);
 else
 disp(['Adjusted profile    : ',char(adj_cast.profilename)]);
 end
