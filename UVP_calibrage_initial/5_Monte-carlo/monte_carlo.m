@@ -34,9 +34,9 @@ N = input('Nombre d essais Monte-Carlo: ' );
 %% génération des variables aléatoires d'entrées Xi 
 
 
-loi_L_ref = input('Loi pour L_ref? normale ou uniforme: ');
-loi_n_px = input('Loi pour n_px? normale ou uniforme: ');
-loi_a_bino_px = input('Loi pour a_bino_px? normale ou uniforme: ');
+loi_L_ref = 'normale' ;
+loi_n_px = 'normale';
+loi_a_bino_px = 'normale';
 loi_uvp_px = 'normale';
 
 %boucle sur i les particules et appel de fonction generation_va
@@ -57,9 +57,10 @@ A_bino_mm_2 = A_bino_px.*(L_ref./n_px).^2;
 
 %création des N fits avec sélection de la méthode (par la lettre A, B, C, D
 %voir description de la fonction type_regression)
-
-modele_regression = input('Choix type régression, A, B :');
-[Aa,expo,Radjusted] = type_regression(modele_regression,A_uvp_px,A_bino_mm_2,N);
+modele_ponderation = input('Choix ponderation oui non :') ;
+modele_robuste = input('Modele robuste, off ou LAR :');
+modele_regression = input('Choix type régression, A, B, C, D :');
+[Aa,expo,Radjusted,conf] = type_regression(modele_ponderation, modele_robuste, modele_regression,A_uvp_px,A_bino_mm_2,N,donnees_uvp.Nb_observations);
 
 %% enregprévenir de la fin
 

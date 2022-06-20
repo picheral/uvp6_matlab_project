@@ -1,4 +1,4 @@
-function [fitresult, gof,output] = fit_power(X, Y, poids)
+function [fitresult, gof,output] = fit_power(X, Y, poids, modele_ponderation, modele_robuste)
 %fit_power(X,Y,POIDS)
 %  Create a fit.
 %
@@ -17,9 +17,10 @@ function [fitresult, gof,output] = fit_power(X, Y, poids)
 %% Fit 
 
 % si pas de vecteur poids donné, la boucle suivante le met par défaut à un
-if nargin <3
+if modele_ponderation == 'non'
     poids = ones(length(Y),1);
 end
+
 
 [xData, yData, weights] = prepareCurveData( X, Y, poids );
 
@@ -27,14 +28,15 @@ end
 ft = fittype( 'power1' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
-opts.Robust = 'LAR';
+opts.Robust = modele_robuste;
+opts.Algorithm = 'Trust-region';
 opts.StartPoint = [0.0556302918341509 0.665659567483676];
 opts.Weights = weights;
 
 % Fit model to data.
 [fitresult, gof, output] = fit( xData, yData, ft, opts );
 
-%Plot fit with data.
+% %Plot fit with data.
 % figure( 'Name', 'Courbe de calibrage' );
 % h = plot( fitresult, xData, yData, 'predobs' );
 % legend( h, 'area bino vs. area UVP with weight',  'UVP size calibration', 'Low bounds ', 'Upper bounds ', 'Location', 'NorthEast', 'Interpreter', 'none' );
@@ -42,4 +44,4 @@ opts.Weights = weights;
 % xlabel( 'X - area UVP (px)', 'Interpreter', 'none' );
 % ylabel( 'Y - area bino (mm2)', 'Interpreter', 'none' );
 % grid on
-% 
+
