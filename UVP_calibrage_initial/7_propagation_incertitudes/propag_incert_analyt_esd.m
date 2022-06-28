@@ -1,7 +1,8 @@
-%% Script Matlab : propag_incert
+%% Script Matlab : propag_incert_analyt_esd
 %
 %
-% But : propager les incertitudes de Aa et exp sur Sm et taille ESD
+% But : propager les incertitudes de Aa et exp sur Sm et taille ESD à
+% partir des formules théoriques analytiques
 % 
 % Blandine JACOB - 16 juin 2022
 
