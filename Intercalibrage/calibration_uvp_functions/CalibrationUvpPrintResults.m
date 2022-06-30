@@ -30,18 +30,24 @@ disp(['Aa adjusted         : ',num2str(aa_adj)]);
 disp(['Exp adjusted        : ',num2str(expo_adj)]); 
 if strcmp(process_params.set_aa_exp, 'y')
     if contains(adj_cast.uvp,'uvp6'); process_params.users_aa = round(process_params.users_aa * 1000000);end    
-    disp(['Set EC (score)      : ',(num2str(process_params.Score_set))]);
+        if isfield(process_params,'Score_set')
+            disp(['Set EC (score)      : ',(num2str(process_params.Score_set))]);
+        else
+            disp(['Set EC (score)      : not set']);
+        end
     disp(['Set Aa              : ',num2str(process_params.users_aa)]);
-    disp(['Set Exp             : ',num2str(process_params.users_exp)]); 
+    disp(['Set Exp             : ',num2str(process_params.users_exp)]);
 end
 disp('-------------------------------------------------------------------------');
 
 % parameters goals
 if contains(adj_cast.uvp,'uvp6')
-    if process_params.Score_set > 0.04 && strcmp(process_params.set_aa_exp, 'y')
-        %disp('WARNING ! the score for the set Aa and Exp is out of range')
-        fprintf(2, 'WARNING ! the score for the set Aa and Exp is out of range\n');
-        disp('-------------------------------------------------------------------------');
+    if isfield(process_params,'Score_set')
+        if process_params.Score_set > 0.04 && strcmp(process_params.set_aa_exp, 'y')
+            %disp('WARNING ! the score for the set Aa and Exp is out of range')
+            fprintf(2, 'WARNING ! the score for the set Aa and Exp is out of range\n');
+            disp('-------------------------------------------------------------------------');
+        end
     end
     disp(['Shutter             : ',num2str(adj_cast.ShutterSpeed)]);
     disp(['Gain                : ',num2str(adj_cast.gain)]);
