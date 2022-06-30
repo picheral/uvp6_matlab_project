@@ -14,7 +14,7 @@ function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, da
 results_dir_ref = ref_cast.results_dir;
 uvp_ref = ref_cast.uvp;
 ref_esd_calib = ref_cast.esd_calib;
-%ref_esd_calib_log = ref_cast.esd_calib_log;
+ref_esd_calib_log = ref_cast.esd_calib_log;
 ref_area_mm2_calib = ref_cast.area_mm2_calib;
 ref_histo_mm2_vol_mean = ref_cast.histo_mm2_vol_mean;
 ref_profilename = ref_cast.profilename;
