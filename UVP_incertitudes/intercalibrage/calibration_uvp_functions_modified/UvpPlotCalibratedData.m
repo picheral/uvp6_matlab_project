@@ -11,6 +11,8 @@ function CalibrationUvpPlotCalibratedData(process_params, ref_cast, adj_cast, da
 %
 
 %% ----------------- used variables  ---------------------------------------
+
+
 results_dir_ref = ref_cast.results_dir;
 uvp_ref = ref_cast.uvp;
 ref_esd_calib = ref_cast.esd_calib;
@@ -30,14 +32,57 @@ adj_calib_vect_ecotaxa = adj_cast.calib_esd_vect_ecotaxa;
 adj_histo_ab_red_log = adj_cast.histo_ab_red_log;
 
 depth = process_params.depth;
+histopx_ref  = ref_cast.histopx;
+pixsize_ref = [1:size(histopx_ref,2)];
+histopx_adj = adj_cast.histopx ;
+pixsize_adj = [1:size(histopx_adj,2)];
 
+% Aa et expo de référence du calibrage inital 
+aa_ref = 0.0036 ;
+expo_ref = 1.149 ; 
+
+%Aa et expo ajusté de l'intercalibrage
+aa_adj = 0.010262 ;
+expo_adj = 1.1785 ;
+
+% incertitude élargie à 95% (écart-type ou covariance multiplié par 1.96) -
+% obtenue avec Monte-Carlo
+u_Aa_ref = 0.00356;
+u_expo_ref = 0.121 ;
+delta_Aa_expo_ref = 0.00021 ;
+df_dAa_ref = pixsize_ref.^expo_ref;
+df_dexpo_ref = aa_ref.*log(pixsize_ref).*(pixsize_ref.^expo_ref);
+dfdf_dexpodAa_ref = log(pixsize_ref).*(pixsize_ref.^expo_ref);
+
+u_Aa_adj = 0.0086 ;
+u_expo_adj = 0.1705 ;
+delta_Aa_expo_adj = 0.00053 ;
+df_dAa_adj= pixsize_adj.^expo_adj;
+df_dexpo_adj = aa_ref.*log(pixsize_adj).*(pixsize_adj.^expo_adj);
+dfdf_dexpodAa_adj = log(pixsize_adj).*(pixsize_adj.^expo_adj);
+
+% incertitude sur area_mm_2_calib_ref
+u_area_mm2_calib_ref = (sqrt(((df_dAa_ref.^2).*(u_Aa_ref.^2))+((df_dexpo_ref.^2).*(u_expo_ref.^2))+(2.*(dfdf_dexpodAa_ref).*(delta_Aa_expo_ref))))./2;
+
+% incertitude sur area_mm_2_calib_adj
+u_area_mm2_calib_adj = (sqrt(((df_dAa_adj.^2).*(u_Aa_adj.^2))+((df_dexpo_adj.^2).*(u_expo_adj.^2))+(2.*(dfdf_dexpodAa_adj).*(delta_Aa_expo_adj))))./2;
+
+% incertitude sur la taille esd ref
+df_dsm_ref = 1./sqrt(pi.*ref_area_mm2_calib);
+u_esd_ref = (df_dsm_ref .* u_area_mm2_calib_ref)./2 ;
+
+% incertitude sur la taille esd adj
+df_dsm_adj = 1./sqrt(pi.*adj_area_mm2_calib);
+u_esd_adj = (df_dsm_adj .* u_area_mm2_calib_adj)./2 ;
 
 fig2 = figure('name','ADJUSTED data','Position',[700 50 1500 600]);
 %% ------------------- Abundance VS area ----------------------------------
-subplot(1,4,1)
-loglog((ref_area_mm2_calib),ref_histo_mm2_vol_mean,'ro');
+subplot(1,3,1)
+errorbar(ref_area_mm2_calib,ref_histo_mm2_vol_mean,[],[],u_area_mm2_calib_ref,u_area_mm2_calib_ref,'ro')
+set(gca, 'XScale','log', 'YScale','log')
 hold on
-loglog(adj_area_mm2_calib,(adj_histo_mm2_vol_mean),'g+');
+%errorbar(adj_area_mm2_calib, adj_histo_mm2_vol_mean,u_area_mm2_calib_adj,'horizontal','g+')
+loglog(adj_area_mm2_calib,adj_histo_mm2_vol_mean,'g+');
 hold on
 if strcmp(uvp_ref,'uvp5-sn203')
     % -------------- AJout limites sur graphes si ref = sn203 -----------------
@@ -67,9 +112,12 @@ title(['CALIBRATED DATA'],'fontsize',14);
 
 
 %% ------------------- abundance VS esd -----------------------------------
-subplot(1,4,2)
+subplot(1,3,2)
 loglog(exp(ref_esd_calib_log),exp(datahistref),'r-');
+errorbar(exp(ref_esd_calib_log),exp(datahistref),u_esd_ref,'horizontal','r-')
+set(gca, 'XScale','log', 'YScale','log')
 hold on
+%errorbar(exp(adj_esd_calib_log),exp(yresults_adj),u_esd_adj,'horizontal','g--')
 loglog(exp(adj_esd_calib_log),exp(yresults_adj),'g--');
 if strcmp(uvp_ref,'uvp5-sn203')
 %     % -------------- AJout limites sur graphes si ref = sn203 -----------------
@@ -110,11 +158,23 @@ title(['CALIBRATED FIT'],'fontsize',14);
 % title(['CONTROL'],'fontsize',14);
 
 % ------------- Part c --------------------------------------------------
+%% ------!!! NE MARCHE PAS POUR LE MOMENT !!!-------
+
+% histo_ab_mean = nanmean(ref_cast.histo_ab);
+% borne_sup_esd_class = sum_ab_classe(exp(ref_esd_calib_log)+u_esd_ref, process_params.esd_vect_ecotaxa, histo_ab_mean(1:numel(exp(ref_esd_calib_log))));
+% borne_inf_esd_class = sum_ab_classe(exp(ref_esd_calib_log)-u_esd_ref, process_params.esd_vect_ecotaxa, histo_ab_mean(1:numel(exp(ref_esd_calib_log))));
+%%
 % particles class plot
-subplot(1,4,3)
+subplot(1,3,3)
 semilogy(ref_calib_vect_ecotaxa,'ro');
+% errorbar(ref_calib_vect_ecotaxa, u_esd_ref, 'horizontal','ro')
+% set(gca, 'XScale','linear', 'YScale','log')
+% hold on
+% semilogy(borne_sup_esd_class,'b-x')
+% hold on
+% semilogy(borne_inf_esd_class,'b-+')
 hold on
-semilogy(adj_calib_vect_ecotaxa,'g+');
+semilogy(adj_calib_vect_ecotaxa,'go');
 legend(uvp_ref,uvp_adj);
 title(['CALIBRATED DATA'],'fontsize',14);
 xlabel('ESD CLASS [#]','fontsize',12);
@@ -171,10 +231,10 @@ legend(uvp_ref,uvp_adj);
 
 
 %% ---------------------- Save figure --------------------------------------
-orient tall
-titre = ['CALIBRATED_data_' char(ref_profilename)];
-set(gcf,'PaperPositionMode','auto')
-print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
+% orient tall
+% titre = ['CALIBRATED_data_' char(ref_profilename)];
+% set(gcf,'PaperPositionMode','auto')
+% print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
 
-end
+
 

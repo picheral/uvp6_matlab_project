@@ -18,7 +18,8 @@ u_expo = 0.121 ;
 delta_Aa_expo = 0.00021 ;
 
 % chargement des mesures uvp en px
-load('Z:\UVP_incertitudes\Partie_II\area_uvp_px.mat');
+table = readtable('Z:\UVP_incertitudes\Partie_I\copie_calibrage_initial_2016\Original_data\calibrage_aquarium_sn203_20160322.xlsx');
+area_moy_sp =table.AreaMoy;
 area_moy_sp(66,1)=NaN;
 
 % dérivée partielle de f en fonction de Aa
