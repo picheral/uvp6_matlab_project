@@ -1,3 +1,5 @@
+function [matrice_classes] = esd_class_MC(uvp_cast,couple_Aa_exp)
+
 %% Script Matlab : esd_class_MC
 %
 %
@@ -14,20 +16,22 @@ addpath('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\Intercalibrage\c
 load('Z:\UVP_incertitudes\Partie_II\monte-carlo\results\raw\MC_propag_incert.mat')
 matrice_classes=[];
 
-for i=1:length(aa_adj)
-      
-    pixsize = adj_cast.pixsize;
+pixsize = uvp_cast.pixsize;
+aa_ref = couple_Aa_exp(1,:);
+expo_ref = couple_Aa_exp(2,:);
 
-    esd_calib = 2*((aa_adj(i)*(pixsize.^expo_adj(i))./pi).^0.5);
-    
-    histo_ab_mean = nanmean(adj_cast.histo_ab);
+for i=1:length(aa_ref)
+      
+
+    esd_calib = 2*((aa_ref(i)*(pixsize.^expo_ref(i))./pi).^0.5);
+
+    histo_ab_mean = nanmean(uvp_cast.histo_ab);
     
     histo_ab_mean_red = histo_ab_mean(1:numel(esd_calib));
 
-    [calib_vect_ecotaxa]= sum_ab_classe(esd_calib,process_params.esd_vect_ecotaxa,adj_cast.histo_ab);
+    [calib_vect_ecotaxa]= sum_ab_classe(esd_calib,process_params.esd_vect_ecotaxa, histo_ab_mean_red);
 
     matrice_classes = [matrice_classes ; calib_vect_ecotaxa];
 
 end
 
-[ecart_type_ab] = classe_de_taille_et_incertitudes(score, matrice_classes)

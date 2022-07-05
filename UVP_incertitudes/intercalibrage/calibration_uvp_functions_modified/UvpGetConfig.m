@@ -1,5 +1,5 @@
-% Catalano 2020/04
-% Jacob 2022/06
+% créé par : Catalano 2020/04
+% copié et modifié par : Jacob 2022/06
 % copie de CalibrationUvpGetOpenBase pour renommage (en 'UvpOpenBase') pour modification afin de propager incertitude
 
 function[uvp_base, uvp_cast] = UvpGetConfig(uvp_base, uvp_cast, type)
