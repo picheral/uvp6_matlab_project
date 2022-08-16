@@ -7,7 +7,8 @@
 
 %% load data
 
-data = readtable('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\5_Monte-carlo\data');
+% --------------------------------- !!! attention chemin en dur !!! ---------------------------------
+data = readtable('Z:\UVP_incertitudes\1.etude_calibrage_initial_en_aquarium\simu_monte_carlo\data');
 
 %enlève un points abberant qui "ruine" la régression
 toDelete_pts_aberrants = [66];
@@ -23,9 +24,43 @@ donnees_uvp = data (:, [4:6]);
 
 %% régression
 
-addpath('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\3_creation_fit')
 
-[res,gof, output] = fit_linear(log(data.Area_moy) , log(data.Area_bino_mm_2))
+type_fit = input('Modele linéaire ou puissance ? lineaire/puissance: ');
+
+while  (strcmp(type_fit,'lineaire') || strcmp(type_fit,'puissance'))==0
+    type_fit = input('Mauvaise réponse: modele linéaire ou puissance ? lineaire/puissance: ');
+end
+
+modele_robuste='off';
+
+switch type_fit
+
+    case 'lineaire'
+
+    X = log(data.Area_moy);
+    Y = log(data.Area_bino_mm_2);
+
+    modele_ponderation = 'non' ;
+    
+
+    [res,gof, output] = fit_linear(X, Y,[], modele_ponderation,modele_robuste);
+
+    case 'puissance'
+
+    X = data.Area_moy;
+    Y = data.Area_bino_mm_2;
+
+    modele_ponderation = input('Modele pondéré ? oui/non: ')
+
+    [fitresult, gof,output] = fit_power(X, Y, data.Nb_observations, modele_ponderation, modele_robuste);
+end
+
+
+ 
+
+
+
+
 %% figures pour l'analyse des résidus
 
 % plot residuals vs fitted

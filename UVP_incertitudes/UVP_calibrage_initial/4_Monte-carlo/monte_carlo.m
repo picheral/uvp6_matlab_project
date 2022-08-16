@@ -8,7 +8,7 @@
 
 %% chargement des données
 
-data = readtable('data');
+data = readtable('Z:\UVP_incertitudes\1.etude_calibrage_initial_en_aquarium\simu_monte_carlo\data.xlsx');
 
 %enlève deux points abberants
 toDelete_pts_aberrants = [66,116];

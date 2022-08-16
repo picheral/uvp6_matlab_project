@@ -6,7 +6,7 @@ function [] = graph_area(table)
 %  Données pour 'graph_area' :
 %       Input : 
 %            table : table de donnees créee  partir de la fonction
-%            pre_process_table
+%            process_table
 %           
 %               
 %   

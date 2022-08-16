@@ -15,6 +15,7 @@ function[uvp_base, uvp_cast] = UvpGetConfig(uvp_base, uvp_cast, type)
 %       uvp_cast : struct storing cast variables
 %
 
+if contains(uvp_cast.project_folder,'uvp5')
 
 % Reading uvp5_configuration_data.txt REF
 uvp_cast.histfile = uvp_base.histfile;
@@ -51,6 +52,21 @@ else
    % disp('All metadata of the profile are OK.')
 end
 
+else
+
+    % Reading data from UVP6 base
+    uvp_cast.aa_data = uvp_base.a0/1000000;
+    uvp_cast.expo_data = uvp_base.exp0;
+    uvp_cast.img_vol_data = uvp_base.volimg0;
+    uvp_cast.pix = uvp_base.pixel_size;
+    uvp_cast.gain = uvp_base.gain;
+    uvp_cast.Thres = uvp_base.threshold;
+    uvp_cast.Exposure = uvp_base.shutter;
+    uvp_cast.ShutterSpeed = uvp_base.shutter;
+    uvp_cast.SMBase    = 1;
+    uvp_cast.light1 = uvp_base.light;
+    uvp_cast.light2 = '';
+    uvp_cast.profilename = uvp_base.profilename;
 end
 
 

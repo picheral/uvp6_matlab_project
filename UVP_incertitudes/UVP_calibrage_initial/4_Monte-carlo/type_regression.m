@@ -20,9 +20,7 @@ function [Aa, expo,Radjusted,conf] = type_regression(modele_ponderation, modele_
 %
 % Blandine JACOB - 20 mai 2022
 
-%% ajout du chemin pour les fonctions fit
 
-%addpath('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\3_creation_fit');
 
 %% type_regression :
 

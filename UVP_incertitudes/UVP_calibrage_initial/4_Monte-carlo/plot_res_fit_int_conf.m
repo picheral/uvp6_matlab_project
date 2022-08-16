@@ -10,8 +10,9 @@
 
 %% load data
 
-%data = readtable('C:\Users\Blandine\Documents\MATLAB\uvp6_matlab_project\UVP_calibrage_initial\5_Monte-carlo\data');
-data = readtable('Z:\UVP_incertitudes\Partie_I\simu_monte_carlo\codes\data');
+% --------------------------------- !!! attention chemin en dur !!! ---------------------------------
+data = readtable('Z:\UVP_incertitudes\1.etude_calibrage_initial_en_aquarium\simu_monte_carlo\data');
+
 %enlève un points abberant qui "ruine" la régression
 toDelete_pts_aberrants = [66,116];
 data(toDelete_pts_aberrants,:)=[];
