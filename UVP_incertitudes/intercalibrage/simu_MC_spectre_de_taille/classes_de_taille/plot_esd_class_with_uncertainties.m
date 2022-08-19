@@ -16,18 +16,6 @@ function [] = plot_esd_class_with_uncertainties(uvp_cast,matrice_classes, ecart_
 % 
 % Blandine Jacob - 8 juillet 2022
 
-%% NB :
-%
-% Cette fonction n'est pas utilisée dans un script: j'importais directement
-% les données matlab res_MC_propag_incert_spectre_taille.mat,
-% puis j'appelais la fonction dans la fenêtre de commande afin de tracer
-% les spectres de taille
-%
-% Pour appeler la fonction:
-%    matrice_classes : matrice_classe_ref ou matrice_classe_adj
-%    ecart_type_ab :  ecart_type_ab_ref ou ecart_type_ab_adj 
-%    uvp_cast : ref_cast ou adj_cast
-
 
 %% color of the plot
 

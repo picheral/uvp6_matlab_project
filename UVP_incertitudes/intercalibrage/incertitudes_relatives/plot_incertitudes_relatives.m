@@ -54,8 +54,8 @@ hold on
 plot(cast_sn002_bis.esd_calib, incert_relatives_002_bis.esd,'-g')
 hold on
 plot(cast_sn000008lp.esd_calib, incert_relatives_000008lp.esd,'-k')
-xline(0.250,'--')
-xline(1.5,'--')
+xline(0.250,'--')  %bornes d'utilisation empirique (se base sur l'article de lionel guidi et al. 2008)
+xline(1.5,'--')  %bornes d'utilisation empirique (se base sur l'article de lionel guidi et al. 2008)
 yline(16,':')
 
 ylim([0 100])
@@ -90,8 +90,8 @@ hold on
 plot(milieu_classe, incert_relatives_002_bis.esd_class,'o--g')
 hold on
 plot(milieu_classe, incert_relatives_000008lp.esd_class,'o--k')
-xline(0.50,'--')
-xline(1.5,'--')
+xline(0.250,'--') %bornes d'utilisation empirique (se base sur l'article de lionel guidi et al. 2008)
+xline(1.5,'--') %bornes d'utilisation empirique (se base sur l'article de lionel guidi et al. 2008)
 yline(91.4,':')
 
 ylim([0 100])

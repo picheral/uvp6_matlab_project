@@ -1,13 +1,17 @@
 % Jacob 2022/06
-% copie de CalibrationUvpGetUserProcessParams pour renommage (en 'UvpGetUserProcessParams') pour modification afin de propager incertitude
+% copie de CalibrationUvpGetUserProcessParams pour renommage (en
+% 'UvpGetUserProcessParams') pour modification: esd_min, esd_max et
+% Fit_data en entrée de la fonction et non pas demandés à l'utilisateur 
 
-function [process_params] = UvpGetUserProcessParams(uvp_ref, uvp_adj, pix_adj,esd_min,esd_max,Fit_data)
+function [process_params] = UvpGetUserProcessParams(pix_adj,esd_min,esd_max,Fit_data)
 % CalibrationUvpGetUserProcessParams  get user inputs for the process
 %
 %   inputs:
-%       uvp_ref: type of reference uvp "uvp6-sn..." or "uvp6-sn..."
-%       uvp_adj: type of uvp to adjust "uvp6-sn..." or "uvp5-sn..."
+%       
 %       pix_adj: pixel size of adjusted uvp
+%       esd_min: min de la gamme de taille
+%       esd_max: max de la gamme de taille
+%       Fit_data: degré du polynôme pour le fit
 %
 %   outputs:
 %       process_params: struct to store process parameters
@@ -19,8 +23,6 @@ function [process_params] = UvpGetUserProcessParams(uvp_ref, uvp_adj, pix_adj,es
 users_aa = 2300;
 users_exp = 1.1359;
 set_aa_exp = 'n';
-
-uvps = [uvp_ref, uvp_adj];
 
 
 % startng value for aa and exp

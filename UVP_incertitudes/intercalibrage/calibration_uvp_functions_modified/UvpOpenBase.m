@@ -1,13 +1,15 @@
 %% Ouverture base pour operation calibrage
 % Picheral 2017/11,; 2019/03
 % Jacob 2022/06
-% copie de CalibrationUvpOpenBase pour renommage (en 'UvpOpenBase') pour modification afin de propager incertitude
+% copie de CalibrationUvpOpenBase pour renommage (en 'UvpOpenBase') pour
+% modification afin que le code puisse tourner sur Marie (pas de iugetdir, utilisation de fullfile)
 
 function[uvp_base, uvp_cast] = UvpOpenBase(type, path)
 %CalibrationUvpOpenBase open the data base
 %
 %   inputs:
 %       type : "Reference" or "Adjusted"
+%       path : Selection of the UVP's project directory
 %
 %   outputs:
 %       uvp_base : data base (struct)
@@ -36,8 +38,9 @@ else
     disp(['Process cannot continue : no base in ',results_dir]);
 end
 % ------------------ Chargement de la base de référence -----------------
-             
-if size(base_list) > 1
+
+base_selected = 1;
+if length(base_list) > 1
     base_selected = input('Enter number corresponding to selected uvp database. (default = 1) ');
     if isempty(base_selected) 
         base_selected = 1;   
@@ -50,10 +53,19 @@ disp(['Selected database : ',base_list(base_selected).name])
 
 load([results_dir,'/',base_list(base_selected).name]);
 %try statement in order to deal with old and new base name syntaxe
-try
-    base = eval(base_list(base_selected).name(1:end-4));
-catch
-    base = base;
+
+if contains(project_folder_ref,'uvp5_sn002') % pour gérer le nom d'une base qui est "originale" par rapport à ce qu'on trouve dans les projets
+    try
+        base = eval(base_list(base_selected).name(1:end-8));
+    catch
+        base = eval(base_list(base_selected).name(1:end-4));
+    end
+else 
+    try
+       base = eval(base_list(base_selected).name(1:end-4));
+    catch
+       base = base;
+    end
 end
 if contains(project_folder_ref,'uvp6_sn')
     ligne_ref = size(base,2);
