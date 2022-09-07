@@ -11,19 +11,17 @@ function [process_params] = CalibrationUvpGetUserProcessParams(uvp_ref, uvp_adj,
 
 % ------------------- params user inputs  ---------------------------------
 
-% user's aa and exp for uvp6
-if contains(uvp_adj,'uvp6')
-    set_aa_exp = input('Set the aa and exp ? (UVP6 only) ([y]/n) ', 's');
-    if isempty(set_aa_exp); set_aa_exp = 'y'; end
-else
-    set_aa_exp = 'n';
-end
-users_aa = 2300;
+% user's aa and exp for uvp6 or uvp5_etalon
+set_aa_exp = input('Set the aa and exp ? ([y]/n) ', 's');
+if isempty(set_aa_exp); set_aa_exp = 'y'; end
+    
+
+users_aa = 2300 / 1000000;
 users_exp = 1.1359;
 if strcmp(set_aa_exp,'y')
     users_aa = input('Enter the aa value (default = 2300) : ');
     if isempty(users_aa); users_aa = 2300; end
-    users_aa = users_aa / 1000000;
+    if contains(uvp_adj,'uvp6'); users_aa = users_aa / 1000000; end
     users_exp = input('Enter the exp value (default = 1.1359) : ');
     if isempty(users_exp); users_exp = 1.1359; end
 end
