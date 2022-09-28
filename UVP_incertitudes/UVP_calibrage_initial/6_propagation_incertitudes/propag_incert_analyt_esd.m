@@ -1,7 +1,7 @@
 %% Script Matlab : propag_incert_analyt_esd
 %
 %
-% But : propager les incertitudes de Aa et exp sur Sm et taille ESD à
+% But : propager les incertitudes de Aa et exp du calibrage initial sur Sm et taille ESD à
 % partir des formules théoriques analytiques
 % 
 % Blandine JACOB - 16 juin 2022
@@ -18,9 +18,11 @@ u_expo = 0.121 ;
 delta_Aa_expo = 0.00021 ;
 
 % chargement des mesures uvp en px
-table = readtable('Z:\UVP_incertitudes\Partie_I\copie_calibrage_initial_2016\Original_data\calibrage_aquarium_sn203_20160322.xlsx');
+table = readtable('Z:\UVP_incertitudes\1.etude_calibrage_initial_en_aquarium\copie_calibrage_initial_2016\Original_data\calibrage_aquarium_sn203_20160322.xlsx');
 area_moy_sp =table.AreaMoy;
-area_moy_sp(66,1)=NaN;
+
+%on enlève la donnée aberrante
+area_moy_sp(66,1)=NaN; 
 
 % dérivée partielle de f en fonction de Aa
 df_dAa = area_moy_sp.^expo;
