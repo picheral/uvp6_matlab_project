@@ -19,6 +19,13 @@
 % the glider.
 % The files in it are called "p[sn]####.nc", with #### the nb of the yo.
 % 
+% ----- BGC float project -----
+% For recovered BGC float uvp6 data.
+% The project must contain "float" in the name.
+% The metadata are extraceted from the sequence and one unique netcdf argo file
+% present in a folder starting by float and ending by the WMOnumber "float_*_#######.nc"
+% This folder must be placed in the doc folder of the project.
+% The file format type is 'OceanSITES vertical profile 1.4'
 % 
 % use Mapping Toolbox 
 %
@@ -32,7 +39,7 @@ disp('------------------------------------------------------')
 disp('------------- uvp6 sample creator --------------------')
 disp('------------------------------------------------------')
 disp('')
-disp('WARNING : Work only for seaexplorer project and seaglider project')
+disp('WARNING : Work only for seaexplorer project, seaglider project and BGC project')
 disp('Read the help of the script for information about the needed project structure')
 disp('')
 
@@ -52,13 +59,18 @@ if contains(project_folder, 'sea')
 elseif contains(project_folder, 'SG')
     disp('SeaGlider project')
     vector_type = 'SeaGlider';
+elseif contains(project_folder, 'float')
+    disp('BGC float project')
+    vector_type = 'float';
 else
-    warning('Only seaexplorer or seaglider project are supported')
-    vector_type = input('Is it a SeaExplorer (se) or a SeaGlider (sg) project ? ([se]/sg) ','s');
+    warning('Only seaexplorer, seaglider and float project are supported')
+    vector_type = input('Is it a SeaExplorer (se), a SeaGlider (sg) or a float (fl) project ? ([se]/sg/fl) ','s');
     if isempty(vector_type) || strcmp(vector_type,'se')
         vector_type = 'SeaExplorer';
     elseif strcmp(vector_type, 'sg')
         vector_type = 'SeaGlider';
+    elseif strcmp(vector_type, 'fl')
+        vector_type = 'float';
     else
         error('ERROR : the project is not a seaexplorer or seaglider project')
     end

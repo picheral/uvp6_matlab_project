@@ -1,10 +1,10 @@
-function [lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list, cruise)
+function [lon_list, lat_list, yo_list, samples_names_list, vector_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list, cruise)
 %GetMetaFromVectorMetaFile get latitude, longitude and yo number
 %corresponding to the sequences
 %
 %
 % inputs :
-%   vector_type : 'SeaExplorer' or 'SeaGlider'
+%   vector_type : 'SeaExplorer' or 'SeaGlider' or 'float'
 %   meta_data_folder : full path to vector meta folder
 %   start_time_list : list of sequences start time
 %   list_of_sequences : dir of sequences folder
@@ -17,7 +17,7 @@ function [lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list
 %   lat_list : vector of latitude
 %   yo_list : list of yo nb
 %   samples_names_list : list of samples names
-%   glider_filenames_list : list of name of glider nc file
+%   vector_filenames_list : list of name of vector nc file
 %
 
 % get list of meta files
@@ -32,6 +32,10 @@ elseif strcmp(vector_type, 'SeaGlider')
     % nc for seaglider
     list_of_vector_meta = dir(fullfile(meta_data_folder, '*.nc'));
     meta_folder_sg = list_of_vector_meta(1).folder;
+elseif strcmp(vector_type, 'float')
+    % nc for float
+    list_of_vector_meta = dir(fullfile(meta_data_folder, '*.nc'));
+    meta_folder_fl = list_of_vector_meta(1).folder;
 end
 
 seq_nb_max = length(list_of_sequences);
@@ -39,7 +43,7 @@ lon_list = zeros(1, seq_nb_max);
 lat_list = zeros(1, seq_nb_max);
 yo_list = zeros(1, seq_nb_max);
 samples_names_list = strings(1, seq_nb_max);
-glider_filenames_list = strings(1, seq_nb_max);
+vector_filenames_list = strings(1, seq_nb_max);
 % sequence number with found meta data
 seq_nb = 1;
 yo_nb = 0;
@@ -52,6 +56,7 @@ for meta_nb = 1:length(list_of_vector_meta)
         [meta, data] = ReadDataSeaexplorer(fullfile(meta_folder_ccu, list_of_vector_meta(meta_nb).name));
     elseif strcmp(vector_type, 'SeaGlider')
         meta = ReadMetaSeaglider(fullfile(meta_folder_sg, list_of_vector_meta(meta_nb).name));
+    elseif strcmp(vector_type, 'float')
     end
     right_meta = 1;
     % while it is a useful meta data file compared to the datetime of the
@@ -89,7 +94,7 @@ for meta_nb = 1:length(list_of_vector_meta)
                    samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb)) '_' cruise];
                end
            end
-           glider_filenames_list(seq_nb) = list_of_vector_meta(meta_nb).name;
+           vector_filenames_list(seq_nb) = list_of_vector_meta(meta_nb).name;
            seq_nb = seq_nb + 1;
         elseif (time_to_find < meta(1,1))
             seq_nb = seq_nb + 1;
