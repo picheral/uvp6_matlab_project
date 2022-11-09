@@ -26,6 +26,8 @@
 % present in a folder starting by float and ending by the WMOnumber "float_*_#######.nc"
 % This folder must be placed in the doc folder of the project.
 % The file format type is 'OceanSITES vertical profile 1.4'
+% Merge sequences rules : one sequence per ascent, one parking sequence
+% between two ascent
 % 
 % use Mapping Toolbox 
 %
@@ -45,6 +47,10 @@ disp('')
 
 
 %% inputs and its QC
+% process params
+parking_pressure_diff = 50; % with margins
+
+
 % select the project
 disp('Select UVP project folder ')
 project_folder = uigetdir('',['Select UVP project folder']);
@@ -59,7 +65,7 @@ if contains(project_folder, 'sea')
 elseif contains(project_folder, 'SG')
     disp('SeaGlider project')
     vector_type = 'SeaGlider';
-elseif contains(project_folder, 'float')
+elseif contains(project_folder, 'WMO')
     disp('BGC float project')
     vector_type = 'float';
 else
@@ -128,7 +134,10 @@ pixelsize_list = zeros(1, seq_nb_max);
 start_idx_list = zeros(1, seq_nb_max);
 end_idx_list = zeros(1, seq_nb_max);
 start_time_list = zeros(1, seq_nb_max);
+stop_time_list = zeros(1, seq_nb_max);
 profile_type_list = strings(1, seq_nb_max);
+sample_type_list = strings(1, seq_nb_max);
+integration_time_list = NaN(1, seq_nb_max);
 for seq_nb = 1:seq_nb_max
     % get hw conf data
     seq_dat_file = fullfile(list_of_sequences(seq_nb).folder, list_of_sequences(seq_nb).name, [list_of_sequences(seq_nb).name, '_data.txt']);
@@ -148,14 +157,21 @@ for seq_nb = 1:seq_nb_max
     I = isnan(black_nb(:,3));
     black_nb(I,:) = [];
     
-    % detection of ascent profile
-    if depth_data(end) < depth_data(1)
+    % detection of ascent profile (or descent or parking)
+    if strcmp(vector_type, 'float') && (abs(depth_data(end) - depth_data(1)) < parking_pressure_diff)
+        profile_type = 'p';
+        sample_type = 'T';
+        integration_time_list(seq_nb) = 1;
+    elseif depth_data(end) < depth_data(1)
         profile_type = 'a';
         black_nb = flip(black_nb);
+        sample_type = 'P';
     else
         profile_type = 'd';
+        sample_type = 'P';
     end
     profile_type_list(seq_nb) = profile_type;
+    sample_type_list(seq_nb) = sample_type;
     
     % detection auto first image by using default method
     % test if black 1pix is all 0
@@ -172,11 +188,13 @@ for seq_nb = 1:seq_nb_max
         start_idx_list(seq_nb) = nan; % uvpapp is in python and start at index 0 for the image number
         end_idx_list(seq_nb) = nan;
         start_time_list(seq_nb) = time_data(1);
+        stop_time_list(seq_nb) = time_data(end);
     else
         Zusable_idx = find(depth_data>=Zusable);
         start_idx_list(seq_nb) = Zusable_idx(1) - 1; % uvpapp is in python and start at index 0 for the image number
         end_idx_list(seq_nb) = Zusable_idx(end) - 1;
         start_time_list(seq_nb) = time_data(Zusable_idx(1));
+        stop_time_list(seq_nb) = time_data(Zusable_idx(end));
     end
     
     
@@ -192,7 +210,12 @@ disp('---------------------------------------------------------------')
 % go through meta files and look for start time of sequences
 % assume that sequences AND meta files are chronologicaly ordered
 disp('Process the vector meta data....')
-[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, start_time_list, list_of_sequences, profile_type_list, cruise);
+if strcmp(vector_type, 'float')
+    ref_time_list = stop_time_list;
+else
+    ref_time_list = start_time_list;
+end
+[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, ref_time_list, list_of_sequences, profile_type_list, cruise);
 disp('---------------------------------------------------------------')
 
 
@@ -254,8 +277,8 @@ for seq_nb = 1:seq_nb_max
         'nan' ';' ctd_filesnames ';' lat ';' lon ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' 'nan' ';' 'nan' ';' 'nan' ';'...
-        'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' num2str(yo_list(seq_nb)) ';' ...
-        '' ';' 'P' ';' 'nan' ';' char(glider_filenames_list(seq_nb)) ';'...
+        'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
+        num2str(yo_list(seq_nb)) ';' char(sample_type_list(seq_nb)) ';' num2str(integration_time_list(seq_nb)) ';' char(glider_filenames_list(seq_nb)) ';'...
         num2str(pixelsize_list(seq_nb)) ';' datestr(start_time_list(seq_nb), 'yyyymmdd-HHMMss')];
     fprintf(sample_file, '%s\n', seq_line);
 end
