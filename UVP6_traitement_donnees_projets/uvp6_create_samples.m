@@ -21,11 +21,14 @@
 % 
 % ----- BGC float project -----
 % For recovered BGC float uvp6 data.
-% The project must contain "float" in the name.
-% The metadata are extraceted from the sequence and one unique netcdf argo file
-% present in a folder starting by float and ending by the WMOnumber "float_*_#######.nc"
+% The project must contain the WMO number in the name (and so "WMO").
+% The metadata are extraceted from the sequence and netcdf argo files (one
+% per profile) present in a folder starting by float and ending by the 
+% WMOnumber "float_*_#######"
 % This folder must be placed in the doc folder of the project.
-% The file format type is 'OceanSITES vertical profile 1.4'
+% The nc files must be located directly in it S*6904139_###.nc where 
+% 6904139 is the WMO number and ### the number of the profile.
+% The file format type is 'Argo-3.1 CF-1.6 A.14'
 % Merge sequences rules : one sequence per ascent, one parking sequence
 % between two ascent
 % 

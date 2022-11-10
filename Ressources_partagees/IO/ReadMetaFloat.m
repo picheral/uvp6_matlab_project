@@ -12,15 +12,19 @@ function [meta_data] = ReadMetaFloat(filepathnc)
 %   meta_data : metadata array
 %
 
-time = ncread(filepathnc, 'TIME');
+depth = ncread(filepathnc, 'PRES_ADJUSTED');
+
+time = ncread(filepathnc, 'JULD');
 t0 = datenum('1950-01-01T00:00:00', 'yyyy-mm-ddTHH:MM:SS');
 time = t0 + time;
-
-depth = time * 0;
 
 latitude = ncread(filepathnc, 'LATITUDE');
 longitude = ncread(filepathnc, 'LONGITUDE');
 
+time = depth*0 + time;
+time(end) = time(end) + 30/60/24;
+latitude = depth*0 + latitude;
+longitude = depth*0 + longitude;
 
 meta_data = [time, depth, latitude, longitude];
 

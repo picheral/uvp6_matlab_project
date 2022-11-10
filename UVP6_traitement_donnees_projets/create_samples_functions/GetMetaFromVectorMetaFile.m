@@ -34,7 +34,7 @@ elseif strcmp(vector_type, 'SeaGlider')
     meta_folder_sg = list_of_vector_meta(1).folder;
 elseif strcmp(vector_type, 'float')
     % nc for float
-    list_of_vector_meta = dir(fullfile(meta_data_folder, '*.nc'));
+    list_of_vector_meta = dir(fullfile(meta_data_folder, 'S*.nc'));
     meta_folder_fl = list_of_vector_meta(1).folder;
 end
 
@@ -91,7 +91,7 @@ for meta_nb = 1:length(list_of_vector_meta)
                lon_list(seq_nb) = ConvertLatLonSeaexplorer(meta(aa(end), 4));
                yo_list(seq_nb) = str2double(list_of_vector_meta(meta_nb).name(21:end-3));
                samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb)) '_' cruise];
-               [~] = CreateCTDfileSeaexplorer(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'));
+               [~] = CreateCTDfile(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'), vector_type);
            elseif strcmp(vector_type, 'SeaGlider')
                lat_list(seq_nb) = meta(aa(end), 3);
                lon_list(seq_nb) = meta(aa(end), 4);
