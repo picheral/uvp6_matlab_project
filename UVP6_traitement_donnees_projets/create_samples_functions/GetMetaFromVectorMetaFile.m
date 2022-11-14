@@ -57,7 +57,7 @@ for meta_nb = 1:length(list_of_vector_meta)
     elseif strcmp(vector_type, 'SeaGlider')
         meta = ReadMetaSeaglider(fullfile(meta_folder_sg, list_of_vector_meta(meta_nb).name));
     elseif strcmp(vector_type, 'float')
-        meta = ReadMetaFloat(fullfile(meta_folder_fl, list_of_vector_meta(meta_nb).name));
+        [meta, data] = ReadMetaFloat(fullfile(meta_folder_fl, list_of_vector_meta(meta_nb).name));
     end
     right_meta = 1;
     % while it is a useful meta data file compared to the datetime of the
@@ -76,9 +76,9 @@ for meta_nb = 1:length(list_of_vector_meta)
         % check that the datetime of the sequence IS in the file
         % of the datetime+10s (in case of non synchro)
         % if not, go to the next meta data file
-        if ((time_to_find + datenum(duration('00:00:10')) >= meta(1,1)) || ...
-                ((time_to_find + datenum(duration('00:50:00')) >= meta(1,1)) && strcmp(vector_type, 'float'))) && ...
-                (time_to_find <= meta(end,1))
+        if ((time_to_find + datenum(duration('00:00:10')) >= meta(1,1)) && (time_to_find <= meta(end,1))) || (...
+                ((time_to_find + datenum(duration('00:50:00')) >= meta(1,1)) && strcmp(vector_type, 'float')) && ...
+                ((time_to_find  - datenum(duration('00:30:00')) <= meta(end,1)) && strcmp(vector_type, 'float')))
            aa =  find(meta(:,1) <= time_to_find);
            if isempty(aa) && strcmp(vector_type, 'float')
                aa =  find(meta(:,1) <= (time_to_find + datenum(duration('00:50:00'))));
@@ -107,9 +107,9 @@ for meta_nb = 1:length(list_of_vector_meta)
                    samples_names_list(seq_nb) = ['Yo_' num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb)) '_' cruise];
                end
            elseif strcmp(vector_type, 'float')
-               if yo_nb == 0
-                   yo_nb = 1;
-               end
+               %if yo_nb == 0
+               %    yo_nb = 1;
+               %end
                lat_list(seq_nb) = meta(aa(end), 3);
                lon_list(seq_nb) = meta(aa(end), 4);
                yo_list(seq_nb) = yo_nb;
@@ -117,6 +117,7 @@ for meta_nb = 1:length(list_of_vector_meta)
                    yo_nb = yo_nb + 1;
                end
                samples_names_list(seq_nb) = [num2str(yo_list(seq_nb), '%04.f') char(profile_type_list(seq_nb)) '_' cruise];
+               [~] = CreateCTDfile(fullfile(meta_data_folder, '..', '..'), data, strcat(samples_names_list(seq_nb), '.csv'), vector_type);
            end
            vector_filenames_list(seq_nb) = list_of_vector_meta(meta_nb).name;
            seq_nb = seq_nb + 1;
