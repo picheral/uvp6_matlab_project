@@ -51,7 +51,7 @@ disp('')
 
 %% inputs and its QC
 % process params
-parking_pressure_diff = 50; % with margins
+parking_pressure_diff = 70; % with margins
 
 
 % select the project
