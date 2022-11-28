@@ -29,6 +29,7 @@
 % The nc files must be located directly in it S*6904139_###.nc where 
 % 6904139 is the WMO number and ### the number of the profile.
 % The file format type is 'Argo-3.1 CF-1.6 A.14'
+% from https://dataselection.euro-argo.eu/ NetCDF Argo original
 % Merge sequences rules : one sequence per ascent, one parking sequence
 % between two ascent
 % 
