@@ -88,6 +88,39 @@ else
 end
 
 
+%% -------------- Copy of images from raw sequence -------------------
+for k = 3:numel(list_seq)
+    im_list = dir([list_seq(k).folder,'\',list_seq(k).name,'\','**/20*.png']);
+    disp('---------------------------------------------------------------')
+    % if images already present, do nothing. If not :
+    if isempty(im_list)
+        disp('Copying images from raw_recherche_threshold folder...');
+        % read the data file to get only the good images
+        [data_table, meta_table, ~] = Uvp6DatafileToArray([list_seq(k).folder,'\',list_seq(k).name,'\',list_seq(k).name,'_data.txt']);
+        % get datetime = name of image
+        [n,m]=size(data_table);
+        for h=1:n
+            C = strsplit(meta_table{h},{','});
+            date_time = char(C(1));
+            meta_table{h} = date_time;
+        end
+        % copy of the file from the raw_recherche_threshold to the raw
+        % folder
+        raw_threshold_folder = [folder,'\raw_recherche_threshold\'];
+        seq_folder = [raw_threshold_folder, '\', list_seq(k).name];
+        [~] = copyfile([seq_folder, '\*_synthetic.txt'], [list_seq(k).folder,'\',list_seq(k).name]);
+        [~] = copyfile([seq_folder, '\images.zip'], [list_seq(k).folder,'\',list_seq(k).name]);
+        for h=1:n
+            image_to_copy = dir([seq_folder, '\*\', meta_table{h}, '.png']);
+            [~] = copyfile([image_to_copy.folder, '\', image_to_copy.name], [list_seq(k).folder,'\',list_seq(k).name]);
+        end
+    else
+        disp('Images already in the folder');
+    end    
+end
+disp('---------------------------------------------------------------')
+
+
 %% -------------- Creation matrice à partir images -------------------
 if option == 'c'
     %------------- Boucle sur sequences ---------------
