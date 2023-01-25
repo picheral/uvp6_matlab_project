@@ -52,7 +52,10 @@ disp('')
 
 %% inputs and its QC
 % process params
+%parking_pressure_diff : pressure difference to identify parkings
 parking_pressure_diff = 70; % with margins
+%deep_black_limit : depth where the black is considered only from the instrument
+deep_black_limit = 60; %80m to be sure
 
 
 % select the project
@@ -130,6 +133,7 @@ list_of_sequences = list_of_sequences(idx);
 
 % get metadata from each sequence data file
 disp('Get data from all sequences...')
+disp(['The instrumental noise is evaluated under ' deep_black_limit 'm'])
 seq_nb_max = length(list_of_sequences);
 aa_list = zeros(1, seq_nb_max);
 exp_list = zeros(1, seq_nb_max);
@@ -185,7 +189,7 @@ for seq_nb = 1:seq_nb_max
         first_black = black_nb(:,4);
     end
     % detection auto first image by using default method
-    [Zusable] = UsableDepthLimit(black_nb(:,1), first_black);
+    [Zusable] = UsableDepthLimit(black_nb(:,1), first_black, deep_black_limit);
 
     % datetime first image
     if isnan(Zusable)
