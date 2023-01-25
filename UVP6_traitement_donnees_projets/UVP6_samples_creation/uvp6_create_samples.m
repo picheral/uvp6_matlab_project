@@ -14,7 +14,7 @@
 % ----- SeaGlider project -----
 % The project must contain "SG" in the name.
 % The meta data are extracted from the sequence and a nav file located in
-% the CTD folder of the project.
+% the doc folder of the project.
 % The meta data folder must be called "SG###_nc_files", with ### the sn of
 % the glider.
 % The files in it are called "p[sn]####.nc", with #### the nb of the yo.
@@ -219,7 +219,7 @@ if strcmp(vector_type, 'float')
 else
     ref_time_list = start_time_list;
 end
-[lon_list, lat_list, yo_list, samples_names_list, glider_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, ref_time_list, list_of_sequences, profile_type_list, cruise);
+[lon_list, lat_list, yo_list, samples_names_list, vector_filenames_list] = GetMetaFromVectorMetaFile(vector_type, meta_data_folder, ref_time_list, list_of_sequences, profile_type_list, cruise);
 disp('---------------------------------------------------------------')
 
 
@@ -290,7 +290,7 @@ for seq_nb = 1:seq_nb_max
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' 'nan' ';' 'nan' ';' 'nan' ';'...
         'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
-        num2str(yo_list(seq_nb)) ';' char(sample_type_list(seq_nb)) ';' num2str(integration_time_list(seq_nb)) ';' char(glider_filenames_list(seq_nb)) ';'...
+        num2str(yo_list(seq_nb)) ';' char(sample_type_list(seq_nb)) ';' num2str(integration_time_list(seq_nb)) ';' char(vector_filenames_list(seq_nb)) ';'...
         num2str(pixelsize_list(seq_nb)) ';' datestr(start_time_list(seq_nb), 'yyyymmdd-HHMMss')];
     fprintf(sample_file, '%s\n', seq_line);
 end
