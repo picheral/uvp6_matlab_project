@@ -5,7 +5,7 @@ function [meta_data_folder, vector_sn] = DetectionVectorMetaFile(project_folder,
 %
 % inputs :
 %   project_folder : full path of the project
-%   vector_type : 'SeaExplorer' or 'SeaGlider'
+%   vector_type : 'SeaExplorer' or 'SeaGlider' or 'float'
 %
 % output :
 %   meta_data_folder : full path of metadata vector folder
@@ -23,6 +23,12 @@ elseif strcmp(vector_type, 'SeaGlider')
         error('ERROR : No metadata folder found in \doc')
     end
     vector_sn = ['SeaGlider_' list_in_doc(1).name(3:5)];
+elseif strcmp(vector_type, 'float')
+    list_in_doc = dir(fullfile(project_folder, 'doc', 'float*'));
+    if isempty(list_in_doc)
+        error('ERROR : No metadata folder found in \doc')
+    end
+    vector_sn = ['WMO' list_in_doc(1).name(end-6:end)];
 end
 
 
