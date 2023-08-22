@@ -144,11 +144,7 @@ while process == 1
             index = 1;
             while 1
                 tline = fgetl(fid_s);
-                
-                
-                
-                disp(tline);
-                
+                % disp(tline);                
                 if ~ischar(tline); disp('EOF'); break; end
                 if strcmp(tline,'[Data]'), break, end
                 % ----------- Ecriture --------------
