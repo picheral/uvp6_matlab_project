@@ -21,6 +21,15 @@ disp('Loading reference project')
 disp('Loading adjusted project')
 [adj_base_source,project_folder_adj,results_dir_adj] = UvpOpenBase('adjusted');
 
+% limites profondeurs
+disp('-------------------------------------------------------------------')
+disp('DEPTH range selection. The range must be > 100 dbars.')
+depth_limit_min = input("Input min depth (default = 0 dbars)");
+if isempty(depth_limit_min); depth_limit_min = 0; end
+depth_limit_max = input("Input max depth (default = 6000 dbars)");
+if isempty(depth_limit_max); depth_limit_max = 60000; end
+disp('-------------------------------------------------------------------')
+
 % settings
 process_params.esd_min = 0.13;
 process_params.esd_max = 1.5;
@@ -78,6 +87,17 @@ for ref_cast_nb = 1 : size(ref_base_source,2)
         % data of adj_cast
         [adj_base, adj_cast] = CalibrationUvpGetConfig(adj_base_source(adj_cast_nb), adj_cast, 'Adjusted');
 
+        % select depth ranges
+        aa = find(ref_base.histopx(:,1) >= depth_limit_min);
+        ref_base.histopx = ref_base.histopx(aa,:);
+        aa = find(ref_base.histopx(:,1) <= depth_limit_max);
+        ref_base.histopx = ref_base.histopx(aa,:);        
+        
+        aa = find(adj_base.histopx(:,1) >= depth_limit_min);
+        adj_base.histopx = adj_base.histopx(aa,:);
+        aa = find(adj_base.histopx(:,1) <= depth_limit_max);
+        adj_base.histopx = adj_base.histopx(aa,:); 
+               
         % check and select the same depth range
         [ref_cast.histopx, adj_cast.histopx, process_params.depth] = CalibrationUvpComputeDepthRange(ref_base.histopx,adj_base.histopx);
 
@@ -95,7 +115,7 @@ for ref_cast_nb = 1 : size(ref_base_source,2)
                 % ---------------------- Save figure -------------------------------------
                 orient tall
                 set(gcf,'PaperPositionMode','auto')
-                print(gcf,'-dpng',[results_dir_ref,'\composite_',num2str(cast_deb_fig)]);
+                print(gcf,'-dpng',[results_dir_ref,'\composite_',num2str(cast_deb_fig),'_',num2str(depth_limit_min,0),'_',num2str(depth_limit_max,0)]);
             end
             
             no_fig = no_fig + 1;
@@ -141,7 +161,7 @@ for ref_cast_nb = 1 : size(ref_base_source,2)
         xline(esd_min, '--b');
         xline(esd_max, '--b');
         legend(uvp_ref,uvp_adj,'fontsize',6);
-        titre = [char(ref_cast.profilename),' / ',char(adj_cast.profilename)];
+        titre = [char(ref_cast.profilename),' / ',char(adj_cast.profilename),' ',num2str(depth_limit_min),'-',num2str(depth_limit_max)];
         ee = titre == '_';
         titre(ee) = '-';
         title(titre,'fontsize',7);
@@ -158,4 +178,5 @@ end
 % ---------------------- Save figure -------------------------------------
 orient tall
 set(gcf,'PaperPositionMode','auto')
-print(gcf,'-dpng',[results_dir_ref,'\composite_',num2str(cast_deb_fig)]);
+print(gcf,'-dpng',[results_dir_ref,'\composite_',num2str(cast_deb_fig),'_',num2str(depth_limit_min,0),'_',num2str(depth_limit_max,0)]);
+

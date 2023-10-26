@@ -92,7 +92,7 @@ for i = 1: size(header,2)
         %20190724-123151,22.31,34.50,1:  1,1048,41.7,14.5; 2,26,38.2,5.6;    3,1,66.0,28.5;
         [data_all, meta_all] = Uvp6DatafileToArray(data_txt_path);
 
-       % from first to las image
+       % from first to last image
        firstimg = str2num(header(i).firstimage);
        lastimg = str2num(header(i).lastimage);
        data = data_all(firstimg:lastimg,:);
@@ -169,7 +169,7 @@ for i = 1: size(header,2)
         title(titre);
 
         % ------------- time of first image -----------------
-        time = data_nb(firstimg,2);
+        time = data_nb(1,2);
         disp(['First image time : ',char(datetime(datevec(time)))])
         base(i).datenum = time;
         base(i).datem = time;
