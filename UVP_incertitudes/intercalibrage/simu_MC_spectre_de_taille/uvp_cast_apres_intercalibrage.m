@@ -28,12 +28,12 @@ function [ref_cast, adj_cast] = uvp_cast_apres_intercalibrage(aa_ref,expo_ref,aa
 %% Selection of reference instrument and data
 
 [ref_base, ref_cast] = UvpOpenBase('Reference', path_ref);
-[ref_base, ref_cast] = CalibrationUvpGetConfig(ref_base, ref_cast, 'Reference');
+[ref_base, ref_cast] = CalibrationUvpGetConfig(ref_base, ref_cast, 'Reference',0);
 
 %% Selection of instrument data to adjust
 
 [adj_base, adj_cast] = UvpOpenBase('Adjusted',path_adj);
-[adj_base, adj_cast] = CalibrationUvpGetConfig(adj_base, adj_cast, 'Adjusted');
+[adj_base, adj_cast] = CalibrationUvpGetConfig(adj_base, adj_cast, 'Adjusted',0);
 
 %% Calibration parameters
 
