@@ -6,6 +6,12 @@
 % !!! the code is case sensitive !!!
 % !!! Close UVPapp before using the code !!!
 %
+% ------ ALL platforms ----------
+% MERGE the sequences first using UVPapp (if necessary).
+% For floats, the profiles must be merged first and the parking then
+% For gliders, there is no parking and there might not be any merging need
+%
+%
 % ----- SeaExplorer project -----
 % The project must contain "sea" in the name.
 % The meta data are extracted from the sequence and a nav file located in
@@ -32,16 +38,19 @@
 % uvp6_sn000006lp_2021_SG150_PolarFront\doc\SG150_PolarFront_arctos\sg150_20210516_150_019_timeseries.nc
 %
 %
-% ----- BGC float project -----
+% ----- BGC-Argo float project -----
 % For recovered BGC float uvp6 data.
-% The project must contain the WMO number in the name (and so "WMO").
+% The project name must contain the WMO number in the name 
+% (uvp6_sn000110lp_YYYY_WMO6904139_recovery). YYYY is the year of the
+% deployment of the float. Recovery indicates that the project contains
+% recovered data.
 % The metadata are extraceted from the sequence and netcdf argo files (one
 % per profile) present in a folder starting by float and ending by the 
 % WMOnumber "float_*_#######"
 % This folder must be placed in the doc folder of the project.
-% The nc files must be located directly in it S*6904139_###.nc where 
-% 6904139 is the WMO number and ### the number of the profile. The files
-% used are the individual profile files 
+% The synthetic profile files must be located directly in it. The filenames are S*6904139_###.nc where 
+% 6904139 is the WMO number and ### the number of the profile. The S prefix indicates that they are synthetic files. 
+% The files used are the individual profile files 
 % from https://dataselection.euro-argo.eu/ NetCDF Argo original
 % Merge sequences rules : one sequence per ascent, one parking sequence
 % between two ascent
@@ -50,8 +59,8 @@
 %
 %
 % -- CTD files --
-% CTD files are created with data from the vector
-% Due to a bug from ecopart, move those files to a ctd_data_cnv folder in
+% The CTD files for EcoPART are created using the data from the vector
+% Due to a bug from EcoPART, after the process, move those files into a new ctd_data_cnv folder in
 % the project in order to import them
 % For SeaGlider, the ctd files are all the same
 %
