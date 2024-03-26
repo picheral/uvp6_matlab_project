@@ -42,7 +42,7 @@ disp('------------------------------------------------------')
 %% Compute new hwline and new acqline
 disp('Computing new meta lines')
 HWline = split(HWline, ',');
-new_HWline = {HWline{1:7} '0' HWline{8:13} '193.49.112.100' HWline{14:end}}';
+new_HWline = {HWline{1:7} '0' HWline{8:13} '193.49.112.100' HWline{14:end-1}}';
 new_HWline = join(new_HWline, ',');
 ACQline = split(ACQline, ',');
 new_ACQline = {ACQline{1:5} '1' ACQline{6:9} '10' ACQline{10:16} '0' ACQline{17:end-5} ACQline{end-1:end}}';
@@ -51,7 +51,7 @@ disp('------------------------------------------------------')
 
 %% write HW and ACQ lines
 disp('writing new file')
-fprintf(old_standard_file,'%s\n',string(new_HWline));
+fprintf(old_standard_file,'%s\n',append(string(new_HWline), ";"));
 fprintf(old_standard_file,'%s\n',line);
 fprintf(old_standard_file,'%s\n',string(new_ACQline));
 
