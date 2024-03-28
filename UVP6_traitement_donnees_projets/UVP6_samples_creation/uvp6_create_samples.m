@@ -288,46 +288,47 @@ fprintf(sample_file,'%s\n',line);
 % one sample by sequence
 for seq_nb = 1:seq_nb_max
     % lat format
-    signe = sign(lat_list(seq_nb));
-    lat_deg = fix(lat_list(seq_nb) * signe);
-    lat_min = fix(rem(lat_list(seq_nb) * signe,1)*60);
-    lat_sec = round(rem(rem(lat_list(seq_nb) * signe,1)*60,1)*60);
-    if lat_sec == 60
-        lat_sec = 0;
-        lat_min = lat_min + 1;
-    end
-    if lat_min == 60
-        lat_min = 0;
-        lat_deg = lat_deg + 1;
-    end
-    if signe == -1
-        lat = ['-' num2str(lat_deg) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
-    else
-        lat = [num2str(lat_deg) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
-    end
-    % lon format
-    signe = sign(lon_list(seq_nb));
-    lon_deg = fix(lon_list(seq_nb) * signe);
-    lon_min = fix(rem(lon_list(seq_nb) * signe,1)*60);
-    lon_sec = round(rem(rem(lon_list(seq_nb) * signe,1)*60,1)*60);
-    if lon_sec == 60
-        lon_sec = 0;
-        lon_min = lon_min + 1;
-    end
-    if lon_min == 60
-        lon_min = 0;
-        lon_deg = lon_deg + 1;
-    end
-    if signe == -1
-        lon = ['-' num2str(lon_deg) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
-    else
-        lon = [num2str(lon_deg) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
-    end
+    % signe = sign(lat_list(seq_nb));
+    % lat_deg = fix(lat_list(seq_nb) * signe);
+    % lat_min = fix(rem(lat_list(seq_nb) * signe,1)*60);
+    % lat_sec = round(rem(rem(lat_list(seq_nb) * signe,1)*60,1)*60);
+    % if lat_sec == 60
+    %     lat_sec = 0;
+    %     lat_min = lat_min + 1;
+    % end
+    % if lat_min == 60
+    %     lat_min = 0;
+    %     lat_deg = lat_deg + 1;
+    % end
+    % if signe == -1
+    %     lat = ['-' num2str(lat_deg) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
+    % else
+    %     lat = [num2str(lat_deg) '°' num2str(lat_min, '%02.f') ' ' num2str(lat_sec, '%02.f')];
+    % end
+    % % lon format
+    % signe = sign(lon_list(seq_nb));
+    % lon_deg = fix(lon_list(seq_nb) * signe);
+    % lon_min = fix(rem(lon_list(seq_nb) * signe,1)*60);
+    % lon_sec = round(rem(rem(lon_list(seq_nb) * signe,1)*60,1)*60);
+    % if lon_sec == 60
+    %     lon_sec = 0;
+    %     lon_min = lon_min + 1;
+    % end
+    % if lon_min == 60
+    %     lon_min = 0;
+    %     lon_deg = lon_deg + 1;
+    % end
+    % if signe == -1
+    %     lon = ['-' num2str(lon_deg) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
+    % else
+    %     lon = [num2str(lon_deg) '°' num2str(lon_min, '%02.f') ' ' num2str(lon_sec, '%02.f')];
+    % end
+    
     % ctd files names
     ctd_filesnames = [char(samples_names_list(seq_nb)) '.ctd'];
     % line to write
     seq_line = [cruise ';' vector_sn ';' list_of_sequences(seq_nb).name ';' char(samples_names_list(seq_nb)) ';'...
-        'nan' ';' ctd_filesnames ';' lat ';' lon ';'...
+        'nan' ';' ctd_filesnames ';' num2str(lat_list(seq_nb)) ';' num2str(lon_list(seq_nb)) ';'...
         num2str(start_idx_list(seq_nb)) ';' num2str(volimage_list(seq_nb)) ';' num2str(aa_list(seq_nb)) ';' num2str(exp_list(seq_nb)) ';'...
         '' ';' 'nan' ';' 'nan' ';' 'nan' ';'...
         'nan' ';' '' ';' num2str(end_idx_list(seq_nb)) ';' '' ';' ...
