@@ -2,6 +2,8 @@ function From2023formatToOldUVPData(data_folder, data_filename)
 %From2023formattoOldUVPData copy the UVP6 data file and modify the hwconf
 %and acqconf line to fit the 2021 format. The original data.txt is archived.
 %
+% uvp6 version = 2024.00
+%
 % The new file is copied in the same folder of the original file.
 %
 % inputs :
