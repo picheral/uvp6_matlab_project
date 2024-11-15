@@ -5,6 +5,8 @@
 % add parameters to fit the old format
 % Save new file
 %
+% uvp6 version = 2024.00
+%
 % Work for all data.txt in a raw folder of a project
 %
 % WARNING : does not work with taxo
