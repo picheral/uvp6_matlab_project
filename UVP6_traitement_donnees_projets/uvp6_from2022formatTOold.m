@@ -1,11 +1,11 @@
 %% Change the metaline format of a data.txt from 2022 to old one
 % Save the data.txt to [...]_2022format.txt
 % Read the data text file from uvp6
+% Delete all taxo lines
 % Change the hwconf line and the acq line :
 % add parameters to fit the old format
 % Save new file
 %
-% WARNING : does not work with taxo
 %
 % camille catalano 05/2022
 
