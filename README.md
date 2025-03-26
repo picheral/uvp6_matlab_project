@@ -1,5 +1,5 @@
 # uvp6_matlab_project
-Outils Matlab associés à UVP6 !
+Outils Matlab associés à l'UVP6
 
 Ce projet contient les codes matlab utilisés pour le développement de l'uvp6, notamment lors des tests, caractérisations et analyses de résultats.
 
