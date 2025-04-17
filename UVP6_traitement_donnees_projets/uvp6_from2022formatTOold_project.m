@@ -6,24 +6,36 @@
 % add parameters to fit the old format
 % Save new file
 %
+% uvp6 version = 24/02/2022
 %
-% camille catalano 05/2022
+% Work for all data.txt in a raw folder of a project
+%
+% camille catalano 12/2024
 
 clear all
 close all
 warning('on')
 
 disp('------------------------------------------------------')
-disp('---------- uvp6 data.txt downgrader  -----------------')
+disp('------- uvp6 data.txt project downgrader  ------------')
 disp('------------------------------------------------------')
 
-%% input data file
-disp("Selection of the data file to downgrade")
-[data_filename, data_folder] = uigetfile('*.txt','Select the data file to downgrade');
-disp("Selected data file : " + data_folder + data_filename)
+
+
+disp('------------------------------------------------------')
+disp('>> Select the UVP project directory');
+project_path = uigetdir('', 'Select the UVP project directory');
+
+data_files = dir([project_path, '\raw\**\*data.txt']);
+
+
+disp('------------------------------------------------------')
+disp(string(length(data_files)) + " files to processed")
 disp('------------------------------------------------------')
 
-From2022formatToOldUVPData(data_folder, data_filename)
+for i=1:length(data_files)
+    From2022formatToOldUVPData(data_files(i).folder, data_files(i).name)
+end
 
 disp('------------------------------------------------------')
 
