@@ -2,7 +2,7 @@
 % from Picheral Lombard 2017/11 / 2019/06/11
 % Updated 2020/03/31
 
-function CalibrationUvpPlotRawData(process_params, ref_cast, adj_cast)
+function CalibrationUvpPlotRawData(process_params, ref_cast, adj_cast,close_fig)
 % CalibrationUvpPlotRawData different plots to compare calibrated ref data
 % and raw data to adjust
 %
@@ -121,7 +121,9 @@ orient tall
 titre = ['RAW_data_' char(ref_cast.profilename)];
 set(gcf,'PaperPositionMode','auto')
 print(gcf,'-dpng',[results_dir_ref,'\',datestr(now,30),'_',char(titre)]);
-% close(fig1);
+if close_fig == 1
+    close(fig1);
+end
 
 
 end

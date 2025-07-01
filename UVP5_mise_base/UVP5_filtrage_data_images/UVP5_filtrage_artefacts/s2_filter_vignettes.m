@@ -39,9 +39,12 @@ xls_th_pixelSize = NN(:, 20);
 xls_hdrName = cellstr(num2str(NN(:,1)));
 
 %% vignettes filtering
-for i = 1:vig_nProj
+% for i = 1:vig_nProj
+for i = 11:14
     hdr_name = vig_listProjects(i).name;
     hdr_name_id = hdr_name(4:end);         %% excel table does not contain prefix HDR
+    disp(hdr_name_id);
+    disp(xls_hdrName)
     idx = find(  strcmp( hdr_name_id, xls_hdrName) == 1 );
     ilha_name = xls_profName{idx};
     
