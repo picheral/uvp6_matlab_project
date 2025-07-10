@@ -112,7 +112,7 @@ end
 
 % ----------- Matrice abondances 0 - z_limitm --------------------------
 ee = find(base_new(deep_stn_zoo).zoopuvp5.abondances.data(:,3)<=z_limit);
-nb_0_z_limit = nansum(nb_zoo(1:ee(end),:,:),1);
+nb_0_z_limit = sum(nb_zoo(1:ee(end),:,:),1, "omitnan");
 vol_sum = nb_0_z_limit(:,4,:);
 data_ab_0_z_limit =  nb_0_z_limit(:,1:4,:);
 for cc = 5:col_zoo
@@ -121,7 +121,7 @@ for cc = 5:col_zoo
 end
 
 % ----------- Matrice abondances > z_limitm --------------------------
-nb_z_limit = nansum(nb_zoo(ee(end)+1:end,:,:),1);
+nb_z_limit = sum(nb_zoo(ee(end)+1:end,:,:),1, "omitnan");
 vol_sum = nb_z_limit(:,4,:);
 data_ab_z_limit =  nb_z_limit(:,1:4,:);
 for cc = 5:col_zoo
@@ -200,11 +200,11 @@ set(gcf,'color','white');
 ax=axes('NextPlot','add');
 
 ab_lpm_all = ab_lpm(:,4:9,:);
-ab_lpm_all_smal_sum = nansum(ab_lpm_all,2);
+ab_lpm_all_smal_sum = sum(ab_lpm_all,2, "omitnan");
 ab_lpm_all = ab_lpm(:,10:13,:);
-ab_lpm_all_int_sum = nansum(ab_lpm_all,2);
+ab_lpm_all_int_sum = sum(ab_lpm_all,2, "omitnan");
 ab_lpm_all = ab_lpm(:,14:end,:);
-ab_lpm_all_large_sum = nansum(ab_lpm_all,2);
+ab_lpm_all_large_sum = sum(ab_lpm_all,2, "omitnan");
 
 stn_colors = 'rgbckmkrgbckmkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcymkrgbcym';
 % ------------------------- LPM DATA -------------------------------
@@ -331,7 +331,7 @@ for map = 1:mapmax
         color = 'g';
     end
     % ------------ Pourcentages -----------------------------
-    vect_prop = nansum(nb_mat(1,5:end,:),3);
+    vect_prop = sum(nb_mat(1,5:end,:),3, "omitnan");
     vect_prop = vect_prop/sum(vect_prop);
     
     % ------------ Boucle sur les pages ---------------------
@@ -417,15 +417,15 @@ for k = 1: numel(station_list);
         z_data = base_new(bbb(1)).hisnb(:,2);
         
         ab_lpm_stn = ab_lpm(1:numel(z_data),4:9,bbb);
-        ab_lpm_stn = nansum(ab_lpm_stn,2);
+        ab_lpm_stn = sum(ab_lpm_stn,2, "omitnan");
         ab_lpm_smal = nanmean(ab_lpm_stn,3);
         
         ab_lpm_stn = ab_lpm(1:numel(z_data),14:end,bbb);
-        ab_lpm_stn = nansum(ab_lpm_stn,2);
+        ab_lpm_stn = sum(ab_lpm_stn,2, "omitnan");
         ab_lpm_large = nanmean(ab_lpm_stn,3);
         
         ab_lpm_stn = ab_lpm(1:numel(z_data),10:13,bbb);
-        ab_lpm_stn = nansum(ab_lpm_stn,2);
+        ab_lpm_stn = sum(ab_lpm_stn,2, "omitnan");
         ab_lpm_int = nanmean(ab_lpm_stn,3);
         
         ccc = find(ab_lpm_smal>0);

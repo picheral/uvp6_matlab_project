@@ -260,8 +260,8 @@ if option == 'a'
             
             spectre_select(1,:) =       pixsize(deb_x:end_x);
             spectre_select_fit(1,:) =   pixsize(deb_x:end_x);
-            area_total(1) =             nansum(data_final(:,4)/nb_img,1);
-            mean_grey_total(1) =        nansum(data_final(:,4) .* data_final(:,5))/nb_img;
+            area_total(1) =             sum(data_final(:,4)/nb_img,1, "omitnan");
+            mean_grey_total(1) =        sum(data_final(:,4) .* data_final(:,5), "omitnan")/nb_img;
             ecarts(1,5:8) =             [rest_v,img_ve_sel,1,img_ho_sel];
             
             
@@ -390,13 +390,13 @@ if option == 'a'
                         % ------- Calcul écart au spectre de la zone entière ----
                         %                     ecart_spectre = nansum(abs((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
                         %                     ecart_spectre_a = nansum(((exp(y_sel_zone) - exp(y_sel))./exp(y_sel)));
-                        ecart_spectre_a = (nansum((abs(exp(y_sel_zone) - exp(y_sel)))./exp(y_sel)))/(numel(y_sel_zone));
+                        ecart_spectre_a = (sum((abs(exp(y_sel_zone) - exp(y_sel)))./exp(y_sel), "omitnan"))/(numel(y_sel_zone));
                         %ecart_spectre_b =  ((nansum((exp(y_sel_zone) - exp(y_sel)).^2)) / (end_x - deb_x + 1))^0.5;
                         ecart_spectre_b = data_similarity_score(exp(y_sel_zone), exp(y_sel));
                         
                         % ------- Calcul ecarts Area et Grey -------------------------
-                        area = nansum(data_zone(:,4),1)/nb_img;
-                        grey = nansum(data_zone(:,4) .* data_zone(:,5))/nb_img;
+                        area = sum(data_zone(:,4),1, "omitnan")/nb_img;
+                        grey = sum(data_zone(:,4) .* data_zone(:,5), "omitnan")/nb_img;
                         
                         %                     ecart_area = abs((area - area_total(1)/nb_zones)/(area_total(1)/nb_zones));
                         %                     ecart_grey = abs((grey - mean_grey_total(1)/nb_zones)/(mean_grey_total(1)/nb_zones));
@@ -420,15 +420,15 @@ if option == 'a'
             end
             
             % ------------------ Resultats ---------------------------------
-            somme_ecarts_spectres_fit_a =     nansum(abs(ecarts(2:end,1)),1);
-            somme_ecarts_spectres_fit_b =     nansum(abs(ecarts(2:end,2)),1);
+            somme_ecarts_spectres_fit_a =     sum(abs(ecarts(2:end,1)),1, "omitnan");
+            somme_ecarts_spectres_fit_b =     sum(abs(ecarts(2:end,2)),1, "omitnan");
             mean_ecarts_spectres_fit_b =     nanmean(abs(ecarts(2:end,2)),1);
             min_ecarts_spectres_fit_b =     nanmin(abs(ecarts(2:end,2)));
             max_ecarts_spectres_fit_b =     nanmax(abs(ecarts(2:end,2)));
             std_ecarts_spectres_fit_b =     nanstd(abs(ecarts(2:end,2)),1);
-            mediane_ecarts_spectres_fit_b =     nanmedian(abs(ecarts(2:end,2)),1);
-            somme_ecarts_area =             nansum(abs(ecarts(2:end,3)),1);
-            somme_ecarts_grey =             nansum(abs(ecarts(3:end,4)),1);
+            mediane_ecarts_spectres_fit_b =     median(abs(ecarts(2:end,2)),1, "omitmissing");
+            somme_ecarts_area =             sum(abs(ecarts(2:end,3)),1, "omitnan");
+            somme_ecarts_grey =             sum(abs(ecarts(3:end,4)),1, "omitnan");
             
             %         disp(['Sum of spectra differences : ',num2str(somme_ecarts_spectres_fit_a)])
             disp(['Mean of spectra differences : ',num2str(mean_ecarts_spectres_fit_b)])
