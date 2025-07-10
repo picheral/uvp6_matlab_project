@@ -127,8 +127,8 @@ for i = 1: size(header,2)
 
         % --------- Calcul du bruit pour UVPdb --------------------------
         disp('---------------------------------------------------------------')
-        median_1px = nanmedian(black_nb(:,3));
-        median_2px = nanmedian(black_nb(:,4));
+        median_1px = median(black_nb(:,3), "omitmissing");
+        median_2px = median(black_nb(:,4), "omitmissing");
         disp(['Black_nb median abundance of 1 pixel objects (UVPdb) : ',num2str(median_1px)])
         disp(['Black_nb median abundance of 2 pixel objects (UVPdb) : ',num2str(median_2px)])
                 
@@ -195,7 +195,7 @@ for i = 1: size(header,2)
                 end
                 % passe de 5:902 à 3:900 le 12/02/2020
                 % passe de 5:902 à 5:904 et 3:900 à 3:902 le 30/04/2020
-                nb_d(h,5:904) = nansum(data_nb(aa(dd),3:902),1);
+                nb_d(h,5:904) = sum(data_nb(aa(dd),3:902),1, "omitnan");
                 nb_d(h,4) = size(dd,1);
                 nb_d(h,3) = size(aa,1);
                 nb_d(h,2) = nanmean(data_nb(aa(dd),1));

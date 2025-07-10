@@ -543,9 +543,9 @@ elseif process_histo == 1
         
         % Tracé des profils verticaux detailles des nombres/L
         
-        x3 = nansum(base(fichier).hisnb(:,4:13),2);
-        x4 = nansum(base(fichier).hisnb(:,14:16),2);
-        x5 = nansum(base(fichier).hisnb(:,17:20),2);
+        x3 = sum(base(fichier).hisnb(:,4:13),2, "omitnan");
+        x4 = sum(base(fichier).hisnb(:,14:16),2, "omitnan");
+        x5 = sum(base(fichier).hisnb(:,17:20),2, "omitnan");
         z_hist = -1 * base(fichier).hisnb(:,2);
         
         subplot (2,3,4)

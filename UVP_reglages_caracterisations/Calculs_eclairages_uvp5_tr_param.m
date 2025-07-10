@@ -63,7 +63,7 @@ for gg=1:numel(level)
     for i=ceil(c/2):b-floor(c/2)
         for j=ceil(l/2):a-floor(l/2)
             pA=im3([j-floor(l/2):j+floor(l/2)],[i-floor(c/2):i+floor(c/2)]);
-            cr=nanmedian(nanmedian(pA));
+            cr=median(median(pA, "omitmissing"), "omitmissing");
             matr(j,i)=cr;
         end
     end
