@@ -87,7 +87,7 @@ while another_ref == 'y'
         if ~isempty(base_list)
             disp('----------- Base list --------------------------------');
             disp([num2str(size(base_list,1)),' database in ', results_dir_ref]);
-            for i = 1:size(base_list)
+            for i = 1:size(base_list,1)
                 disp(['N°= ',num2str(i),' : ',base_list(i).name]);
             end
         else
@@ -402,7 +402,7 @@ while other_cast == 1
             if base_nofile == 0
                 disp('----------- Base list --------------------------------');
                 disp([num2str(size(base_list,1)),' database in ', results_dir_adj]);
-                for gg = 1:size(base_list)
+                for gg = 1:size(base_list,1)
                     disp(['N°= ',num2str(gg),' : ',base_list(gg).name]);
                 end
             else
