@@ -30,7 +30,7 @@ testh = abs(mean(a(:,end-nn,mm))-mean(a(:,nn,mm)));
  rflag =0;
 if testv > testh
  rflag =1;
- a = rotate90(a);
+ a = rot90(a);
  temp=nlin;
  nlin = npix;
  npix = temp;
