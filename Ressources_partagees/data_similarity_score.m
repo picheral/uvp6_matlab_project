@@ -39,7 +39,7 @@ function rel_err_score = relative_error(data, data_ref)
 %   rel_err_score : squared relative error score [float]
 %
 data_score = (abs(data-data_ref)./(data_ref)).^2;
-rel_err_score = nansum(data_score);
+rel_err_score = sum(data_score, "omitnan");
 end
 
 
@@ -56,5 +56,5 @@ function rel_err_norm_score = relative_error_norm(data, data_ref)
 %   rel_err_norm_score : normalized squared relative error score [float]
 %
 data_score = (abs(data-data_ref)./(data_ref)).^2;
-rel_err_norm_score = nansum(data_score) / length(data_score);
+rel_err_norm_score = sum(data_score, "omitnan") / length(data_score);
 end

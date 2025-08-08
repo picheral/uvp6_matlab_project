@@ -17,6 +17,8 @@ disp('-------------------------------------------------------------------------'
 disp(['Processing date     : ',datestr(now,31)])
 disp(['Processing operator : ',char(people)]);
 disp('-------------------------------------------------------------------------');
+disp(['Adjusted UVP        : ',char(adj_cast.uvp)]);
+disp('-------------------------------------------------------------------------');
 disp(['Nb of reference uvps: ',num2str(length(ref_cast_list))]);
 disp(['Min raw ESD   [mm]  : ',num2str(process_params.esd_min)]);
 disp(['Max raw ESD   [mm]  : ',num2str(process_params.esd_max)]);
@@ -38,7 +40,7 @@ if strcmp(process_params.set_aa_exp, 'y')
     disp(['Set Aa              : ',num2str(process_params.users_aa)]);
     disp(['Set Exp             : ',num2str(process_params.users_exp)]);
 end
-disp('-------------------------------------------------------------------------');
+% disp('-------------------------------------------------------------------------');
 
 % parameters goals
 if contains(adj_cast.uvp,'uvp6')

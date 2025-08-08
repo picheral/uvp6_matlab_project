@@ -232,10 +232,10 @@ for j = 2 : nb_zones + 1
         % ----------- Ecart spectre a -------------------------
         %         mat_ecarts_spectre_fit_a(i-1,j-1) = nansum(((exp(spectre_zone) - exp(spectre_ref))./exp(spectre_ref)));
         
-        mat_ecarts_spectre_fit_a(i-1,j-1) = (      nansum((abs(exp(spectre_zone) - exp(spectre_ref))) ./exp(spectre_ref))   ) / (numel(x_sel));
+        mat_ecarts_spectre_fit_a(i-1,j-1) = (      sum((abs(exp(spectre_zone) - exp(spectre_ref))) ./exp(spectre_ref), "omitnan")   ) / (numel(x_sel));
         
         % ----------- Ecart spectre b -------------------------
-        mat_ecarts_spectre_fit_b(i-1,j-1) = ((nansum((exp(spectre_zone) - exp(spectre_ref)).^2)) / (numel(x_sel)))^0.5;
+        mat_ecarts_spectre_fit_b(i-1,j-1) = ((sum((exp(spectre_zone) - exp(spectre_ref)).^2, "omitnan")) / (numel(x_sel)))^0.5;
         
         % ----------- Ecart area -------------------------
         mat_ecarts_area(i-1,j-1) = abs(area_zone - area_ref)/area_ref;

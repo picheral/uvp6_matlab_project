@@ -31,7 +31,7 @@ if isfolder(results_dir)
             disp('------------------------------------------------------');
             disp('----------- Base list --------------------------------');
             disp([num2str(size(base_list,1)),' database in ', results_dir]);
-            for i = 1:size(base_list)
+            for i = 1:size(base_list, 1)
                 disp(['N°= ',num2str(i),' : ',base_list(i).name]);
             end
         end

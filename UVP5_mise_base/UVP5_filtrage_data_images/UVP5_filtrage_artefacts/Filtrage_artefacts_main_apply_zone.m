@@ -7,7 +7,8 @@ clc
 clear all
 close all
 
-project_folder_ref = uigetdir('', 'Select UVP5 project directory ');
+% project_folder_ref = uigetdir('', 'Select UVP5 project directory ');
+project_name = uigetdir('', 'Select UVP5 project directory ');
 
 fprintf('=========================================================== \n');
 fprintf('----------------------------------------------------------- \n');
@@ -32,10 +33,12 @@ fprintf('----------------------------------------------------------- \n');
 % triangle_yy = [10 60 60 10 10]
 fprintf('=========================================================== \n');
 fprintf('FILTERING BRU files \n');
-shape_xx = [1 1 139 139 1];
-shape_yy = [415 661 661 415 415];
+% uvp5_sn221_io_2022
+shape_xx = [1 1 250 250 1];
+shape_yy = [500 1800 1800 500 500];
 xlsfile = 'header.xls';
 s7_filter_bru_files(project_name,xlsfile,shape_xx,shape_yy)
+fprintf('The header.xls file contains only the profiles to correct.  \n');
 
 %% Verifier que les fichiers sont bien corrigés
 % Chargement des fichiers BRU et creation mat
@@ -56,9 +59,12 @@ fprintf('Check the fig or png files \n');
 
 % Filter vignettes in sub-folders
 fprintf('=========================================================== \n');
-fprintf('FILTERING THE VIGNETTES FROM THE impacted zone \n');
+fprintf('FILTERING THE VIGNETTES FROM THE impacted zone (the vignettes are moved in the ignored sub-folder) \n');
 th_area = 79;
 s2_filter_vignettes(project_name,xlsfile,th_area)
+fprintf('ZOOPROCESS : \n');
+fprintf('The PID files of the corrected samples must be reprocessed \n');
+fprintf('Perform the update metadata of all samples \n');
 
 fprintf('=========================================================== \n');
 fprintf('----------------------------------------------------------- \n');

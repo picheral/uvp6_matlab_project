@@ -205,16 +205,16 @@ for i=1:size(base,2);
         end
         % ------------ the data -------------------
         %% hisnb data reduite et total
-        x3 = num2str(nansum(base(i).hisnb(bb,4:13),2));
-        x4 = num2str(nansum(base(i).hisnb(bb,14:16),2));
-        x5 = num2str(nansum(base(i).hisnb(bb,17:20),2));
-        x6 = num2str(nansum(base(i).hisnb(bb,4:20),2));
+        x3 = num2str(sum(base(i).hisnb(bb,4:13),2, "omitnan"));
+        x4 = num2str(sum(base(i).hisnb(bb,14:16),2, "omitnan"));
+        x5 = num2str(sum(base(i).hisnb(bb,17:20),2, "omitnan"));
+        x6 = num2str(sum(base(i).hisnb(bb,4:20),2, "omitnan"));
         fprintf(fid,'%s',strcat(x3,';',x4,';',x5,';',x6,';'));
         %% hisbv data reduite et total
-        x3 = num2str(nansum(base(i).hisbv(bb,4:13),2));
-        x4 = num2str(nansum(base(i).hisbv(bb,14:16),2));
-        x5 = num2str(nansum(base(i).hisbv(bb,17:20),2));
-        x6 = num2str(nansum(base(i).hisbv(bb,4:20),2));
+        x3 = num2str(sum(base(i).hisbv(bb,4:13),2, "omitnan"));
+        x4 = num2str(sum(base(i).hisbv(bb,14:16),2, "omitnan"));
+        x5 = num2str(sum(base(i).hisbv(bb,17:20),2, "omitnan"));
+        x6 = num2str(sum(base(i).hisbv(bb,4:20),2, "omitnan"));
         fprintf(fid,'%s',strcat(x3,';',x4,';',x5,';',x6,';'));
         %% hisnb data
         for j=4:b
